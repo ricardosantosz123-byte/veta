@@ -1,0 +1,19 @@
+{
+  "name": "veta",
+  "version": "1.0.0",
+  "description": "SaaS por suscripción para mueblerías y talleres de carpintería, laca y tapicería: cotizador, pedidos y cobranza, producción por etapa con destajistas, insumos y portal del cliente final. Stack: Supabase + Netlify + Stripe + Mercado Pago.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "supabase": "^2.119.0"
+  }
+}
