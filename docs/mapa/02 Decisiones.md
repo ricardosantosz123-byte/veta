@@ -59,7 +59,7 @@
 - **1A:** la base **bloquea** la existencia negativa (salida o ajuste); el error dice "Registra primero la entrada o haz un ajuste".
 - **2A:** el Destajista ve el material que le entregaron en "Mis órdenes" (nombre y cantidad, **sin costos**) vía `material_entregado`.
 - **3A:** el material **no** entra al margen en V1. El indicador se llama **"Margen sobre destajos"** con la nota "No incluye material de insumos" (PRD §5.10, FASES Fase 10, comentario en `v_pedido_resumen`). Integrarlo es V2 → [[05 Pendientes y riesgos#V2]].
-- Unidades: lista cerrada `pza, m, m2, pie_tabla, kg, l`. Nombre único por empresa sin distinguir mayúsculas, acentos ni espacios (`nombre_norm` con `_norm`).
+- Unidades: lista cerrada `pza, m, m2, dm2, pie_tabla, kg, l`. **dm² agregado a petición de Ricardo:** la piel se compra por decímetro cuadrado o por pieza; al elegir tipo Piel en un alta, la unidad se pone en dm². Nombre único por empresa sin distinguir mayúsculas, acentos ni espacios (`nombre_norm` con `_norm`).
 - Toda entrada lleva costo, también la existencia inicial del alta (`crear_insumo`).
 - Ajuste = **conteo físico** (`ajustar_existencia`): la persona escribe cuánto hay y la base calcula la diferencia; exige motivo.
 - Costo promedio ponderado con **4 decimales**; salidas y ajustes guardan el promedio del momento (valor del material). Renglón bloqueado (`for update`) al calcular.

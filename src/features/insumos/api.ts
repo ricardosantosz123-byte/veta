@@ -17,13 +17,14 @@ export const nombreTipo: Record<TipoInsumo, string> = {
   otro: 'Otro',
 }
 
-export const UNIDADES = ['pza', 'm', 'm2', 'pie_tabla', 'kg', 'l'] as const
+export const UNIDADES = ['pza', 'm', 'm2', 'dm2', 'pie_tabla', 'kg', 'l'] as const
 export type Unidad = (typeof UNIDADES)[number]
 
 export const nombreUnidad: Record<Unidad, string> = {
   pza: 'pza',
   m: 'm',
   m2: 'm²',
+  dm2: 'dm²',
   pie_tabla: 'pie tabla',
   kg: 'kg',
   l: 'l',
@@ -33,6 +34,9 @@ export const nombreUnidad: Record<Unidad, string> = {
 export function unidad(u: string | null | undefined): string {
   return u ? (nombreUnidad[u as Unidad] ?? u) : ''
 }
+
+/** Unidad sugerida al elegir el tipo en un alta (la piel se compra por dm²). */
+export const unidadSugerida: Partial<Record<TipoInsumo, Unidad>> = { piel: 'dm2' }
 
 export type TipoMovimiento = Enum<'tipo_movimiento'>
 

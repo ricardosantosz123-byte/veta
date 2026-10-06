@@ -1,7 +1,7 @@
 # Mapa de la base de datos
 
 > Claude Code: mantén esta nota al día con cada migración nueva (nombre, qué agrega y sus pruebas).
-> Última revisión contra veta-dev: 2026-10-05. Pruebas: `supabase/tests/01_flujo_completo.sql` (188).
+> Última revisión contra veta-dev: 2026-10-05. Pruebas: `supabase/tests/01_flujo_completo.sql` (189).
 
 ## Migraciones (`supabase/migrations/`)
 | Archivo | Contenido |
@@ -18,6 +18,7 @@
 | `20261010000001_fase5_produccion.sql` | Órdenes protegidas; reglas de avance; inicio sin anticipo autorizado; adelantos; `sugerir_ordenes`, `v_destajo_saldos`, `corte_destajistas` |
 | `20261010000002_fase5_v_pedidos.sql` | Recrea `v_pedidos` para incluir `inicio_autorizado_*` |
 | `20261011000001_fase6_insumos.sql` | Unidad cerrada, nombre único normalizado (`nombre_norm`), costo a 4 decimales, existencia nunca negativa, entrada con costo, ajuste con motivo, salida→orden con `destajista_id`, columnas protegidas, no borrar con movimientos; `crear_insumo`, `ajustar_existencia`, `material_entregado`; `v_insumos`, `v_movimientos_insumo`; comentario "Margen sobre destajos" en `v_pedido_resumen` |
+| `20261011000002_fase6_unidad_dm2.sql` | Unidad `dm2` (decímetro cuadrado) para piel |
 
 > Ojo: una vista creada con `p.*` no ve columnas agregadas después; hay que recrearla (pasó con `v_cotizaciones` y `v_pedidos`).
 

@@ -19,6 +19,7 @@ import {
   nombreUnidad,
   TIPOS_INSUMO,
   UNIDADES,
+  unidadSugerida,
   type Insumo,
   type TipoInsumo,
   type Unidad,
@@ -129,7 +130,14 @@ export function DialogoInsumo({ insumo: i, onCerrar, onCreado, onBorrado }: Prop
                 control={form.control}
                 name="tipo"
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={(v) => {
+                      field.onChange(v)
+                      const sugerida = unidadSugerida[v as TipoInsumo]
+                      if (nuevo && sugerida) form.setValue('unidad', sugerida)
+                    }}
+                  >
                     <SelectTrigger id="ins-tipo" className="w-full">
                       <SelectValue />
                     </SelectTrigger>

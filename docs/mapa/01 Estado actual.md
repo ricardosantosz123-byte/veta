@@ -18,13 +18,14 @@
 | 10 | Tablero, avisos, landing, lanzamiento | ⚪ Pendiente | |
 
 ## Fase 6: qué falta para cerrarla
-- [x] Migración `20261011000001_fase6_insumos.sql` aplicada en veta-dev; `run.sh`: **188 pruebas en verde** (34 nuevas).
+- [x] Migración `20261011000001_fase6_insumos.sql` y `20261011000002_fase6_unidad_dm2.sql` aplicadas en veta-dev; `run.sh`: **189 pruebas en verde** (35 nuevas).
 - [x] Interfaz: Insumos (lista, alerta bajo mínimo, ficha con historial, entrada/salida/ajuste), "Material entregado" en la ficha de la orden y en "Mis órdenes".
 - [x] typecheck, lint y build ✅.
-- [ ] **Prueba de aceptación en la app** (Ricardo; Claude no inicia sesión con cuentas reales).
+- [x] Prueba en la app (Ricardo, 2026-10-06): funciona; pidió medir la piel en dm² o piezas → agregado dm².
+- [ ] Confirmar el alta de una piel en dm².
 
 ## Prueba de aceptación de la Fase 6
-1. Como Admin → **Insumos → Nuevo insumo**: "Piel Napa café", piel, m2, mínimo 5, existencia inicial 10 a $100.
+1. Como Admin → **Insumos → Nuevo insumo**: "Piel Napa café", piel, **dm²** (se pone sola al elegir Piel), mínimo 5, existencia inicial 10 a $100.
 2. En su ficha → **Entrada**: 10 m2 a $120 → costo promedio **$110**, existencia 20.
 3. **Producción → Tablero** → abre una orden de P-1 → **Entregar material**: 3 m2 de esa piel → aparece en "Material entregado" con valor **$330**.
 4. En la ficha del insumo: existencia 17 y la salida en el historial con "Orden O-n · entregado a Ricardo".

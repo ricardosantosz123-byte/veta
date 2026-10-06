@@ -251,6 +251,9 @@ select pg_temp.falla(format($$insert into insumos (empresa_id, nombre, tipo, uni
   'nombre de insumo único sin mayúsculas, acentos ni espacios de más');
 select pg_temp.falla(format($$insert into insumos (empresa_id, nombre, unidad) values (%L, 'Tachuela', 'cm')$$, :'emp_a'),
   'unidad fuera de la lista cerrada');
+select crear_insumo(:'emp_a', 'Piel Florentic negra', 'piel', 'dm2', 0, null, 450, 4.8) as ins_dm2 \gset
+select pg_temp.ok((select unidad = 'dm2' and existencia = 450 and costo_unitario = 4.8 from insumos where id = :'ins_dm2'),
+  'la piel se mide en decímetros cuadrados (dm2)');
 select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad) values (%L, %L, 'entrada', 5)$$, :'emp_a', :'ins'),
   'una entrada exige costo unitario');
 select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, costo_unitario, orden_id) values (%L, %L, 'entrada', 5, 100, %L)$$, :'emp_a', :'ins', :'o2'),
@@ -332,7 +335,7 @@ select pg_temp.ok(calcular_precio(:'m_nat', array[:'o_nog', :'o_piel']::uuid[], 
 select pg_temp.ok((select count(*) from modelo_costeo) = 1, 'Contador ve el markup');
 update modelo_costeo set markup = 2 where modelo_id = :'m_nat';  -- RLS: 0 filas, sin error
 select pg_temp.ok((select markup from modelo_costeo where modelo_id = :'m_nat') = 1.0, 'Contador no edita el markup');
-select pg_temp.ok((select count(*) from v_insumos) = 2 and (select valor from material_entregado(array[:'o2']::uuid[])) = 330,
+select pg_temp.ok((select count(*) from v_insumos) = 3 and (select valor from material_entregado(array[:'o2']::uuid[])) = 330,
   'Contador ve insumos y el valor del material');
 select pg_temp.falla(format($$select crear_insumo(%L, 'Clavo', 'herraje', 'pza')$$, :'emp_a'), 'Contador no da de alta insumos');
 select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, costo_unitario) values (%L, %L, 'entrada', 1, 1)$$, :'emp_a', :'ins'),
