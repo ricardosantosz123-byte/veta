@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { ArrowLeft, Check, Plus } from 'lucide-react'
+import { ArrowLeft, Check, ImagePlus, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
@@ -249,9 +249,10 @@ export function AsistenteModelo() {
                 )}
                 <div className="grid gap-2">
                   <Label htmlFor="am-foto">Foto (opcional)</Label>
-                  <Input
+                  <input
                     id="am-foto"
                     type="file"
+                    className="peer sr-only"
                     accept={LOGO_TIPOS.join(',')}
                     onChange={(e) => {
                       const f = e.target.files?.[0] ?? null
@@ -263,6 +264,14 @@ export function AsistenteModelo() {
                       setFoto(f)
                     }}
                   />
+                  <div className="flex items-center gap-3 peer-focus-visible:[&>label]:ring-[3px] peer-focus-visible:[&>label]:ring-ring/50">
+                    <Button type="button" variant="outline" asChild>
+                      <label htmlFor="am-foto" className="cursor-pointer">
+                        <ImagePlus aria-hidden /> {foto ? 'Cambiar foto' : 'Elegir foto'}
+                      </label>
+                    </Button>
+                    <span className="min-w-0 truncate text-sm text-muted-foreground">{foto ? foto.name : 'Sin foto'}</span>
+                  </div>
                 </div>
                 <label className="flex items-center justify-between gap-4 rounded-xl border p-3">
                   <span className="grid gap-0.5">

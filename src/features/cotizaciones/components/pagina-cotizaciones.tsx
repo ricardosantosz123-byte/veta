@@ -170,7 +170,7 @@ function ListaCotizaciones() {
                       {c.empresa_cliente && <span className="text-muted-foreground"> · {c.empresa_cliente}</span>}
                     </Link>
                     <span className="hidden text-sm text-muted-foreground lg:block">{fecha(c.fecha)}</span>
-                    <span className={porVencer ? 'hidden text-sm font-medium text-amber-700 lg:block dark:text-amber-400' : 'hidden text-sm text-muted-foreground lg:block'}>
+                    <span className={porVencer ? 'hidden text-sm font-medium text-aviso lg:block' : 'hidden text-sm text-muted-foreground lg:block'}>
                       {fecha(c.vigencia_hasta)}
                     </span>
                     <span className="hidden truncate text-sm text-muted-foreground lg:block">{nombreDe(c.vendedor_id)}</span>

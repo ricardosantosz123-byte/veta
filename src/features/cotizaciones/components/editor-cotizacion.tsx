@@ -78,7 +78,7 @@ function FilaRenglon({ r, editable, verSugerido, onEditar, onBorrar }: { r: Reng
         <div className="mt-1 flex flex-wrap gap-1.5">
           {r.vendido && <Badge variant="secondary">Vendido</Badge>}
           {r.precio_manual && (
-            <Badge variant="outline" className="border-amber-300 text-amber-800 dark:border-amber-800 dark:text-amber-300">
+            <Badge variant="outline" className="border-aviso-borde text-aviso">
               Precio a mano
             </Badge>
           )}

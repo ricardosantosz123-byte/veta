@@ -13,7 +13,7 @@
 - [ ] Mercado Pago: procesar reembolsos y contracargos (`refunded`, `charged_back`) en `mp-webhook`; hoy solo se registran pagos aprobados.
 
 ## Técnicos
-- [ ] Contraste en modo claro: el rojo `--destructive` (#e7000b) sobre fondos rojizos (`bg-destructive/5` o `/10`: la insignia y el botón "destructive" de shadcn, el aviso de cancelación del pedido) da ~4.4:1 y no pasa AA. Sobre blanco sí (4.77:1). En Insumos se usó contorno sobre blanco.
+- [x] ~~Contraste en modo claro: el rojo `--destructive` (#e7000b) sobre fondos rojizos (`bg-destructive/5` o `/10`: la insignia y el botón "destructive" de shadcn, el aviso de cancelación del pedido) da ~4.4:1 y no pasa AA. Sobre blanco sí (4.77:1). En Insumos se usó contorno sobre blanco.~~ Resuelto el 2026-10-06: `--destructive` pasa a oklch(0.53 0.215 27.3) (4.9:1 sobre fondo rojizo).
 - [ ] Bundle de JavaScript > 500 kB: cargar los módulos por separado (lazy), ya iniciado en Catálogo.
 - [x] Íconos PNG de la PWA (generados de la "V" actual; regenerar con el logo definitivo).
 

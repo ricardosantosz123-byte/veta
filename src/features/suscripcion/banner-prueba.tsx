@@ -20,7 +20,7 @@ export function BannerPrueba() {
           ? 'La suscripción está cancelada.'
           : 'La suscripción está vencida.'
     return (
-      <div role="status" className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b bg-amber-50 px-4 py-2.5 text-sm text-amber-950 dark:bg-amber-950/40 dark:text-amber-100">
+      <div role="status" className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b bg-aviso-suave px-4 py-2.5 text-sm text-aviso-fuerte">
         <Lock className="size-4 shrink-0" aria-hidden />
         <p className="flex-1">
           <strong className="font-semibold">Solo lectura.</strong> {motivo}{' '}
@@ -45,7 +45,7 @@ export function BannerPrueba() {
       role="status"
       className={cn(
         'flex flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-2 text-sm',
-        urgente ? 'bg-amber-50 text-amber-950 dark:bg-amber-950/40 dark:text-amber-100' : 'bg-muted/50 text-muted-foreground',
+        urgente ? 'bg-aviso-suave text-aviso-fuerte' : 'bg-muted/50 text-muted-foreground',
       )}
     >
       <Clock className="size-4 shrink-0" aria-hidden />

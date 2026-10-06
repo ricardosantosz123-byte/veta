@@ -129,7 +129,7 @@ function FichaCliente() {
           </Link>
         </Button>
         <div className="min-w-0 flex-1 basis-56">
-          <h1 className="truncate text-2xl font-semibold tracking-tight">{nombre}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-balance break-words">{nombre}</h1>
           {c.empresa_cliente && <p className="text-sm text-muted-foreground">{c.empresa_cliente}</p>}
         </div>
         <Button variant="outline" asChild>

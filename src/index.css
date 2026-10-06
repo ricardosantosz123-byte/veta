@@ -62,7 +62,7 @@
     --muted-foreground: oklch(0.556 0 0);
     --accent: oklch(0.97 0 0);
     --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
+    --destructive: oklch(0.53 0.215 27.3); /* AA sobre blanco y sobre fondos rojizos (bg-destructive/10) */
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
@@ -114,6 +114,38 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* Estados: aviso (ámbar) y éxito (verde). Mismos tonos que antes, en un solo lugar y con su modo oscuro. */
+:root {
+  --aviso: var(--color-amber-700);
+  --aviso-fuerte: var(--color-amber-950);
+  --aviso-suave: var(--color-amber-50);
+  --aviso-borde: var(--color-amber-300);
+  --exito: var(--color-emerald-700);
+  --exito-fuerte: var(--color-emerald-950);
+  --exito-suave: var(--color-emerald-50);
+  --exito-borde: var(--color-emerald-300);
+}
+.dark {
+  --aviso: var(--color-amber-400);
+  --aviso-fuerte: var(--color-amber-100);
+  --aviso-suave: color-mix(in oklab, var(--color-amber-950) 40%, transparent);
+  --aviso-borde: var(--color-amber-900);
+  --exito: var(--color-emerald-400);
+  --exito-fuerte: var(--color-emerald-100);
+  --exito-suave: color-mix(in oklab, var(--color-emerald-950) 40%, transparent);
+  --exito-borde: var(--color-emerald-900);
+}
+@theme inline {
+  --color-aviso: var(--aviso);
+  --color-aviso-fuerte: var(--aviso-fuerte);
+  --color-aviso-suave: var(--aviso-suave);
+  --color-aviso-borde: var(--aviso-borde);
+  --color-exito: var(--exito);
+  --color-exito-fuerte: var(--exito-fuerte);
+  --color-exito-suave: var(--exito-suave);
+  --color-exito-borde: var(--exito-borde);
 }
 
 @layer base {

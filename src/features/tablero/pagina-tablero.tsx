@@ -21,7 +21,7 @@ function Indicador({ titulo, valor, nota, alerta }: { titulo: string; valor: str
     <Card className="gap-1 py-4">
       <CardContent className="px-4">
         <p className="text-sm text-muted-foreground">{titulo}</p>
-        <p className={cn('text-2xl font-semibold tracking-tight tabular', alerta && 'text-amber-700 dark:text-amber-400')}>{valor}</p>
+        <p className={cn('text-2xl font-semibold tracking-tight tabular', alerta && 'text-aviso')}>{valor}</p>
         {nota && <p className="text-xs text-muted-foreground">{nota}</p>}
       </CardContent>
     </Card>

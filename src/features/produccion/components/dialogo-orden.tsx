@@ -34,7 +34,8 @@ const NOMBRE: Record<EstadoOrden, string> = { pendiente: 'Pendiente', en_proceso
 function PagoDestajo({ orden, onPagado }: { orden: Orden; onPagado: () => Promise<unknown> }) {
   const { empresa } = useEmpresaActiva()
   const pendiente = Number(orden.saldo)
-  const [monto, setMonto] = useState<number | null>(pendiente || null)
+  // Un adelanto se escribe a propósito; solo el pago de una orden terminada viene lleno con lo que falta.
+  const [monto, setMonto] = useState<number | null>(orden.estado === 'terminada' ? pendiente || null : null)
   const [metodo, setMetodo] = useState<Enum<'metodo_pago'>>('efectivo')
   const [fechaPago, setFechaPago] = useState(hoyMx())
   const pagar = useMutation({

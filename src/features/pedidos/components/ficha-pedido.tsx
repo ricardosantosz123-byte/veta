@@ -312,7 +312,7 @@ export function FichaPedido() {
       )}
 
       {p.estado === 'terminado' && saldo > 0 && (
-        <div role="status" className="flex flex-wrap items-center gap-3 rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-950 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100">
+        <div role="status" className="flex flex-wrap items-center gap-3 rounded-xl border border-exito-borde bg-exito-suave p-4 text-sm text-exito-fuerte">
           <PackageCheck className="size-5 shrink-0" aria-hidden />
           <p className="min-w-0 flex-1 basis-60">
             <strong className="font-semibold">Producción terminada.</strong> Avisa al cliente para cobrar el finiquito de <span className="tabular">{moneda(saldo)}</span> y coordinar la entrega.
@@ -347,7 +347,7 @@ export function FichaPedido() {
           <Card key={d.etiqueta} className="gap-1 py-4">
             <CardContent className="px-4">
               <p className="text-sm text-muted-foreground">{d.etiqueta}</p>
-              <p className={cn('text-xl font-semibold tracking-tight tabular', 'resaltar' in d && d.resaltar && 'text-amber-700 dark:text-amber-400')}>{d.valor}</p>
+              <p className={cn('text-xl font-semibold tracking-tight tabular', 'resaltar' in d && d.resaltar && 'text-aviso')}>{d.valor}</p>
               {'nota' in d && d.nota && <p className="text-xs text-muted-foreground">{d.nota}</p>}
             </CardContent>
           </Card>

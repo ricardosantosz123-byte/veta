@@ -83,7 +83,7 @@ function Tarjeta({ o, arrastrable, verCostos, onAbrir }: { o: Orden; arrastrable
           {o.cantidad} × {o.descripcion}
         </span>
         <span className="flex flex-wrap items-center justify-between gap-2 text-xs">
-          <span className={o.destajista ? '' : 'text-amber-700 dark:text-amber-400'}>{o.destajista?.nombre ?? 'Sin asignar'}</span>
+          <span className={o.destajista ? '' : 'text-aviso'}>{o.destajista?.nombre ?? 'Sin asignar'}</span>
           <Semaforo semaforo={s.semaforo} dias={s.dias} />
         </span>
       </button>

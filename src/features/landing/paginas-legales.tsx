@@ -13,7 +13,7 @@ function Legal({ titulo, children }: { titulo: string; children: ReactNode }) {
         <Link to="/" className="flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" aria-hidden /> {marca.nombre}
         </Link>
-        <p role="note" className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
+        <p role="note" className="flex items-start gap-2 rounded-xl border border-aviso-borde bg-aviso-suave p-4 text-sm text-aviso-fuerte">
           <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
           Borrador pendiente de revisión legal. No es la versión definitiva.
         </p>

@@ -69,7 +69,7 @@ function EstadoSlug({ slug, valido }: { slug: string; valido: boolean }) {
   }
   if (isError) return <span className="text-sm text-destructive">No pudimos revisar el slug. Intenta de nuevo.</span>
   return data ? (
-    <span className="flex items-center gap-1.5 text-sm text-emerald-700 dark:text-emerald-400">
+    <span className="flex items-center gap-1.5 text-sm text-exito">
       <Check className="size-4" aria-hidden /> Disponible
     </span>
   ) : (
@@ -147,10 +147,7 @@ export function AsistenteAlta() {
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted/40 p-4">
-      <div className="text-center">
-        <p className="text-sm text-muted-foreground">Bienvenido a {marca.nombre}</p>
-        <h1 className="text-2xl font-semibold tracking-tight">Da de alta tu empresa</h1>
-      </div>
+      <h1 className="text-center text-2xl font-semibold tracking-tight">Da de alta tu empresa en {marca.nombre}</h1>
 
       <ol className="flex items-center gap-2 text-sm" aria-label="Pasos">
         {PASOS.map((nombre, i) => (
@@ -182,7 +179,7 @@ export function AsistenteAlta() {
           <CardHeader className="mb-6">
             <CardTitle>{PASOS[paso]}</CardTitle>
             <CardDescription>
-              {paso === 0 && 'El slug es la dirección de tu portal para clientes. No se puede cambiar después.'}
+              {paso === 0 && 'La dirección es el enlace donde tus clientes verán sus pedidos. No se puede cambiar después.'}
               {paso === 1 && 'Tu logo y tu color aparecen en cotizaciones, recibos y en el portal. Puedes cambiarlos después.'}
               {paso === 2 && '¿Cómo calculas el precio de tus muebles? Puedes cambiarlo después en Ajustes.'}
             </CardDescription>
