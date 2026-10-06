@@ -11,7 +11,7 @@ export function AppLayout() {
     <SidebarProvider>
       <BarraLateral />
       <SidebarInset>
-        <div className="sticky top-0 z-10">
+        <div className="sticky top-0 z-10 bg-background">
           <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
             <SidebarTrigger className="-ml-1" aria-label="Mostrar u ocultar menú" />
             <Separator orientation="vertical" className="mr-1 data-vertical:h-5 data-vertical:self-center" />

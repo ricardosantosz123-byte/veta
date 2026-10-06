@@ -72,7 +72,7 @@ function ListaPedidos() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ABIERTOS}>Abiertos (sin entregar)</SelectItem>
+                <SelectItem value={ABIERTOS}>Sin entregar</SelectItem>
                 <SelectItem value={TODOS}>Todos</SelectItem>
                 {(Object.keys(estadoPedido) as Enum<'estado_pedido'>[]).map((e) => (
                   <SelectItem key={e} value={e}>

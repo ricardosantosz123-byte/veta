@@ -242,7 +242,7 @@ export function TableroProduccion() {
           },
         }}
       >
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid gap-3 lg:grid-cols-3">
           {COLUMNAS.map((c) => {
             const lista = visibles.filter((o) => o.estado === c.estado)
             return (

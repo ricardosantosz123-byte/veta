@@ -251,7 +251,7 @@ export function EditorCotizacion() {
             <ArrowLeft aria-hidden />
           </Link>
         </Button>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-56">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-semibold tracking-tight tabular">Cotización C-{c.folio}</h1>
             {c.estado_efectivo && <InsigniaEstado tipo="cotizacion" estado={c.estado_efectivo} />}

@@ -128,7 +128,7 @@ function FichaCliente() {
             <ArrowLeft aria-hidden />
           </Link>
         </Button>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-56">
           <h1 className="truncate text-2xl font-semibold tracking-tight">{nombre}</h1>
           {c.empresa_cliente && <p className="text-sm text-muted-foreground">{c.empresa_cliente}</p>}
         </div>

@@ -134,7 +134,7 @@ export default function PaginaTablero() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <Indicador titulo="Ventas del mes" valor={moneda(t.ventas_mes)} nota={`${t.pedidos_mes} pedidos, con IVA`} />
+            <Indicador titulo="Ventas del mes" valor={moneda(t.ventas_mes)} nota={`${t.pedidos_mes} ${t.pedidos_mes === 1 ? 'pedido' : 'pedidos'}, con IVA`} />
             <Indicador titulo="Cobrado del mes" valor={moneda(t.cobrado_mes)} />
             <Indicador titulo="Por cobrar" valor={moneda(t.por_cobrar)} nota={t.anticipos_pendientes ? `${t.anticipos_pendientes} esperando anticipo` : 'Saldo de pedidos abiertos'} alerta={Number(t.por_cobrar) > 0} />
             <Indicador

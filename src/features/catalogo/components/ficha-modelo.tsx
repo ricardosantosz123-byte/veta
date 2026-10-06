@@ -340,7 +340,7 @@ export function FichaModelo() {
             <ArrowLeft aria-hidden />
           </Link>
         </Button>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-56">
           <h1 className="truncate text-2xl font-semibold tracking-tight">{m.nombre}</h1>
           <p className="text-sm text-muted-foreground">{categoria?.nombre ?? 'Sin categoría'}</p>
         </div>

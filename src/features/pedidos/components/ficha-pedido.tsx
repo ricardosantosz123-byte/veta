@@ -243,7 +243,7 @@ export function FichaPedido() {
             <ArrowLeft aria-hidden />
           </Link>
         </Button>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-56">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-semibold tracking-tight tabular">Pedido P-{p.folio}</h1>
             {p.estado && <InsigniaEstado tipo="pedido" estado={p.estado} />}
@@ -314,7 +314,7 @@ export function FichaPedido() {
       {p.estado === 'terminado' && saldo > 0 && (
         <div role="status" className="flex flex-wrap items-center gap-3 rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-950 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100">
           <PackageCheck className="size-5 shrink-0" aria-hidden />
-          <p className="flex-1">
+          <p className="min-w-0 flex-1 basis-60">
             <strong className="font-semibold">Producción terminada.</strong> Avisa al cliente para cobrar el finiquito de <span className="tabular">{moneda(saldo)}</span> y coordinar la entrega.
           </p>
           <Button size="sm" asChild>
