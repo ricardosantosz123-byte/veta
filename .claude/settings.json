@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Edit(/**)",
+      "Bash(npm *)",
+      "Bash(npx supabase db push)",
+      "Bash(npx supabase db push --dry-run)",
+      "Bash(npx supabase db query --linked *)",
+      "Bash(npx supabase migration new *)",
+      "Bash(npx supabase migration list --linked)",
+      "Bash(npx supabase gen types typescript --linked > src/types/database.ts)",
+      "Bash(npx supabase functions deploy * --use-api)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push)",
+      "Bash(git push origin main)"
+    ],
+    "deny": [
+      "Bash(npm exec *)",
+      "Bash(npx supabase db reset*)",
+      "Bash(npx supabase * --db-url*)",
+      "Bash(npx supabase * --project-ref*)",
+      "Bash(npx supabase link*)",
+      "Bash(npx supabase unlink*)",
+      "Bash(npx supabase projects *)",
+      "Bash(npx supabase branches *)",
+      "Bash(supabase *)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * --force*)",
+      "Bash(git push * -f*)",
+      "Bash(git push * +*)",
+      "Bash(git push * --delete*)",
+      "Bash(git reset --hard*)",
+      "Bash(git reset * --hard*)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~*)",
+      "Bash(rm -rf ..*)",
+      "Bash(rm -rf $HOME*)",
+      "Bash(rm -rf *../*)",
+      "Bash(rm -fr *)",
+      "Bash(rm -Rf *)",
+      "Bash(rm -r -f *)",
+      "Bash(sudo *)"
+    ]
+  }
+}
