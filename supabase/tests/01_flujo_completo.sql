@@ -565,5 +565,33 @@ insert into clientes (empresa_id, nombre) values (:'emp_a', 'Nuevo');
 select pg_temp.ok((select count(*) from clientes) = 2, 'suscripción activa → vuelve a escribir');
 reset role;
 
+-- Fase 9: Stripe
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+select pg_temp.falla(format($$update empresas set estado_suscripcion = 'activa', periodo_termina = now() + interval '1 year' where id = %L$$, :'emp_a'),
+  'el Admin no escribe su suscripción a mano');
+select pg_temp.falla(format($$select aplicar_suscripcion_stripe(%L, 'cus_A1', 'sub_1', 'active', 'mes', now(), false)$$, :'emp_a'), 'la app no aplica estados de Stripe');
+select pg_temp.falla($$select * from stripe_eventos$$, 'la app no lee los eventos de Stripe');
+reset role;
+set role service_role;  -- stripe-checkout y stripe-webhook
+select guardar_cliente_stripe(:'emp_a', 'cus_A1');
+select guardar_cliente_stripe(:'emp_a', 'cus_A1');
+select pg_temp.falla(format($$select guardar_cliente_stripe(%L, 'cus_OTRO')$$, :'emp_a'), 'una empresa conserva su customer de Stripe');
+select aplicar_suscripcion_stripe(:'emp_a', 'cus_A1', 'sub_1', 'active', 'mes', now() + interval '30 days', false) as est \gset
+select pg_temp.ok(:'est' = 'activa' and (select plan_intervalo = 'mes' and stripe_subscription_id = 'sub_1' from empresas where id = :'emp_a'), 'Stripe active → activa, plan mensual');
+select pg_temp.ok(aplicar_suscripcion_stripe(:'emp_a', 'cus_A1', 'sub_1', 'past_due', 'mes', null, false) = 'activa', 'past_due → sigue activa mientras Stripe reintenta');
+select pg_temp.ok(aplicar_suscripcion_stripe(:'emp_a', 'cus_A1', 'sub_1', 'incomplete', null, null, false) = 'activa', 'incomplete no cambia el estado');
+select aplicar_suscripcion_stripe(:'emp_a', 'cus_A1', 'sub_1', 'active', 'anio', now() + interval '1 year', true) as est \gset
+select pg_temp.ok(:'est' = 'activa' and (select cancela_al_final and plan_intervalo = 'anio' from empresas where id = :'emp_a'), 'cancelación programada al final del periodo');
+select pg_temp.ok(aplicar_suscripcion_stripe(:'emp_a', 'cus_A1', 'sub_1', 'unpaid', null, null, false) = 'vencida', 'unpaid → vencida');
+select aplicar_suscripcion_stripe(:'emp_a', 'cus_A1', 'sub_1', 'canceled', null, null, false) as est \gset
+select pg_temp.ok(:'est' = 'cancelada' and not (select cancela_al_final from empresas where id = :'emp_a'), 'canceled → cancelada');
+select pg_temp.falla(format($$select aplicar_suscripcion_stripe(%L, 'cus_OTRO', 'sub_9', 'active', 'mes', now(), false)$$, :'emp_a'), 'el customer debe ser el de la empresa');
+select pg_temp.falla(format($$select aplicar_suscripcion_stripe(%L, 'cus_A1', 'sub_1', 'raro', null, null, false)$$, :'emp_a'), 'estado de Stripe desconocido se rechaza');
+reset role;
+select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated;
+select pg_temp.ok(not puede_escribir(:'emp_a'), 'suscripción cancelada → solo lectura');
+select pg_temp.falla(format($$insert into clientes (empresa_id, nombre) values (%L, 'Otro')$$, :'emp_a'), 'con suscripción cancelada no escribe');
+reset role;
+
 rollback;
 \echo '==== TODAS LAS PRUEBAS PASARON ===='

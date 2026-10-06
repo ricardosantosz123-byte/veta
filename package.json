@@ -11,7 +11,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "gen:types": "supabase gen types typescript --linked > src/types/database.ts",
-    "contraste": "python3 scripts/contraste.py"
+    "contraste": "python3 scripts/contraste.py",
+    "check:funciones": "cd supabase/functions && DENO_NO_PACKAGE_JSON=1 npx -y deno@2 check --node-modules-dir=none */index.ts"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

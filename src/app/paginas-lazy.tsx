@@ -10,6 +10,7 @@ const MisOrdenes = lazy(() => import('@/features/produccion/components/mis-orden
 const Insumos = lazy(() => import('@/features/insumos/components/pagina-insumos'))
 const PedidoPortal = lazy(() => import('@/features/portal/components/pagina-pedido-portal'))
 const Seguimiento = lazy(() => import('@/features/portal/components/pagina-seguimiento'))
+const Suscripcion = lazy(() => import('@/features/suscripcion/pagina-suscripcion'))
 
 function Cargando() {
   return <div className="mx-auto h-64 w-full max-w-5xl animate-pulse rounded-xl bg-muted" aria-busy="true" aria-label="Cargando" />
@@ -62,5 +63,10 @@ export const PaginaPedidoPortal = () => (
 export const PaginaSeguimiento = () => (
   <Diferido>
     <Seguimiento />
+  </Diferido>
+)
+export const PaginaSuscripcion = () => (
+  <Diferido>
+    <Suscripcion />
   </Diferido>
 )

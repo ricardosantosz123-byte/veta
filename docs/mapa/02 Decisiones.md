@@ -90,6 +90,17 @@
 - El token sigue en `empresa_secretos` (sin políticas: solo service_role). Pasarlo a Supabase Vault queda en [[05 Pendientes y riesgos]].
 - Reembolsos y contracargos de Mercado Pago **no** se procesan todavía (pendiente).
 
+## Fase 9 (2026-10-06)
+- Las funciones `stripe-checkout`, `stripe-portal` y `stripe-webhook` están **escritas, revisadas con `deno check` y sin desplegar**: faltan `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_MENSUAL` y `STRIPE_PRICE_ANUAL` (no se inventaron credenciales). Sin secretos responden 503 "aún no están configurados".
+- El webhook **vuelve a leer la suscripción en la API** en cada evento y aplica su estado actual: el orden en que lleguen los eventos no importa. Idempotencia con `stripe_eventos`.
+- Mapeo del PRD §5.11 más dos casos: `incomplete` → sin cambio (el primer cobro aún no se confirma) y `paused` → vencida. (⚠️ Decidida en modo nocturno, revisar)
+- Cancelación programada (`cancel_at_period_end`): la cuenta sigue **activa** hasta el fin del periodo y la pantalla dice "Se cancela el …" (`empresas.cancela_al_final`).
+- No se abre un segundo Checkout si la suscripción ya está activa: se usa "Administrar pago" (cambiar de plan, tarjeta o cancelar en el Portal de Stripe). (⚠️ Decidida en modo nocturno, revisar)
+- La interfaz **no muestra montos**: el precio aparece en la página de Stripe (los precios viven en Stripe y en `STRIPE_PRICE_*`). (⚠️ Decidida en modo nocturno, revisar)
+- Checkout en español (`es-419`) y con códigos promocionales habilitados. (⚠️ Decidida en modo nocturno, revisar)
+- Un customer de Stripe por empresa, creado una sola vez (`guardar_cliente_stripe`, clave de idempotencia `customer-<empresa>`).
+- SDK `npm:stripe@23` solo en Edge Functions (verificación de firma); no entra al bundle del navegador.
+
 ## Herramientas (2026-10-05)
 - ~~Skills de antislop v3.2.20 en `.claude/skills/`, aplicando salvo contradicción con CLAUDE.md.~~ Reemplazado el mismo día:
 - **antislop se retiró del proyecto (las 6 skills).** Por qué:

@@ -3,7 +3,7 @@ import { Inicio, RequiereEmpresa, RequierePermiso, RequiereSesion } from '@/app/
 import { AppLayout } from '@/app/layout/app-layout'
 import { modulos } from '@/app/modulos'
 import { PaginaModulo, PaginaNoEncontrada } from '@/app/paginas'
-import { PaginaCatalogo, PaginaClientes, PaginaCotizaciones, PaginaInsumos, PaginaMisOrdenes, PaginaPedidoPortal, PaginaPedidos, PaginaProduccion, PaginaSeguimiento } from '@/app/paginas-lazy'
+import { PaginaCatalogo, PaginaClientes, PaginaCotizaciones, PaginaInsumos, PaginaMisOrdenes, PaginaPedidoPortal, PaginaPedidos, PaginaProduccion, PaginaSeguimiento, PaginaSuscripcion } from '@/app/paginas-lazy'
 import { PaginaAjustes } from '@/features/ajustes/components/pagina-ajustes'
 import {
   PaginaEntrar,
@@ -23,6 +23,7 @@ const paginas: Record<string, React.ReactNode> = {
   '/produccion': <PaginaProduccion />,
   '/mis-ordenes': <PaginaMisOrdenes />,
   '/insumos': <PaginaInsumos />,
+  '/suscripcion': <PaginaSuscripcion />,
 }
 // Módulos con subrutas propias (/catalogo/modelos/:id…).
 const conSubrutas = new Set(['/catalogo', '/clientes', '/cotizaciones', '/pedidos', '/produccion', '/insumos'])

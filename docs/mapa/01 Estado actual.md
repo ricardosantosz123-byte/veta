@@ -14,7 +14,7 @@
 | 6 | Insumos | ✅ Completada | `1aa465c` + `ddea1f1` (unidad dm² para piel) |
 | 7 | Portal del cliente final | 🟡 Construida (noche), falta la prueba desde el celular | ver [[07 Reporte nocturno]] |
 | 8 | Link de pago Mercado Pago | 🟡 Construida (noche) y desplegada; falta probar con cuentas de prueba de Mercado Pago | ver [[07 Reporte nocturno]] |
-| 9 | Suscripción Stripe | ⚪ Pendiente | |
+| 9 | Suscripción Stripe | 🟡 Código y pruebas listos (noche); funciones sin desplegar hasta tener las llaves de Stripe | ver [[07 Reporte nocturno]] |
 | 10 | Tablero, avisos, landing, lanzamiento | ⚪ Pendiente | |
 
 ## Fase 6: cierre

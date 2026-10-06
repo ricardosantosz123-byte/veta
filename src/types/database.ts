@@ -523,6 +523,7 @@ export type Database = {
       empresas: {
         Row: {
           anticipo_pct: number
+          cancela_al_final: boolean
           color_marca: string
           condiciones_cotizacion: string | null
           created_at: string
@@ -550,6 +551,7 @@ export type Database = {
         }
         Insert: {
           anticipo_pct?: number
+          cancela_al_final?: boolean
           color_marca?: string
           condiciones_cotizacion?: string | null
           created_at?: string
@@ -577,6 +579,7 @@ export type Database = {
         }
         Update: {
           anticipo_pct?: number
+          cancela_al_final?: boolean
           color_marca?: string
           condiciones_cotizacion?: string | null
           created_at?: string
@@ -1735,6 +1738,35 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_eventos: {
+        Row: {
+          empresa_id: string | null
+          id: string
+          recibido_at: string
+          tipo: string
+        }
+        Insert: {
+          empresa_id?: string | null
+          id: string
+          recibido_at?: string
+          tipo: string
+        }
+        Update: {
+          empresa_id?: string | null
+          id?: string
+          recibido_at?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_eventos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       v_clientes: {
@@ -2211,6 +2243,18 @@ export type Database = {
         }
         Returns: number
       }
+      aplicar_suscripcion_stripe: {
+        Args: {
+          p_cancela_al_final: boolean
+          p_customer: string
+          p_empresa: string
+          p_intervalo: string
+          p_periodo_termina: string
+          p_status: string
+          p_subscription: string
+        }
+        Returns: Database["public"]["Enums"]["estado_suscripcion"]
+      }
       autorizar_inicio_sin_anticipo: {
         Args: { p_pedido: string }
         Returns: undefined
@@ -2267,6 +2311,10 @@ export type Database = {
       }
       duplicar_cotizacion: { Args: { p_cotizacion: string }; Returns: string }
       es_miembro: { Args: { p_empresa: string }; Returns: boolean }
+      guardar_cliente_stripe: {
+        Args: { p_customer: string; p_empresa: string }
+        Returns: undefined
+      }
       hoy_mx: { Args: never; Returns: string }
       marcar_avance_orden: {
         Args: {
