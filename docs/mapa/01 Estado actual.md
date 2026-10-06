@@ -10,7 +10,7 @@
 | 2 | Catálogo y costeo | ✅ Completada | `265cb16` |
 | 3 | Clientes y cotizador | ✅ Completada | `f1534f5` |
 | 4 | Pedidos y cobranza | ✅ Completada | `6135d8a` |
-| 5 | Producción y destajistas | 🟡 Código terminado, falta verificar | `78e2a7a` |
+| 5 | Producción y destajistas | 🟡 Pruebas ✅ · falta la aceptación en la app | `78e2a7a` |
 | 6 | Insumos | ⚪ Pendiente | |
 | 7 | Portal del cliente final | ⚪ Pendiente (ruta pública `/:slug/p/:token` ya preparada) | |
 | 8 | Link de pago Mercado Pago | ⚪ Pendiente | |
@@ -18,9 +18,13 @@
 | 10 | Tablero, avisos, landing, lanzamiento | ⚪ Pendiente | |
 
 ## Fase 5: qué falta para cerrarla
-- [ ] Correr `supabase/tests/run.sh` contra veta-dev (153 pruebas; en local ya pasan).
+- [x] `supabase/tests/run.sh` contra veta-dev: **154 pruebas en verde** (2026-10-05).
+- [x] Push a GitHub.
+- [x] Los tres ajustes, cada uno con su prueba:
+  - (a) Admin autoriza el inicio sin anticipo (`autorizar_inicio_sin_anticipo`, visible en la línea de tiempo).
+  - (b) Adelantos al destajista sin rebasar el costo acordado.
+  - (c) "Por pagar" y "Comprometido" separados en `v_destajo_saldos`, `corte_destajistas` y `/mis-ordenes`.
 - [ ] Prueba de aceptación en la app (abajo).
-- [ ] Push a GitHub.
 
 ## Prueba de aceptación de la Fase 5
 1. P-1 (ya con anticipo) → **Mandar a producción** → asignar las etapas a "Ricardo" (destajista).

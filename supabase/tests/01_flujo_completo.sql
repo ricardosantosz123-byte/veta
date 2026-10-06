@@ -351,6 +351,8 @@ select pg_temp.falla(format($$insert into pagos_destajista (empresa_id, orden_id
   'pago de destajo con fecha futura se rechaza');
 select pg_temp.falla(format($$update ordenes_produccion set costo_acordado = 500 where id = %L$$, :'o5'), 'el costo acordado no baja de lo pagado');
 select pg_temp.falla(format($$update ordenes_produccion set destajista_id = null where id = %L$$, :'o5'), 'una orden con pagos no se reasigna');
+select pg_temp.ok((select por_pagar = 5600 + 7200 and comprometido = 1400 + 1800
+  from corte_destajistas(:'emp_a', hoy_mx() - 6, hoy_mx()) where destajista_id = :'d_sergio'), 'corte: separa por pagar (terminadas) y comprometido (en curso − adelantos)');
 reset role;
 
 select set_config('request.jwt.claim.sub', :'destA', false); set role authenticated;
