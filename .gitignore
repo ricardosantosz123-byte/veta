@@ -5,3 +5,9 @@ node_modules
 supabase/.temp
 supabase/.branches
 .DS_Store
+dist
+*.local
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea
