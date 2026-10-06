@@ -83,7 +83,7 @@ export function AjustesCobros({ empresaId }: { empresaId: string }) {
       <CardContent className="grid gap-5">
         {conexion.data.mp_conectado ? (
           <>
-            <p role="status" className="flex items-center gap-2 rounded-xl border p-4 text-sm">
+            <p role="status" className="flex items-center gap-2 text-sm">
               <CheckCircle2 className="size-5 shrink-0" aria-hidden />
               <span>
                 Conectado con la cuenta <strong>{conexion.data.mp_cuenta ?? 'de Mercado Pago'}</strong>. Ya puedes generar links desde cada pedido.

@@ -161,7 +161,7 @@ export function LinkPagoPedido({ pedido }: { pedido: PedidoLink }) {
       </CardHeader>
       <CardContent className="grid gap-3 text-sm">
         {activo ? (
-          <div className="grid gap-2 rounded-xl border p-3">
+          <div className="grid gap-2">
             <p className="flex items-center justify-between gap-2">
               <span>
                 <span className="font-medium tabular">{moneda(activo.monto)}</span> · {CONCEPTO[activo.concepto] ?? 'pago'}

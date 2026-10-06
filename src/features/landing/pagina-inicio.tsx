@@ -1,4 +1,4 @@
-import { Boxes, Check, ClipboardList, CreditCard, Factory, FileText, PackageSearch, Smartphone } from 'lucide-react'
+import { Boxes, Check, ClipboardList, CreditCard, Factory, FileText, PackageSearch, Plus } from 'lucide-react'
 import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { marca } from '@/config/marca'
@@ -61,11 +61,11 @@ export default function PaginaInicio() {
       </header>
 
       <main>
-        <section className="mx-auto grid max-w-3xl justify-items-center gap-6 px-4 pt-16 pb-20 text-center sm:pt-24">
-          <p className="rounded-full border px-3 py-1 text-sm text-muted-foreground">Para mueblerías y talleres de carpintería, laca y tapicería</p>
+        <section className="mx-auto grid max-w-3xl justify-items-center gap-6 px-4 pt-16 pb-24 text-center sm:pt-28">
           <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-6xl">{marca.lema}</h1>
           <p className="max-w-xl text-lg text-pretty text-muted-foreground">
-            Cotiza, cobra anticipos, manda a producir con tus destajistas y deja que tu cliente vea el avance. Todo en un solo lugar, desde la computadora o el celular.
+            Para mueblerías y talleres de carpintería, laca y tapicería: cotiza, cobra anticipos, manda a producir con tus destajistas y deja que tu cliente vea el avance, desde la
+            computadora o el celular.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button size="lg" className="h-12 px-6 text-base" asChild>
@@ -77,23 +77,23 @@ export default function PaginaInicio() {
           </div>
         </section>
 
-        <section id="funciones" className="mx-auto max-w-6xl scroll-mt-8 px-4 pb-20" aria-labelledby="titulo-funciones">
-          <h2 id="titulo-funciones" className="mb-8 text-center text-2xl font-semibold tracking-tight sm:text-3xl">
+        <section id="funciones" className="mx-auto max-w-6xl scroll-mt-8 border-t px-4 py-20 sm:py-24" aria-labelledby="titulo-funciones">
+          <h2 id="titulo-funciones" className="mb-12 max-w-xl text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
             Todo lo que tu taller necesita, en un solo lugar
           </h2>
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {FUNCIONES.map((f) => (
-              <li key={f.titulo} className="grid content-start gap-3 rounded-2xl border bg-card p-6">
-                <f.icono className="size-6" aria-hidden />
+              <li key={f.titulo} className="grid content-start gap-2">
+                <f.icono className="mb-1 size-5" strokeWidth={1.75} aria-hidden />
                 <h3 className="font-semibold">{f.titulo}</h3>
-                <p className="text-sm text-muted-foreground">{f.texto}</p>
+                <p className="text-sm text-pretty text-muted-foreground">{f.texto}</p>
               </li>
             ))}
           </ul>
         </section>
 
         <section className="border-y bg-muted/40" aria-labelledby="titulo-quien">
-          <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 md:grid-cols-2">
+          <div className="mx-auto grid max-w-6xl gap-8 px-4 py-20 sm:py-24 md:grid-cols-2">
             <div className="grid content-start gap-3">
               <h2 id="titulo-quien" className="text-2xl font-semibold tracking-tight">
                 Hecho para cómo trabajas
@@ -110,7 +110,7 @@ export default function PaginaInicio() {
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-3xl gap-6 px-4 py-20" aria-labelledby="titulo-precios">
+        <section className="mx-auto grid max-w-3xl gap-8 px-4 py-20 sm:py-24" aria-labelledby="titulo-precios">
           <div className="text-center">
             <h2 id="titulo-precios" className="text-2xl font-semibold tracking-tight sm:text-3xl">
               Precios
@@ -133,7 +133,7 @@ export default function PaginaInicio() {
           </Button>
         </section>
 
-        <section className="mx-auto max-w-3xl px-4 pb-20" aria-labelledby="titulo-preguntas">
+        <section className="mx-auto max-w-3xl border-t px-4 py-20 sm:py-24" aria-labelledby="titulo-preguntas">
           <h2 id="titulo-preguntas" className="mb-6 text-2xl font-semibold tracking-tight">
             Preguntas frecuentes
           </h2>
@@ -142,9 +142,7 @@ export default function PaginaInicio() {
               <details key={q.p} className="group px-5 py-4 [&_summary::-webkit-details-marker]:hidden">
                 <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 font-medium outline-none focus-visible:underline">
                   {q.p}
-                  <span className="text-muted-foreground transition-transform group-open:rotate-45" aria-hidden>
-                    +
-                  </span>
+                  <Plus className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 ease-out group-open:rotate-45 motion-reduce:transition-none" aria-hidden />
                 </summary>
                 <p className="pt-2 text-sm text-muted-foreground">{q.r}</p>
               </details>
@@ -152,8 +150,7 @@ export default function PaginaInicio() {
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-3xl justify-items-center gap-4 px-4 pb-24 text-center">
-          <Smartphone className="size-8" aria-hidden />
+        <section className="mx-auto grid max-w-3xl justify-items-center gap-6 border-t px-4 py-20 text-center sm:py-24">
           <h2 className="text-2xl font-semibold tracking-tight">Empieza hoy, sin tarjeta</h2>
           <Button size="lg" className="h-12 px-6 text-base" asChild>
             <Link to="/registro">Crear mi cuenta</Link>

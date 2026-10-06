@@ -9,7 +9,7 @@ import { planes } from '@/config/planes'
 function Legal({ titulo, children }: { titulo: string; children: ReactNode }) {
   return (
     <div className="min-h-dvh bg-background">
-      <main className="mx-auto grid max-w-2xl gap-6 px-4 py-10">
+      <main className="mx-auto grid max-w-[34rem] gap-6 px-4 py-10">
         <Link to="/" className="flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" aria-hidden /> {marca.nombre}
         </Link>

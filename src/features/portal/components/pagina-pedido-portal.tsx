@@ -103,7 +103,7 @@ function Renglon({ r }: { r: PortalPedido['items'][number] }) {
               </span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label={`Avance de ${r.descripcion}`}>
-              <div className="h-full rounded-full bg-foreground transition-[width]" style={{ width: `${pct}%` }} />
+              <div className="h-full origin-left rounded-full bg-foreground transition-transform duration-500 ease-out motion-reduce:transition-none" style={{ transform: `scaleX(${pct / 100})` }} />
             </div>
           </div>
           <ul className="flex flex-wrap gap-2">
