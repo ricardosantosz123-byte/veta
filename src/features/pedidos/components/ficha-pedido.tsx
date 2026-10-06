@@ -3,6 +3,9 @@ import {
   ArrowLeft,
   Ban,
   Check,
+  Factory,
+  KeyRound,
+  MessageCircle,
   FileText,
   MoreHorizontal,
   PackageCheck,
@@ -57,6 +60,8 @@ import { DialogoMotivo } from '@/features/pedidos/components/dialogo-motivo'
 import { DialogoPago } from '@/features/pedidos/components/dialogo-pago'
 import { DialogoRecibo } from '@/features/pedidos/components/dialogo-recibo'
 import { Semaforo } from '@/features/pedidos/components/semaforo'
+import { autorizarInicio } from '@/features/produccion/api'
+import { DialogoMandarProduccion } from '@/features/produccion/components/dialogo-mandar-produccion'
 import { mensajeError } from '@/lib/errores'
 import { fecha, fechaHora, moneda, porcentaje } from '@/lib/formato'
 import { cn } from '@/lib/utils'
@@ -103,6 +108,7 @@ export function FichaPedido() {
   const queryClient = useQueryClient()
   const cobrar = usePuedeEditar('registrar_cobro')
   const esAdmin = usePuede('anular_pago')
+  const programar = usePuedeEditar('gestionar_produccion')
   const editarEntrega = puedeEscribir && (rol === 'admin' || rol === 'vendedor' || rol === 'produccion')
 
   const pedido = useQuery({ queryKey: ['pedidos', empresa!.id, id], queryFn: () => leerPedido(id) })
@@ -114,6 +120,8 @@ export function FichaPedido() {
   const [anulando, setAnulando] = useState<Pago | null>(null)
   const [cancelando, setCancelando] = useState(false)
   const [entregando, setEntregando] = useState(false)
+  const [mandando, setMandando] = useState(false)
+  const [autorizando, setAutorizando] = useState(false)
   const factura = useRef<HTMLInputElement>(null)
 
   const refrescar = useCallback(
@@ -138,6 +146,14 @@ export function FichaPedido() {
     onSuccess: async () => {
       await refrescar()
       toast.success('Pedido entregado')
+    },
+    onError: (e) => toast.error(mensajeError(e)),
+  })
+  const autorizar = useMutation({
+    mutationFn: () => autorizarInicio(id),
+    onSuccess: async () => {
+      await refrescar()
+      toast.success('Inicio autorizado: los destajistas ya pueden empezar')
     },
     onError: (e) => toast.error(mensajeError(e)),
   })
@@ -201,8 +217,16 @@ export function FichaPedido() {
     } else window.open(wa, '_blank', 'noopener')
   }
 
+  const mensajeFiniquito = [
+    `Hola ${p.cliente_nombre ?? ''}, ¡tu pedido P-${p.folio} de ${empresa!.nombre} está terminado!`,
+    `Para coordinar la entrega queda un saldo de ${moneda(saldo)}.`,
+    '',
+    `Puedes ver el detalle aquí: ${enlacePortal}`,
+  ].join('\n')
+
   const hitos = [
     { hecho: true, titulo: 'Pedido creado', cuando: fechaHora(p.created_at) },
+    ...(p.inicio_autorizado_at ? [{ hecho: true, titulo: 'Inicio autorizado sin anticipo', cuando: fechaHora(p.inicio_autorizado_at) }] : []),
     { hecho: !!p.en_produccion_at, titulo: 'Anticipo cubierto · en producción', cuando: p.en_produccion_at ? fechaHora(p.en_produccion_at) : null },
     { hecho: !!p.terminado_at, titulo: 'Producción terminada', cuando: p.terminado_at ? fechaHora(p.terminado_at) : null },
     { hecho: !!p.liquidado_at, titulo: 'Liquidado', cuando: p.liquidado_at ? fechaHora(p.liquidado_at) : null },
@@ -234,6 +258,11 @@ export function FichaPedido() {
             <Share2 aria-hidden /> Compartir seguimiento
           </Button>
         )}
+        {programar && (p.estado === 'anticipo_pendiente' || p.estado === 'en_produccion') && (
+          <Button variant="outline" onClick={() => setMandando(true)}>
+            <Factory aria-hidden /> Mandar a producción
+          </Button>
+        )}
         {cobrar && !cancelado && saldo > 0 && (
           <Button onClick={() => setPagando(true)}>
             <Plus aria-hidden /> Registrar pago
@@ -254,6 +283,11 @@ export function FichaPedido() {
                 <Link to={`/cotizaciones/${p.cotizacion_id}`}>Ver cotización</Link>
               </DropdownMenuItem>
             )}
+            {esAdmin && puedeEscribir && p.estado === 'anticipo_pendiente' && !p.inicio_autorizado_at && (
+              <DropdownMenuItem onSelect={() => setAutorizando(true)}>
+                <KeyRound aria-hidden /> Autorizar inicio sin anticipo
+              </DropdownMenuItem>
+            )}
             {esAdmin && puedeEscribir && !cancelado && p.estado !== 'entregado' && (
               <DropdownMenuItem variant="destructive" onSelect={() => setCancelando(true)}>
                 <Ban aria-hidden /> Cancelar pedido
@@ -271,6 +305,25 @@ export function FichaPedido() {
             Cobrado antes de cancelar: <span className="font-medium tabular">{moneda(p.pagado)}</span>
           </p>
         </div>
+      )}
+
+      {p.estado === 'terminado' && saldo > 0 && (
+        <div role="status" className="flex flex-wrap items-center gap-3 rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-950 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100">
+          <PackageCheck className="size-5 shrink-0" aria-hidden />
+          <p className="flex-1">
+            <strong className="font-semibold">Producción terminada.</strong> Avisa al cliente para cobrar el finiquito de <span className="tabular">{moneda(saldo)}</span> y coordinar la entrega.
+          </p>
+          <Button size="sm" asChild>
+            <a href={enlaceWhatsApp(mensajeFiniquito, p.cliente_telefono)} target="_blank" rel="noreferrer">
+              <MessageCircle aria-hidden /> Avisar por WhatsApp
+            </a>
+          </Button>
+        </div>
+      )}
+      {p.estado === 'anticipo_pendiente' && p.inicio_autorizado_at && (
+        <p role="status" className="rounded-xl border p-3 text-sm text-muted-foreground">
+          <KeyRound className="mr-1 inline size-4" aria-hidden /> Inicio autorizado sin anticipo el {fechaHora(p.inicio_autorizado_at)}: los destajistas ya pueden empezar.
+        </p>
       )}
 
       {/* Resumen de dinero */}
@@ -522,6 +575,21 @@ export function FichaPedido() {
         </div>
       </div>
 
+      {mandando && <DialogoMandarProduccion abierto pedido={{ id: p.id!, folio: p.folio, fecha_compromiso: p.fecha_compromiso }} onCerrar={() => setMandando(false)} />}
+      <AlertDialog open={autorizando} onOpenChange={setAutorizando}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Autorizar el inicio de P-{p.folio} sin anticipo?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Los destajistas podrán empezar sus órdenes aunque falten {moneda(p.anticipo_faltante)} del anticipo. Queda registrado quién lo autorizó y cuándo.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Volver</AlertDialogCancel>
+            <AlertDialogAction onClick={() => autorizar.mutate()}>Autorizar inicio</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {pagando && <DialogoPago abierto pedido={p} onCerrar={() => setPagando(false)} onRegistrado={refrescar} />}
       {recibo && <DialogoRecibo abierto pedido={p} pago={recibo} onCerrar={() => setRecibo(null)} />}
       {anulando && (

@@ -13,7 +13,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       // El generador de PDF (~1.2 MB) se descarga al usarlo; no hace falta en la instalación.
-      workbox: { globIgnores: ['**/generar-*.js'] },
+      workbox: { globIgnores: ['**/generar-*.js', '**/react-pdf*.js'] },
       manifest: {
         name: 'Veta',
         short_name: 'Veta',

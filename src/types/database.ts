@@ -781,6 +781,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "invitaciones_destajista_id_fkey"
+            columns: ["destajista_id"]
+            isOneToOne: false
+            referencedRelation: "v_destajo_saldos"
+            referencedColumns: ["destajista_id"]
+          },
+          {
             foreignKeyName: "invitaciones_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
@@ -936,6 +943,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "destajistas"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "miembros_destajista_id_fkey"
+            columns: ["destajista_id"]
+            isOneToOne: false
+            referencedRelation: "v_destajo_saldos"
+            referencedColumns: ["destajista_id"]
           },
           {
             foreignKeyName: "miembros_empresa_id_fkey"
@@ -1249,6 +1263,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ordenes_produccion_destajista_id_fkey"
+            columns: ["destajista_id"]
+            isOneToOne: false
+            referencedRelation: "v_destajo_saldos"
+            referencedColumns: ["destajista_id"]
+          },
+          {
             foreignKeyName: "ordenes_produccion_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
@@ -1518,6 +1539,8 @@ export type Database = {
           fecha_compromiso: string | null
           folio: number | null
           id: string
+          inicio_autorizado_at: string | null
+          inicio_autorizado_por: string | null
           iva: number
           liquidado_at: string | null
           motivo_cancelacion: string | null
@@ -1552,6 +1575,8 @@ export type Database = {
           fecha_compromiso?: string | null
           folio?: number | null
           id?: string
+          inicio_autorizado_at?: string | null
+          inicio_autorizado_por?: string | null
           iva?: number
           liquidado_at?: string | null
           motivo_cancelacion?: string | null
@@ -1586,6 +1611,8 @@ export type Database = {
           fecha_compromiso?: string | null
           folio?: number | null
           id?: string
+          inicio_autorizado_at?: string | null
+          inicio_autorizado_por?: string | null
           iva?: number
           liquidado_at?: string | null
           motivo_cancelacion?: string | null
@@ -1773,6 +1800,33 @@ export type Database = {
           },
         ]
       }
+      v_destajo_saldos: {
+        Row: {
+          activo: boolean | null
+          adelantos: number | null
+          comprometido: number | null
+          destajista_id: string | null
+          empresa_id: string | null
+          en_curso: number | null
+          especialidad: string | null
+          nombre: string | null
+          ordenes_abiertas: number | null
+          pagado_terminado: number | null
+          por_pagar: number | null
+          telefono: string | null
+          terminado: number | null
+          tipo: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "destajistas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_pagos: {
         Row: {
           anulado: boolean | null
@@ -1883,6 +1937,8 @@ export type Database = {
           fecha_compromiso: string | null
           folio: number | null
           id: string | null
+          inicio_autorizado_at: string | null
+          inicio_autorizado_por: string | null
           iva: number | null
           liquidado_at: string | null
           motivo_cancelacion: string | null
@@ -1969,9 +2025,26 @@ export type Database = {
         Returns: undefined
       }
       aceptar_invitaciones: { Args: never; Returns: number }
+      autorizar_inicio_sin_anticipo: {
+        Args: { p_pedido: string }
+        Returns: undefined
+      }
       calcular_precio: {
         Args: { p_lista?: string; p_modelo: string; p_opciones: string[] }
         Returns: number
+      }
+      corte_destajistas: {
+        Args: { p_desde: string; p_empresa: string; p_hasta: string }
+        Returns: {
+          comprometido: number
+          destajista_id: string
+          nombre: string
+          ordenes_terminadas_periodo: number
+          pagado_periodo: number
+          por_pagar: number
+          telefono: string
+          terminado_periodo: number
+        }[]
       }
       costear_modelo: {
         Args: { p_lista?: string; p_modelo: string; p_opciones: string[] }
@@ -2028,6 +2101,23 @@ export type Database = {
         Returns: undefined
       }
       slug_disponible: { Args: { p_slug: string }; Returns: boolean }
+      sugerir_ordenes: {
+        Args: { p_pedido: string }
+        Returns: {
+          cantidad: number
+          con_costo: boolean
+          costo_sugerido: number
+          costo_unitario: number
+          descripcion: string
+          estado_produccion: Database["public"]["Enums"]["estado_produccion"]
+          etapa: string
+          etapa_id: string
+          etapa_orden: number
+          opciones_texto: string
+          pedido_item_id: string
+          tiene_orden: boolean
+        }[]
+      }
       tiene_rol: {
         Args: {
           p_empresa: string

@@ -325,6 +325,68 @@ select pg_temp.ok((select pagado = 21000 and cancelado_at is not null from pedid
 select pg_temp.falla(format($$insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (%L, %L, 10, 'efectivo')$$, :'emp_a', :'ped2'),
   'no se registran pagos manuales a un pedido cancelado');
 select pg_temp.falla(format($$update pedidos set estado = 'entregado' where id = %L$$, :'ped2'), 'un pedido cancelado no se reactiva');
+
+-- Fase 5: órdenes protegidas, inicio sin anticipo autorizado, adelantos y saldos de destajo
+insert into cotizaciones (empresa_id, cliente_id, lista_id) values (:'emp_a', :'cli', :'l_gen') returning id as cot5 \gset
+insert into cotizacion_items (empresa_id, cotizacion_id, modelo_id, opcion_ids, cantidad) values (:'emp_a', :'cot5', :'m_nat', array[:'o_nog', :'o_piel']::uuid[], 1);
+select crear_pedido_desde_cotizacion(:'cot5') as ped3 \gset
+select id as pit3 from pedido_items where pedido_id = :'ped3' \gset
+select pg_temp.ok((select costo_sugerido from sugerir_ordenes(:'ped3') where etapa = 'Carpintería') = 2400
+  and (select costo_sugerido from sugerir_ordenes(:'ped3') where etapa = 'Tapicería') = 1800, 'sugerir_ordenes: (1800+600)×1 y (900+900)×1');
+select pg_temp.ok((select count(*) from sugerir_ordenes(:'ped3') where con_costo) = 2, 'sugerir_ordenes preselecciona las etapas con costo');
+insert into ordenes_produccion (empresa_id, pedido_item_id, etapa_id, destajista_id, cantidad, costo_acordado)
+  values (:'emp_a', :'pit3', :'e_carp', :'d_sergio', 1, 2400) returning id as o5 \gset
+insert into ordenes_produccion (empresa_id, pedido_item_id, etapa_id, destajista_id, cantidad, costo_acordado)
+  values (:'emp_a', :'pit3', :'e_tap', :'d_sergio', 1, 1800) returning id as o6 \gset
+select pg_temp.ok((select tiene_orden from sugerir_ordenes(:'ped3') where etapa = 'Carpintería'), 'sugerir_ordenes marca las etapas que ya tienen orden');
+select pg_temp.falla(format($$update ordenes_produccion set etapa_id = %L where id = %L$$, :'e_tap', :'o5'), 'la etapa de una orden no se cambia');
+select pg_temp.falla(format($$update ordenes_produccion set estado = 'terminada' where id = %L$$, :'o5'), 'el estado de una orden solo cambia con marcar_avance_orden');
+select pg_temp.falla(format($$insert into ordenes_produccion (empresa_id, pedido_item_id, etapa_id, cantidad, costo_acordado) values (%L, %L, %L, 1, 10)$$,
+  :'emp_a', :'pit2', :'e_carp'), 'no se crean órdenes para un pedido cancelado');
+insert into pagos_destajista (empresa_id, orden_id, monto) values (:'emp_a', :'o5', 1000);  -- adelanto sobre orden pendiente
+select pg_temp.ok((select saldo from ordenes_produccion where id = :'o5') = 1400, 'adelanto sobre una orden pendiente');
+select pg_temp.falla(format($$insert into pagos_destajista (empresa_id, orden_id, monto) values (%L, %L, 1500)$$, :'emp_a', :'o5'),
+  'el total pagado no supera el costo acordado');
+select pg_temp.falla(format($$insert into pagos_destajista (empresa_id, orden_id, monto, fecha) values (%L, %L, 10, hoy_mx() + 1)$$, :'emp_a', :'o5'),
+  'pago de destajo con fecha futura se rechaza');
+select pg_temp.falla(format($$update ordenes_produccion set costo_acordado = 500 where id = %L$$, :'o5'), 'el costo acordado no baja de lo pagado');
+select pg_temp.falla(format($$update ordenes_produccion set destajista_id = null where id = %L$$, :'o5'), 'una orden con pagos no se reasigna');
+reset role;
+
+select set_config('request.jwt.claim.sub', :'destA', false); set role authenticated;
+select pg_temp.falla(format($$select marcar_avance_orden(%L, 'en_proceso')$$, :'o5'), 'sin anticipo no se empieza una orden');
+select pg_temp.ok((select por_pagar = 5600 + 7200 and comprometido = 1400 + 1800 and adelantos = 1000 from v_destajo_saldos),
+  'destajista ve su por pagar (terminado − pagado) y su comprometido (en curso − adelantos)');
+select pg_temp.ok((select count(*) from v_destajo_saldos) = 1, 'destajista solo ve su propio saldo');
+reset role;
+select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated;
+select pg_temp.falla(format($$select autorizar_inicio_sin_anticipo(%L)$$, :'ped3'), 'solo el Admin autoriza el inicio sin anticipo');
+reset role;
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+select autorizar_inicio_sin_anticipo(:'ped3');
+select pg_temp.ok((select inicio_autorizado_at is not null and inicio_autorizado_por = :'adminA' from pedidos where id = :'ped3'),
+  'el inicio autorizado queda registrado con quién y cuándo');
+select pg_temp.ok((select inicio_autorizado_at is not null from v_pedidos where id = :'ped3'), 'v_pedidos muestra la autorización de inicio');
+reset role;
+select set_config('request.jwt.claim.sub', :'destA', false); set role authenticated;
+select marcar_avance_orden(:'o5', 'en_proceso', 'Arranqué con autorización');
+select pg_temp.ok((select estado from ordenes_produccion where id = :'o5') = 'en_proceso', 'con autorización el destajista empieza sin anticipo');
+select pg_temp.falla(format($$select marcar_avance_orden(%L, 'pendiente')$$, :'o5'), 'el destajista no regresa una orden');
+select marcar_avance_orden(:'o5', 'terminada');
+select marcar_avance_orden(:'o6', 'terminada');
+reset role;
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (:'emp_a', :'ped3', 5846.40, 'transferencia');
+select pg_temp.ok((select estado from pedidos where id = :'ped3') = 'terminado', 'anticipo + todas las etapas terminadas → pedido terminado');
+select marcar_avance_orden(:'o6', 'en_proceso', 'Costura abierta');
+select pg_temp.ok((select estado = 'en_produccion' and terminado_at is null from pedidos where id = :'ped3'), 'reabrir una orden regresa el pedido a producción');
+select pg_temp.ok((select terminada_at is null from ordenes_produccion where id = :'o6'), 'al regresar la orden se limpia su fecha de terminado');
+select marcar_avance_orden(:'o6', 'terminada');
+select pg_temp.ok((select estado from pedidos where id = :'ped3') = 'terminado', 'al terminarla otra vez el pedido vuelve a terminado');
+select pg_temp.ok((select por_pagar = 5600 + 7200 + 1400 + 1800 and comprometido = 0
+  from corte_destajistas(:'emp_a', hoy_mx() - 6, hoy_mx()) where destajista_id = :'d_sergio'), 'corte: por pagar de lo terminado, sin comprometido');
+select pg_temp.ok((select pagado_periodo = 4000 + 1000 and ordenes_terminadas_periodo = 4
+  from corte_destajistas(:'emp_a', hoy_mx() - 6, hoy_mx()) where destajista_id = :'d_sergio'), 'corte: pagos y órdenes terminadas de la semana');
 reset role;
 
 -- ============ Aislamiento entre empresas ============

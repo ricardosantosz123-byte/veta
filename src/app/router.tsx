@@ -3,7 +3,7 @@ import { Inicio, RequiereEmpresa, RequierePermiso, RequiereSesion } from '@/app/
 import { AppLayout } from '@/app/layout/app-layout'
 import { modulos } from '@/app/modulos'
 import { PaginaModulo, PaginaNoEncontrada, PortalEnConstruccion } from '@/app/paginas'
-import { PaginaCatalogo, PaginaClientes, PaginaCotizaciones, PaginaPedidos } from '@/app/paginas-lazy'
+import { PaginaCatalogo, PaginaClientes, PaginaCotizaciones, PaginaMisOrdenes, PaginaPedidos, PaginaProduccion } from '@/app/paginas-lazy'
 import { PaginaAjustes } from '@/features/ajustes/components/pagina-ajustes'
 import {
   PaginaEntrar,
@@ -20,9 +20,11 @@ const paginas: Record<string, React.ReactNode> = {
   '/clientes': <PaginaClientes />,
   '/cotizaciones': <PaginaCotizaciones />,
   '/pedidos': <PaginaPedidos />,
+  '/produccion': <PaginaProduccion />,
+  '/mis-ordenes': <PaginaMisOrdenes />,
 }
 // Módulos con subrutas propias (/catalogo/modelos/:id…).
-const conSubrutas = new Set(['/catalogo', '/clientes', '/cotizaciones', '/pedidos'])
+const conSubrutas = new Set(['/catalogo', '/clientes', '/cotizaciones', '/pedidos', '/produccion'])
 
 export const router = createBrowserRouter([
   { path: '/entrar', element: <PaginaEntrar /> },

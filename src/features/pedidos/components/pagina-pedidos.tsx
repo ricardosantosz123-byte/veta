@@ -38,6 +38,7 @@ function ListaPedidos() {
       if (extra === 'saldo' && !(Number(p.saldo) > 0 && p.estado !== 'cancelado')) return false
       if (extra === 'atrasados' && p.semaforo !== 'atrasado') return false
       if (extra === 'sin_factura' && (p.facturado || p.estado === 'cancelado')) return false
+      if (extra === 'finiquito' && !(p.estado === 'terminado' && Number(p.saldo) > 0)) return false
       if (q && !normalizar(`P-${p.folio} ${p.folio} ${p.cliente_nombre} ${p.cliente_apellidos} ${p.empresa_cliente ?? ''}`).includes(q)) return false
       return true
     })
@@ -89,6 +90,7 @@ function ListaPedidos() {
                 <SelectItem value="saldo">Con saldo por cobrar</SelectItem>
                 <SelectItem value="atrasados">Atrasados</SelectItem>
                 <SelectItem value="sin_factura">Sin facturar</SelectItem>
+                <SelectItem value="finiquito">Listos para finiquito</SelectItem>
               </SelectContent>
             </Select>
           </div>
