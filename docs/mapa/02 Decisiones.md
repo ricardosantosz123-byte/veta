@@ -54,3 +54,14 @@
 - **B1:** solo Producción y Admin regresan una orden; el pedido vuelve a *en producción*.
 - Se permiten adelantos al destajista sin rebasar el costo acordado.
 - Saldos del destajista separados en **Por pagar** (terminadas) y **Comprometido** (pendientes y en proceso).
+
+## Herramientas (2026-10-05)
+- **Skills de antislop v3.2.20** en `.claude/skills/`, versionadas con el repo: antislop, antislop-ui, antislop-copywriting, antislop-human, antislop-layoutmobile, antislop-code. Aplican **salvo que contradigan CLAUDE.md; en conflicto, CLAUDE.md manda** (regla escrita en CLAUDE.md).
+- Conflictos conocidos, donde gana CLAUDE.md:
+  - **Íconos:** lucide-react es parte del stack fijo, aunque antislop marca "Lucide Icons" como patrón a evitar.
+  - **"Sterile Default":** el minimalismo estilo Apple (grises neutros, bordes de 1 px sutiles, fuente del sistema) es intencional y no se "anima" con motivos o decoración.
+  - **Fuente:** -apple-system, SF Pro o Inter. No se cambia la fuente por la regla de "fuente de IA".
+  - **Dirección de diseño:** vive en la sección Diseño de CLAUDE.md, no en un `DESIGN.md`.
+  - **Memoria y cierre de fase:** la memoria vive en `docs/mapa/`. No se crea `anti-slop/audit-*.md` aparte. El cierre de fase sigue siendo typecheck, lint, build, pruebas del esquema y commit.
+  - **Bloque puntero:** el que propone la skill para el final de CLAUDE.md no se agregó; lo sustituye la línea anterior.
+- Útiles y compatibles: contraste AA calculado (`contrast-check.py`, solo biblioteca estándar y sin red), estados vacíos con acción, foco visible, errores en texto (no solo color), nada de datos inventados en el Tablero, revisar los dos temas, tap targets de 44 px y `dvh` en móvil, un solo acento.

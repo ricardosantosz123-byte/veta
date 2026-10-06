@@ -10,6 +10,10 @@ Instrucciones permanentes para Claude Code en este repositorio. Léelas completa
 - **Antes de decidir algo:** revisa `docs/mapa/02 Decisiones.md`. Si ya se decidió, respétalo; si cambia, regístralo ahí.
 - **Al cerrar cada fase o sesión:** actualiza `01 Estado actual`, `02 Decisiones` y `04 Mapa de la base`, y agrega una entrada en `06 Bitácora`.
 
+## Skills de antislop
+
+Las skills de antislop aplican salvo que contradigan este archivo; en conflicto, CLAUDE.md manda.
+
 ## Qué es
 
 SaaS multi-empresa para mueblerías y talleres (carpintería, laca, tapicería): cotizador, pedidos y cobranza, producción por etapa con destajistas, insumos y portal del cliente final. Especificación completa en `docs/PRD.md`. Plan de construcción en `docs/FASES.md`.
