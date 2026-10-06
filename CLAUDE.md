@@ -2,6 +2,14 @@
 
 Instrucciones permanentes para Claude Code en este repositorio. Léelas completas antes de cada tarea.
 
+## Memoria del proyecto
+
+`docs/mapa/` es un vault de Obsidian que funciona como memoria entre sesiones.
+
+- **Al iniciar cada sesión:** lee `docs/mapa/00 Inicio.md` y `docs/mapa/01 Estado actual.md`. Lee las demás notas solo si la tarea lo requiere; no releas todo el PRD.
+- **Antes de decidir algo:** revisa `docs/mapa/02 Decisiones.md`. Si ya se decidió, respétalo; si cambia, regístralo ahí.
+- **Al cerrar cada fase o sesión:** actualiza `01 Estado actual`, `02 Decisiones` y `04 Mapa de la base`, y agrega una entrada en `06 Bitácora`.
+
 ## Qué es
 
 SaaS multi-empresa para mueblerías y talleres (carpintería, laca, tapicería): cotizador, pedidos y cobranza, producción por etapa con destajistas, insumos y portal del cliente final. Especificación completa en `docs/PRD.md`. Plan de construcción en `docs/FASES.md`.

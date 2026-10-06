@@ -11,3 +11,7 @@ dist
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# Configuración de Obsidian (local de cada quien)
+docs/.obsidian/
+docs/mapa/.obsidian/
