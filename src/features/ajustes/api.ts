@@ -104,3 +104,44 @@ export async function desconectarMercadoPago(empresaId: string) {
   const { error } = await supabase.rpc('mp_desconectar', { p_empresa: empresaId })
   if (error) throw error
 }
+
+// ───────────── Bitácora (Admin) ─────────────
+
+export const TABLAS_BITACORA = {
+  cotizaciones: 'Cotizaciones',
+  cotizacion_items: 'Renglones de cotización',
+  pedidos: 'Pedidos',
+  pagos_cliente: 'Pagos de clientes',
+  ordenes_produccion: 'Órdenes de producción',
+  pagos_destajista: 'Pagos a destajistas',
+  modelos: 'Modelos del catálogo',
+  miembros: 'Usuarios',
+} as const
+export type TablaBitacora = keyof typeof TABLAS_BITACORA
+
+export interface FiltroBitacora {
+  tabla: TablaBitacora | null
+  usuario: string | null
+  desde: string | null
+  hasta: string | null
+}
+
+export const POR_PAGINA = 50
+
+/** Fechas "AAAA-MM-DD" en la Ciudad de México (UTC−6, sin horario de verano desde 2022). */
+export async function leerBitacora(empresaId: string, f: FiltroBitacora, pagina: number) {
+  let q = supabase
+    .from('bitacora')
+    .select('id, user_id, tabla, operacion, registro_id, datos, created_at')
+    .eq('empresa_id', empresaId)
+    .order('created_at', { ascending: false })
+    .range(pagina * POR_PAGINA, pagina * POR_PAGINA + POR_PAGINA - 1)
+  if (f.tabla) q = q.eq('tabla', f.tabla)
+  if (f.usuario) q = q.eq('user_id', f.usuario)
+  if (f.desde) q = q.gte('created_at', `${f.desde}T00:00:00-06:00`)
+  if (f.hasta) q = q.lte('created_at', `${f.hasta}T23:59:59.999-06:00`)
+  const { data, error } = await q
+  if (error) throw error
+  return data
+}
+export type RegistroBitacora = Awaited<ReturnType<typeof leerBitacora>>[number]

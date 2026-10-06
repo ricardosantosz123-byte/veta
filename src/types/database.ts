@@ -2418,6 +2418,7 @@ export type Database = {
           tiene_orden: boolean
         }[]
       }
+      tablero: { Args: { p_empresa: string }; Returns: Json }
       tiene_rol: {
         Args: {
           p_empresa: string

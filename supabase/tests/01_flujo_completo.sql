@@ -593,5 +593,29 @@ select pg_temp.ok(not puede_escribir(:'emp_a'), 'suscripción cancelada → solo
 select pg_temp.falla(format($$insert into clientes (empresa_id, nombre) values (%L, 'Otro')$$, :'emp_a'), 'con suscripción cancelada no escribe');
 reset role;
 
+-- Fase 10: tablero
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+select tablero(:'emp_a') as tab_admin \gset
+select pg_temp.ok((:'tab_admin'::jsonb->>'completo')::boolean and :'tab_admin'::jsonb->'margen_mes' is not null
+  and jsonb_array_length(:'tab_admin'::jsonb->'serie') = 6, 'tablero del Admin: completo, con margen y 6 meses');
+select pg_temp.ok((:'tab_admin'::jsonb->>'cobrado_mes')::numeric = (select coalesce(sum(monto), 0) from pagos_cliente where empresa_id = :'emp_a' and not anulado and fecha >= date_trunc('month', hoy_mx())::date
+  and pedido_id in (select id from pedidos where estado <> 'cancelado')), 'tablero: cobrado del mes lo suma la base');
+select pg_temp.ok(jsonb_array_length(:'tab_admin'::jsonb->'insumos_bajo_minimo') >= 1, 'tablero: insumos bajo mínimo');
+reset role;
+select set_config('request.jwt.claim.sub', :'contA', false); set role authenticated;
+select pg_temp.ok((tablero(:'emp_a')->>'completo')::boolean, 'tablero del Contador: completo');
+reset role;
+select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated;
+select tablero(:'emp_a') as tab_vend \gset
+select pg_temp.ok(not (:'tab_vend'::jsonb->>'completo')::boolean and :'tab_vend'::jsonb->'margen_mes' = 'null'::jsonb
+  and :'tab_vend'::jsonb->'destajistas' = 'null'::jsonb and :'tab_vend'::jsonb::text not like '%costo%', 'tablero del Vendedor: sin costos ni márgenes');
+reset role;
+select set_config('request.jwt.claim.sub', :'prodA', false); set role authenticated;
+select pg_temp.falla(format($$select tablero(%L)$$, :'emp_a'), 'Producción no ve el tablero de ventas');
+reset role;
+select set_config('request.jwt.claim.sub', :'adminB', false); set role authenticated;
+select pg_temp.falla(format($$select tablero(%L)$$, :'emp_a'), 'B no ve el tablero de A');
+reset role;
+
 rollback;
 \echo '==== TODAS LAS PRUEBAS PASARON ===='
