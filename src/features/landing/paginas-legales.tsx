@@ -33,7 +33,7 @@ export default function PaginaPrivacidad() {
       </p>
       <h2>1. Quién es responsable</h2>
       <p>
-        <strong>[Razón social y domicilio del titular de {marca.nombre} — por completar]</strong> es responsable de los datos de las personas que crean una cuenta (dueños y usuarios de
+        <strong>[Razón social y domicilio del titular de {marca.nombre}, por completar]</strong> es responsable de los datos de las personas que crean una cuenta (dueños y usuarios de
         las mueblerías). Respecto de los datos de los <strong>clientes finales</strong> y <strong>destajistas</strong> que cada mueblería captura, la mueblería es la responsable y{' '}
         {marca.nombre} actúa como <strong>encargado</strong>: los trata solo por cuenta y bajo instrucciones de la mueblería.
       </p>
