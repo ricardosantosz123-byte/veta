@@ -17,7 +17,8 @@
 ### 2026-10-06 · Fase 6: ajuste de unidades
 - Hecho: Ricardo probó la Fase 6 en la app (funciona). Pidió medir la piel en dm² o piezas → migración `fase6_unidad_dm2`; al elegir tipo Piel la unidad se sugiere en dm².
 - Pruebas: run.sh ✅ 189 · typecheck/lint/build ✅.
-- Siguiente paso: confirmar el alta de una piel en dm² y cerrar la Fase 6; luego Fase 7.
+- Fase 6 ✅ cerrada por Ricardo.
+- Siguiente paso: plan de la Fase 7.
 
 ### 2026-10-05 (noche, sin supervisión) · Fase 6
 - Hecho: migración `fase6_insumos` (12 huecos del esquema corregidos), Insumos (lista, ficha, entrada/salida/ajuste por conteo), "Material entregado" en la orden y en Mis órdenes; `.claude/settings.json` con permisos; contraseña de veta-dev en `~/.pgpass` y `~/.zshrc` (la puso Ricardo).

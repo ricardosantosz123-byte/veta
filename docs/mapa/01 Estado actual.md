@@ -11,18 +11,18 @@
 | 3 | Clientes y cotizador | ✅ Completada | `f1534f5` |
 | 4 | Pedidos y cobranza | ✅ Completada | `6135d8a` |
 | 5 | Producción y destajistas | ✅ Completada | `78e2a7a` + `38ff0e2` |
-| 6 | Insumos | 🟡 Construida, falta la prueba en la app | `1aa465c` |
+| 6 | Insumos | ✅ Completada | `1aa465c` + `ddea1f1` (unidad dm² para piel) |
 | 7 | Portal del cliente final | ⚪ Pendiente (ruta pública `/:slug/p/:token` ya preparada) | |
 | 8 | Link de pago Mercado Pago | ⚪ Pendiente | |
 | 9 | Suscripción Stripe | ⚪ Pendiente | |
 | 10 | Tablero, avisos, landing, lanzamiento | ⚪ Pendiente | |
 
-## Fase 6: qué falta para cerrarla
+## Fase 6: cierre
 - [x] Migración `20261011000001_fase6_insumos.sql` y `20261011000002_fase6_unidad_dm2.sql` aplicadas en veta-dev; `run.sh`: **189 pruebas en verde** (35 nuevas).
 - [x] Interfaz: Insumos (lista, alerta bajo mínimo, ficha con historial, entrada/salida/ajuste), "Material entregado" en la ficha de la orden y en "Mis órdenes".
 - [x] typecheck, lint y build ✅.
 - [x] Prueba en la app (Ricardo, 2026-10-06): funciona; pidió medir la piel en dm² o piezas → agregado dm².
-- [ ] Confirmar el alta de una piel en dm².
+- [x] Ricardo dio la Fase 6 por buena (2026-10-06).
 
 ## Prueba de aceptación de la Fase 6
 1. Como Admin → **Insumos → Nuevo insumo**: "Piel Napa café", piel, **dm²** (se pone sola al elegir Piel), mínimo 5, existencia inicial 10 a $100.
@@ -33,7 +33,7 @@
 6. **Ajuste por conteo** a 2 con motivo → aparece **Bajo mínimo** en la lista.
 
 ## Siguiente paso
-Hacer la prueba de aceptación de la Fase 6 y marcarla ✅. Luego **Fase 7 · Portal del cliente final**.
+**Fase 7 · Portal del cliente final**: plan propuesto, esperando confirmación.
 
 ## Datos de prueba
 - Silla **Natalia**: Carpintería 1,800 · Tapicería 900 · Nogal +600 · Piel +900 · markup 1.0 → **$8,400** General / **$9,800** Expo.
