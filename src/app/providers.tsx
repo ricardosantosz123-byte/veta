@@ -1,9 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState, type ReactNode } from 'react'
+import { EmpresaActivaProvider } from '@/app/empresa-activa'
 import { TemaProvider } from '@/app/tema'
+import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { AuthProvider } from '@/features/auth/auth-provider'
 
-// En la Fase 1 se agregan AuthProvider y EmpresaActivaProvider aquí.
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
     () =>
@@ -15,7 +17,14 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <TemaProvider>
-        <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
+        <AuthProvider>
+          <EmpresaActivaProvider>
+            <TooltipProvider delayDuration={300}>
+              {children}
+              <Toaster position="top-center" richColors closeButton />
+            </TooltipProvider>
+          </EmpresaActivaProvider>
+        </AuthProvider>
       </TemaProvider>
     </QueryClientProvider>
   )

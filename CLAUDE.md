@@ -69,8 +69,10 @@ npx supabase db push --dry-run                # ver qué migraciones faltan en v
 npx supabase db push                          # aplicar migraciones pendientes a veta-dev
 npx supabase db query --linked "select ..."   # consulta rápida contra veta-dev
 npx supabase gen types typescript --linked > src/types/database.ts
-DATABASE_URL="<cadena de conexión de veta-dev>" ./supabase/tests/run.sh   # requiere psql; corre en transacción y no deja datos
-npx supabase functions deploy <nombre>        # Edge Functions (no hay functions serve sin Docker)
+# Pruebas del esquema contra veta-dev (psql de Postgres.app; pide la contraseña; corre en transacción y no deja datos)
+PATH=/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH DATABASE_URL="$(cat supabase/.temp/pooler-url)" ./supabase/tests/run.sh
+npx supabase functions deploy <nombre> --use-api   # Edge Functions sin Docker (no hay functions serve local)
+npx supabase secrets set NOMBRE=valor              # secretos de Edge Functions (los secretos reales los pone el usuario)
 npm run typecheck && npm run lint && npm run build
 ```
 

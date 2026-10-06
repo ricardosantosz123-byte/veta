@@ -183,6 +183,7 @@ Netlify (PWA React)  ──supabase-js──▶  Supabase
 - Los campos de suscripción de `empresas` no son editables por el usuario (permisos por columna).
 - El token de Mercado Pago vive en `empresa_secretos` (solo service_role). Recomendación: migrarlo a Supabase Vault.
 - Los webhooks verifican firma (Stripe) o consultan el pago en la API (Mercado Pago). Nunca confían en el cuerpo de la petición.
+- **Requisito de lanzamiento · correo de Auth**: antes del primer cliente real, verificar el dominio en Resend, configurarlo como SMTP de Supabase Auth y volver a encender **Confirm email**. Sin confirmación de correo, alguien podría registrarse con el correo de un invitado y quedarse con su invitación (`aceptar_invitaciones()` confía en el correo de la cuenta). En desarrollo (`veta-dev`) está apagado temporalmente.
 - **LFPDPPP**: aviso de privacidad y términos en la landing y en el registro. Veta es *encargado* de los datos de los clientes de cada mueblería; la mueblería es la *responsable*.
 
 ## 8. Indicadores del producto

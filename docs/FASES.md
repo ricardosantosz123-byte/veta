@@ -218,6 +218,7 @@ Fase 10:
 5. PWA: manifest, íconos y offline básico del shell.
 6. Revisión final: accesibilidad, modo oscuro, móvil, rendimiento (Lighthouse ≥ 90), errores en español, y que ninguna clave secreta esté en el bundle.
 7. Guía de despliegue: proyecto Supabase de producción (`supabase link`, `supabase db push`, `supabase functions deploy`, secretos), sitio en Netlify con variables y dominio, y webhooks de Stripe y Mercado Pago apuntando a producción.
+8. Requisito de lanzamiento (PRD §7), antes del primer cliente real: dominio verificado en Resend, Resend configurado como SMTP de Supabase Auth y **Confirm email encendido**. Sin confirmación, alguien podría registrarse con el correo de un invitado y tomar su invitación. Verifica que el enlace mágico, la recuperación de contraseña y las invitaciones lleguen a un correo externo.
 ```
 
-**Aceptación**: una persona ajena se registra, crea su primera cotización en menos de 30 minutos y se suscribe con tarjeta real en producción.
+**Aceptación**: Confirm email encendido y correos de Auth enviados desde el dominio propio; una persona ajena se registra, crea su primera cotización en menos de 30 minutos y se suscribe con tarjeta real en producción.

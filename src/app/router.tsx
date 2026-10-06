@@ -1,17 +1,49 @@
-import { createBrowserRouter, Navigate } from 'react-router'
+import { createBrowserRouter } from 'react-router'
+import { Inicio, RequiereEmpresa, RequierePermiso, RequiereSesion } from '@/app/guardias'
 import { AppLayout } from '@/app/layout/app-layout'
 import { modulos } from '@/app/modulos'
 import { PaginaModulo, PaginaNoEncontrada } from '@/app/paginas'
+import { PaginaAjustes } from '@/features/ajustes/components/pagina-ajustes'
+import {
+  PaginaEntrar,
+  PaginaRecuperar,
+  PaginaRegistro,
+  PaginaRestablecer,
+} from '@/features/auth/components/paginas-auth'
+import { AsistenteAlta } from '@/features/empresa/components/asistente-alta'
+
+// Páginas propias por módulo; los demás muestran su estado vacío hasta su fase.
+const paginas: Record<string, React.ReactNode> = {
+  '/ajustes': <PaginaAjustes />,
+}
 
 export const router = createBrowserRouter([
+  { path: '/entrar', element: <PaginaEntrar /> },
+  { path: '/registro', element: <PaginaRegistro /> },
+  { path: '/recuperar', element: <PaginaRecuperar /> },
+  { path: '/restablecer', element: <PaginaRestablecer /> },
   {
-    path: '/',
-    element: <AppLayout />,
+    element: <RequiereSesion />,
     children: [
-      { index: true, element: <Navigate to="/tablero" replace /> },
-      ...modulos.map((m) => ({ path: m.ruta.slice(1), element: <PaginaModulo modulo={m} /> })),
+      { path: '/bienvenida', element: <AsistenteAlta /> },
+      {
+        element: <RequiereEmpresa />,
+        children: [
+          {
+            path: '/',
+            element: <AppLayout />,
+            children: [
+              { index: true, element: <Inicio /> },
+              ...modulos.map((m) => ({
+                path: m.ruta.slice(1),
+                element: <RequierePermiso capacidad={m.permiso}>{paginas[m.ruta] ?? <PaginaModulo modulo={m} />}</RequierePermiso>,
+              })),
+            ],
+          },
+        ],
+      },
     ],
   },
-  // Portal público (Fase 7): /:slug/p/:token y /:slug/seguimiento, fuera del layout.
+  // Portal público (Fase 7): /:slug/p/:token y /:slug/seguimiento, fuera del layout y sin sesión.
   { path: '*', element: <PaginaNoEncontrada /> },
 ])

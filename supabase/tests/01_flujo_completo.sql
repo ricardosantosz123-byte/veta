@@ -40,6 +40,12 @@ select set_config('request.jwt.claim.sub', :'adminA', false); set role authentic
 select crear_empresa('Mueblería Sauce', 'muebleria-sauce') as emp_a \gset
 select pg_temp.ok((select count(*) from etapas) = 5, 'empresa nueva trae 5 etapas predeterminadas');
 select pg_temp.ok((select count(*) from modelos) = 0, 'catálogo arranca vacío');
+select pg_temp.ok(not slug_disponible('muebleria-sauce'), 'slug ocupado no está disponible');
+select pg_temp.ok(slug_disponible('  Taller-Nuevo '), 'slug libre está disponible (sin importar mayúsculas)');
+select pg_temp.ok(not slug_disponible('ajustes'), 'slug reservado no está disponible');
+select pg_temp.ok(not slug_disponible('a b'), 'slug con formato inválido no está disponible');
+select pg_temp.falla($$select crear_empresa('Otra', 'MUEBLERIA-SAUCE')$$, 'no se crea empresa con slug ocupado');
+select pg_temp.falla($$select crear_empresa('Otra', 'tablero')$$, 'no se crea empresa con slug reservado');
 
 select id as e_carp from etapas where nombre = 'Carpintería' \gset
 select id as e_tap  from etapas where nombre = 'Tapicería' \gset
@@ -196,6 +202,8 @@ select pg_temp.falla(format($$insert into cotizaciones (empresa_id, cliente_id) 
 select pg_temp.falla(format($$insert into clientes (empresa_id, nombre) values (%L, 'Intruso')$$, :'emp_a'),
   'B no puede escribir en A');
 select pg_temp.falla($$select portal_pedido(gen_random_uuid())$$, 'usuario autenticado no llama funciones del portal');
+select pg_temp.falla(format($$insert into invitaciones (empresa_id, email, rol, destajista_id) values (%L, 'x@b.mx', 'destajista', %L)$$, :'emp_b', :'d_sergio'),
+  'B no puede invitar ligando un destajista de A');
 reset role;
 
 -- ============ Portal público (vía Edge Function con service_role) ============
@@ -211,6 +219,7 @@ reset role;
 set role anon;
 select pg_temp.falla(format($$select portal_pedido(%L)$$, :'tok'), 'anon no llama al portal directo');
 select pg_temp.falla($$select * from pedidos$$, 'anon no lee tablas');
+select pg_temp.falla($$select slug_disponible('libre-123')$$, 'anon no consulta slugs');
 reset role;
 
 -- ============ Prueba vencida → solo lectura ============

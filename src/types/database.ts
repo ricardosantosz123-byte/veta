@@ -1595,6 +1595,7 @@ export type Database = {
         Args: { p_empresa: string; p_tipo: string }
         Returns: number
       }
+      _slug_reservado: { Args: { p_slug: string }; Returns: boolean }
       _totales: {
         Args: {
           p_con_iva: boolean
@@ -1647,6 +1648,7 @@ export type Database = {
         Args: { p_cotizacion: string }
         Returns: undefined
       }
+      slug_disponible: { Args: { p_slug: string }; Returns: boolean }
       tiene_rol: {
         Args: {
           p_empresa: string

@@ -16,6 +16,10 @@ fi
 psql -q -c "drop database if exists veta_test;" -c "create database veta_test;" >/dev/null 2>&1
 P="psql -v ON_ERROR_STOP=1 -q -d veta_test"
 $P -f 00_supabase_stub.sql
-for f in ../migrations/*_init.sql; do $P -f "$f" 2>&1 | grep -v NOTICE || true; done
+# Todas las migraciones en orden, salvo las de Storage (requieren el esquema real de Supabase).
+for f in ../migrations/*.sql; do
+  case "$f" in *storage*) continue ;; esac
+  $P -f "$f" 2>&1 | grep -v NOTICE || true
+done
 $P -f 01_flujo_completo.sql 2>&1 | grep -E 'ok  |FALLA|ERROR|PASARON'
 exit "${PIPESTATUS[0]}"

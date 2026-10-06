@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from 'react-router'
-import { modulos, type Modulo } from '@/app/modulos'
+import { useEmpresaActiva } from '@/app/empresa-activa'
+import { modulosDe, type Modulo } from '@/app/modulos'
 import { marca } from '@/config/marca'
 import {
   Sidebar,
@@ -18,6 +19,7 @@ import {
 function Grupo({ titulo, items }: { titulo: string; items: Modulo[] }) {
   const { pathname } = useLocation()
   const { isMobile, setOpenMobile } = useSidebar()
+  if (items.length === 0) return null
 
   return (
     <SidebarGroup>
@@ -41,13 +43,15 @@ function Grupo({ titulo, items }: { titulo: string; items: Modulo[] }) {
 }
 
 export function BarraLateral() {
+  const { rol } = useEmpresaActiva()
+  const visibles = modulosDe(rol)
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <NavLink to="/tablero">
+              <NavLink to="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sm font-semibold text-sidebar-primary-foreground">
                   {marca.nombre.charAt(0)}
                 </div>
@@ -61,8 +65,8 @@ export function BarraLateral() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <Grupo titulo="Operación" items={modulos.filter((m) => m.grupo === 'operacion')} />
-        <Grupo titulo="Cuenta" items={modulos.filter((m) => m.grupo === 'cuenta')} />
+        <Grupo titulo="Operación" items={visibles.filter((m) => m.grupo === 'operacion')} />
+        <Grupo titulo="Cuenta" items={visibles.filter((m) => m.grupo === 'cuenta')} />
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
