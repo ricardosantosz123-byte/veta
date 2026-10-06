@@ -1,10 +1,11 @@
 import { useSearchParams } from 'react-router'
 import { useEmpresaActiva } from '@/app/empresa-activa'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { AjustesCobros } from '@/features/ajustes/components/ajustes-cobros'
 import { AjustesEmpresa } from '@/features/ajustes/components/ajustes-empresa'
 import { AjustesUsuarios } from '@/features/ajustes/components/ajustes-usuarios'
 
-const PESTANAS = ['empresa', 'usuarios'] as const
+const PESTANAS = ['empresa', 'usuarios', 'cobros'] as const
 type Pestana = (typeof PESTANAS)[number]
 
 export function PaginaAjustes() {
@@ -21,12 +22,16 @@ export function PaginaAjustes() {
         <TabsList className="mb-6">
           <TabsTrigger value="empresa">Empresa</TabsTrigger>
           <TabsTrigger value="usuarios">Usuarios</TabsTrigger>
+          <TabsTrigger value="cobros">Cobros en línea</TabsTrigger>
         </TabsList>
         <TabsContent value="empresa">
           <AjustesEmpresa key={empresa.id} empresaId={empresa.id} />
         </TabsContent>
         <TabsContent value="usuarios">
           <AjustesUsuarios key={empresa.id} empresaId={empresa.id} />
+        </TabsContent>
+        <TabsContent value="cobros">
+          <AjustesCobros key={empresa.id} empresaId={empresa.id} />
         </TabsContent>
       </Tabs>
     </div>

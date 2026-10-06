@@ -79,6 +79,17 @@
 - El acento de la mueblería solo se usa en la barra superior y en el botón de pago, con texto blanco o negro según el contraste. Lo demás va en grises, para no depender de colores de marca con poco contraste.
 - `PORTAL_SALT` lo generó Claude al azar (`openssl rand -hex 32`) dentro del shell; nunca se mostró.
 
+## Fase 8 (2026-10-06)
+- Generan links el **Admin y el Vendedor** (mismo permiso que registrar cobros). Hay **un solo link activo** por pedido: uno nuevo cancela el anterior. (⚠️ Decidida en modo nocturno, revisar)
+- Monto del link: anticipo que falta, saldo completo u otro monto, **nunca mayor que el saldo** (lo valida `preparar_link_pago` y otra vez `registrar_link_pago`).
+- Desde la app solo se **cancela** un link activo (política RLS `lp_upd`); "pagado" y "expirado" los escribe la base. Un pago manual sigue expirando el link (Fase 4).
+- El webhook **no confía en la notificación**: consulta el pago en la API de Mercado Pago con el token de la empresa de la URL; solo registra pagos `approved` en MXN cuyo `external_reference` sea un pedido de esa empresa. Idempotente por `externo_id`. Si el pago supera el saldo se acepta (saldo a favor, Fase 4).
+- `auto_return` solo cuando `APP_URL` es https (Mercado Pago no regresa solo a localhost); en desarrollo el cliente vuelve con "Volver al sitio". (⚠️ Decidida en modo nocturno, revisar)
+- Las tres funciones de Mercado Pago **sí se desplegaron** en veta-dev: no necesitan secretos nuevos (el token es de cada mueblería y se captura en Ajustes; `APP_URL` ya existía). (⚠️ Decidida en modo nocturno, revisar)
+- `mp-conectar` acepta tokens `APP_USR-…` (producción y usuarios de prueba) y `TEST-…`, y exige cuenta de México (`site_id = MLM`).
+- El token sigue en `empresa_secretos` (sin políticas: solo service_role). Pasarlo a Supabase Vault queda en [[05 Pendientes y riesgos]].
+- Reembolsos y contracargos de Mercado Pago **no** se procesan todavía (pendiente).
+
 ## Herramientas (2026-10-05)
 - ~~Skills de antislop v3.2.20 en `.claude/skills/`, aplicando salvo contradicción con CLAUDE.md.~~ Reemplazado el mismo día:
 - **antislop se retiró del proyecto (las 6 skills).** Por qué:

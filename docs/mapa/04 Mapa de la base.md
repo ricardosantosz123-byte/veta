@@ -1,7 +1,7 @@
 # Mapa de la base de datos
 
 > Claude Code: mantén esta nota al día con cada migración nueva (nombre, qué agrega y sus pruebas).
-> Última revisión contra veta-dev: 2026-10-05. Pruebas: `supabase/tests/01_flujo_completo.sql` (201).
+> Última revisión contra veta-dev: 2026-10-06. Pruebas: `supabase/tests/01_flujo_completo.sql` (220).
 
 ## Migraciones (`supabase/migrations/`)
 | Archivo | Contenido |
@@ -19,6 +19,7 @@
 | `20261010000002_fase5_v_pedidos.sql` | Recrea `v_pedidos` para incluir `inicio_autorizado_*` |
 | `20261011000001_fase6_insumos.sql` | Unidad cerrada, nombre único normalizado (`nombre_norm`), costo a 4 decimales, existencia nunca negativa, entrada con costo, ajuste con motivo, salida→orden con `destajista_id`, columnas protegidas, no borrar con movimientos; `crear_insumo`, `ajustar_existencia`, `material_entregado`; `v_insumos`, `v_movimientos_insumo`; comentario "Margen sobre destajos" en `v_pedido_resumen` |
 | `20261011000002_fase6_unidad_dm2.sql` | Unidad `dm2` (decímetro cuadrado) para piel |
+| `20261013000001_fase8_mercado_pago.sql` | `empresas.mp_cuenta`; `links_pago.concepto/pagado_at/pago_id`; política `lp_upd` (solo cancelar un link activo); `mp_guardar_conexion`, `mp_desconectar`, `preparar_link_pago`, `registrar_link_pago`, `registrar_pago_mp` |
 | `20261012000001_fase7_portal.sql` | `portal_pedido(token, slug)` con slug obligatorio en el portal, fecha en CDMX, fechas de cada estado y botón de pago solo con saldo; `portal_permitido` y `portal_registrar_intento` (límite por IP con hash) |
 
 > Ojo: una vista creada con `p.*` no ve columnas agregadas después; hay que recrearla (pasó con `v_cotizaciones` y `v_pedidos`).
@@ -50,6 +51,9 @@
 | `corte_destajistas` | Admin, Producción, Contador | Corte del periodo por destajista |
 | `crear_insumo` | Admin, Producción | Alta con existencia inicial (exige costo) |
 | `ajustar_existencia` | Admin, Producción | Ajuste por conteo físico, con motivo |
+| `preparar_link_pago` | Admin, Vendedor | Valida monto, rol y conexión antes de crear la preferencia |
+| `mp_desconectar` | Admin | Borra el token, desconecta y cancela links activos |
+| `mp_guardar_conexion` / `registrar_link_pago` / `registrar_pago_mp` | solo service_role (Edge Functions de Mercado Pago) | Guardar token, guardar link, registrar pago aprobado (idempotente) |
 | `material_entregado` | Admin, Producción, Contador; Destajista (lo suyo, sin valor) | Material entregado por orden |
 | `hoy_mx` | todos | "Hoy" en America/Mexico_City |
 | `portal_pedido` / `portal_buscar` | solo service_role (Edge Function `portal`) | Portal público |
@@ -72,6 +76,9 @@
 |---|---|
 | `invitar` | Guarda la invitación (RLS) y, con Resend, manda el enlace mágico solo al invitado |
 | `notificar` | `cotizacion_enviada` y `pago_recibido` con PDF adjunto (responde `no_configurado` sin Resend) |
+| `mp-conectar` | Admin: valida el Access Token en `/users/me` y lo guarda con `mp_guardar_conexion` |
+| `mp-crear-link` | Admin/Vendedor: `preparar_link_pago` → preferencia de Checkout Pro → `registrar_link_pago`. Usa `APP_URL` |
+| `mp-webhook` | Pública (`verify_jwt = false`): consulta el pago en la API y llama `registrar_pago_mp` |
 | `portal` | Pública (`verify_jwt = false`). GET link y POST buscador; límite por IP, CORS de `APP_ORIGINS`, 404 genérico. Secretos: `PORTAL_SALT`, `APP_ORIGINS` (ya puestos en veta-dev) |
 
 ## Helpers de seguridad

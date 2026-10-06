@@ -417,3 +417,7 @@ enabled = true
 # Portal público del cliente final: sin verificación de JWT (valida y limita por IP ella misma).
 [functions.portal]
 verify_jwt = false
+
+# Notificaciones de Mercado Pago: sin JWT (consulta cada pago en la API con el token de la mueblería).
+[functions.mp-webhook]
+verify_jwt = false

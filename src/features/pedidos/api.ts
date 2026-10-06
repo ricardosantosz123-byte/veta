@@ -1,4 +1,5 @@
 import { FunctionsHttpError } from '@supabase/supabase-js'
+import { invocar } from '@/lib/funciones'
 import { supabase, type Enum } from '@/lib/supabase'
 
 const BUCKET_PRIVADO = 'privado'
@@ -147,4 +148,34 @@ export async function leerEstadoCuenta(clienteId: string) {
     : { data: [], error: null }
   if (e2) throw e2
   return { pedidos, pagos }
+}
+
+// ───────────── Link de pago (Mercado Pago) ─────────────
+
+export async function leerLinksPago(pedidoId: string) {
+  const { data, error } = await supabase
+    .from('links_pago')
+    .select('id, monto, url, estado, concepto, created_at, pagado_at')
+    .eq('pedido_id', pedidoId)
+    .order('created_at', { ascending: false })
+    .limit(10)
+  if (error) throw error
+  return data
+}
+export type LinkPago = Awaited<ReturnType<typeof leerLinksPago>>[number]
+
+/** Edge Function mp-crear-link: la base valida rol, conexión y que el monto no supere el saldo. */
+export function crearLinkPago(pedidoId: string, monto: number) {
+  return invocar<{ url: string; monto: number; concepto: string }>('mp-crear-link', { pedido_id: pedidoId, monto }, 'No pudimos generar el link de pago.')
+}
+
+export async function cancelarLinkPago(id: string) {
+  const { error } = await supabase.from('links_pago').update({ estado: 'cancelado' }).eq('id', id)
+  if (error) throw error
+}
+
+export async function leerConexionMp(empresaId: string) {
+  const { data, error } = await supabase.from('empresas').select('mp_conectado, mp_cuenta').eq('id', empresaId).single()
+  if (error) throw error
+  return data
 }

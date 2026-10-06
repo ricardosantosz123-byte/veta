@@ -9,7 +9,8 @@
 
 ## Seguridad
 - [ ] **Rotar el token de GitHub** `veta-mac`: quedó expuesto en un chat. Generar uno nuevo, actualizarlo en Acceso a Llaveros y borrar el anterior.
-- [ ] Guardar el token de Mercado Pago de cada empresa en Supabase Vault (hoy está en `empresa_secretos`).
+- [ ] Guardar el token de Mercado Pago de cada empresa en Supabase Vault (hoy está en `empresa_secretos`, sin cifrar, solo legible por service_role).
+- [ ] Mercado Pago: procesar reembolsos y contracargos (`refunded`, `charged_back`) en `mp-webhook`; hoy solo se registran pagos aprobados.
 
 ## Técnicos
 - [ ] Contraste en modo claro: el rojo `--destructive` (#e7000b) sobre fondos rojizos (`bg-destructive/5` o `/10`: la insignia y el botón "destructive" de shadcn, el aviso de cancelación del pedido) da ~4.4:1 y no pasa AA. Sobre blanco sí (4.77:1). En Insumos se usó contorno sobre blanco.

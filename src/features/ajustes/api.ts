@@ -1,4 +1,5 @@
 import { FunctionsHttpError } from '@supabase/supabase-js'
+import { invocar } from '@/lib/funciones'
 import type { Rol } from '@/lib/permisos'
 import { supabase } from '@/lib/supabase'
 
@@ -89,5 +90,17 @@ export async function cambiarRol(miembroId: string, rol: Rol, destajistaId: stri
 
 export async function cambiarActivo(miembroId: string, activo: boolean) {
   const { error } = await supabase.from('miembros').update({ activo }).eq('id', miembroId)
+  if (error) throw error
+}
+
+// ───────────── Cobros en línea (Mercado Pago) ─────────────
+
+/** Edge Function mp-conectar: valida el token en Mercado Pago y lo guarda fuera del alcance del navegador. */
+export function conectarMercadoPago(empresaId: string, accessToken: string) {
+  return invocar<{ conectado: true; cuenta: string }>('mp-conectar', { empresa_id: empresaId, access_token: accessToken.trim() }, 'No pudimos conectar Mercado Pago.')
+}
+
+export async function desconectarMercadoPago(empresaId: string) {
+  const { error } = await supabase.rpc('mp_desconectar', { p_empresa: empresaId })
   if (error) throw error
 }

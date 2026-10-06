@@ -453,6 +453,49 @@ select pg_temp.ok((select pagado_periodo = 4000 + 1000 and ordenes_terminadas_pe
   from corte_destajistas(:'emp_a', hoy_mx() - 6, hoy_mx()) where destajista_id = :'d_sergio'), 'corte: pagos y órdenes terminadas de la semana');
 reset role;
 
+-- Fase 8: Mercado Pago
+select saldo as saldo3, anticipo_requerido as anticipo3 from pedidos where id = :'ped3' \gset
+select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated;
+select pg_temp.falla(format($$select preparar_link_pago(%L, 100)$$, :'ped3'), 'sin Mercado Pago conectado no se generan links');
+select pg_temp.falla(format($$select mp_desconectar(%L)$$, :'emp_a'), 'solo el Admin desconecta Mercado Pago');
+select pg_temp.falla(format($$select mp_guardar_conexion(%L, repeat('x', 40), 'yo')$$, :'emp_a'), 'el token no se guarda desde la app');
+select pg_temp.falla($$select * from empresa_secretos$$, 'nadie lee el token desde la app');
+reset role;
+set role service_role;  -- mp-conectar, después de validar el token en la API
+select mp_guardar_conexion(:'emp_a', 'APP_USR-' || repeat('0', 40), 'CASASAUCE_PRUEBA');
+reset role;
+select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated;
+select pg_temp.ok((select mp_conectado and mp_cuenta = 'CASASAUCE_PRUEBA' from empresas where id = :'emp_a'), 'Mercado Pago conectado con su cuenta');
+select pg_temp.falla(format($$select preparar_link_pago(%L, %s)$$, :'ped3', :saldo3 + 1), 'el link no supera el saldo');
+select pg_temp.falla(format($$select preparar_link_pago(%L, 0)$$, :'ped3'), 'el link lleva monto');
+select pg_temp.ok((preparar_link_pago(:'ped3', :saldo3)->>'concepto') = 'saldo', 'link por el saldo completo');
+select pg_temp.falla(format($$select registrar_link_pago(%L, 100, 'https://mp.test/x', 'pref', 'saldo', null)$$, :'ped3'), 'el link no se registra desde la app');
+reset role;
+set role service_role;  -- mp-crear-link, después de crear la preferencia
+select registrar_link_pago(:'ped3', 100, 'https://mp.test/a', 'pref-a', 'otro', :'vendA') as link_a \gset
+select registrar_link_pago(:'ped3', :saldo3, 'https://mp.test/b', 'pref-b', 'saldo', :'vendA') as link_b \gset
+select pg_temp.falla(format($$select registrar_link_pago(%L, 10, 'http://inseguro', 'p', 'otro', null)$$, :'ped3'), 'el link de pago debe ser https');
+reset role;
+select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated;
+select pg_temp.ok((select estado from links_pago where id = :'link_a') = 'cancelado' and (select estado from links_pago where id = :'link_b') = 'activo',
+  'un link nuevo cancela el activo anterior');
+select pg_temp.falla(format($$update links_pago set estado = 'pagado' where id = %L$$, :'link_b'), 'nadie marca un link como pagado a mano');
+select pg_temp.falla(format($$update links_pago set monto = 1 where id = %L$$, :'link_b'), 'el monto del link no se cambia');
+reset role;
+set role service_role;  -- mp-webhook, después de consultar el pago en la API de Mercado Pago
+select registrar_pago_mp(:'emp_a', :'ped3', 'mp-pago-1', :saldo3, hoy_mx()) as pago_mp \gset
+select pg_temp.ok(registrar_pago_mp(:'emp_a', :'ped3', 'mp-pago-1', :saldo3, hoy_mx()) = :'pago_mp', 'webhook repetido: no duplica el pago');
+select pg_temp.falla(format($$select registrar_pago_mp(%L, %L, 'mp-pago-2', 10, hoy_mx())$$, gen_random_uuid(), :'ped3'), 'el pedido debe ser de la empresa de la URL');
+reset role;
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+select pg_temp.ok((select count(*) from pagos_cliente where externo_id = 'mp-pago-1') = 1
+  and (select estado = 'liquidado' and saldo = 0 from pedidos where id = :'ped3'), 'pago de Mercado Pago registrado solo: pedido liquidado');
+select pg_temp.ok((select estado = 'pagado' and pago_id = :'pago_mp' from links_pago where id = :'link_b'), 'el link queda pagado y ligado a su pago');
+select pg_temp.falla(format($$select registrar_pago_mp(%L, %L, 'mp-pago-3', 10, hoy_mx())$$, :'emp_a', :'ped3'), 'la app no registra pagos de Mercado Pago');
+select mp_desconectar(:'emp_a');
+select pg_temp.ok((select not mp_conectado and mp_cuenta is null from empresas where id = :'emp_a'), 'el Admin desconecta Mercado Pago');
+reset role;
+
 -- ============ Aislamiento entre empresas ============
 select set_config('request.jwt.claim.sub', :'adminB', false); set role authenticated;
 select crear_empresa('Taller Brambila', 'taller-brambila') as emp_b \gset

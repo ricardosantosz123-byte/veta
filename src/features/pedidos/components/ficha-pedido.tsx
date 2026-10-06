@@ -56,6 +56,7 @@ import {
   urlPrivada,
   type Pago,
 } from '@/features/pedidos/api'
+import { LinkPagoPedido } from '@/features/pedidos/components/link-pago'
 import { DialogoMotivo } from '@/features/pedidos/components/dialogo-motivo'
 import { DialogoPago } from '@/features/pedidos/components/dialogo-pago'
 import { DialogoRecibo } from '@/features/pedidos/components/dialogo-recibo'
@@ -471,6 +472,8 @@ export function FichaPedido() {
         </div>
 
         <div className="grid content-start gap-6">
+          <LinkPagoPedido pedido={{ ...p, id }} />
+
           {/* Línea de tiempo */}
           <Card>
             <CardHeader>

@@ -13,7 +13,7 @@
 | 5 | Producción y destajistas | ✅ Completada | `78e2a7a` + `38ff0e2` |
 | 6 | Insumos | ✅ Completada | `1aa465c` + `ddea1f1` (unidad dm² para piel) |
 | 7 | Portal del cliente final | 🟡 Construida (noche), falta la prueba desde el celular | ver [[07 Reporte nocturno]] |
-| 8 | Link de pago Mercado Pago | ⚪ Pendiente | |
+| 8 | Link de pago Mercado Pago | 🟡 Construida (noche) y desplegada; falta probar con cuentas de prueba de Mercado Pago | ver [[07 Reporte nocturno]] |
 | 9 | Suscripción Stripe | ⚪ Pendiente | |
 | 10 | Tablero, avisos, landing, lanzamiento | ⚪ Pendiente | |
 

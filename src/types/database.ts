@@ -535,6 +535,7 @@ export type Database = {
           logo_pdf_path: string | null
           metodo_precio: Database["public"]["Enums"]["metodo_precio"]
           mp_conectado: boolean
+          mp_cuenta: string | null
           nombre: string
           periodo_termina: string | null
           plan_intervalo: string | null
@@ -561,6 +562,7 @@ export type Database = {
           logo_pdf_path?: string | null
           metodo_precio?: Database["public"]["Enums"]["metodo_precio"]
           mp_conectado?: boolean
+          mp_cuenta?: string | null
           nombre: string
           periodo_termina?: string | null
           plan_intervalo?: string | null
@@ -587,6 +589,7 @@ export type Database = {
           logo_pdf_path?: string | null
           metodo_precio?: Database["public"]["Enums"]["metodo_precio"]
           mp_conectado?: boolean
+          mp_cuenta?: string | null
           nombre?: string
           periodo_termina?: string | null
           plan_intervalo?: string | null
@@ -801,6 +804,7 @@ export type Database = {
       }
       links_pago: {
         Row: {
+          concepto: string
           created_at: string
           created_by: string | null
           empresa_id: string
@@ -808,11 +812,14 @@ export type Database = {
           externo_id: string | null
           id: string
           monto: number
+          pagado_at: string | null
+          pago_id: string | null
           pedido_id: string
           proveedor: string
           url: string
         }
         Insert: {
+          concepto?: string
           created_at?: string
           created_by?: string | null
           empresa_id: string
@@ -820,11 +827,14 @@ export type Database = {
           externo_id?: string | null
           id?: string
           monto: number
+          pagado_at?: string | null
+          pago_id?: string | null
           pedido_id: string
           proveedor?: string
           url: string
         }
         Update: {
+          concepto?: string
           created_at?: string
           created_by?: string | null
           empresa_id?: string
@@ -832,6 +842,8 @@ export type Database = {
           externo_id?: string | null
           id?: string
           monto?: number
+          pagado_at?: string | null
+          pago_id?: string | null
           pedido_id?: string
           proveedor?: string
           url?: string
@@ -842,6 +854,20 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "links_pago_pago_id_fkey"
+            columns: ["pago_id"]
+            isOneToOne: false
+            referencedRelation: "pagos_cliente"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "links_pago_pago_id_fkey"
+            columns: ["pago_id"]
+            isOneToOne: false
+            referencedRelation: "v_pagos"
             referencedColumns: ["id"]
           },
           {
@@ -2266,6 +2292,11 @@ export type Database = {
         }[]
       }
       mi_destajista: { Args: { p_empresa: string }; Returns: string }
+      mp_desconectar: { Args: { p_empresa: string }; Returns: undefined }
+      mp_guardar_conexion: {
+        Args: { p_cuenta: string; p_empresa: string; p_token: string }
+        Returns: undefined
+      }
       nombres_equipo: {
         Args: { p_empresa: string }
         Returns: {
@@ -2278,11 +2309,44 @@ export type Database = {
         Args: { p_apellidos: string; p_folio: number; p_slug: string }
         Returns: string
       }
-      portal_pedido: { Args: { p_token: string }; Returns: Json }
+      portal_pedido: {
+        Args: { p_slug?: string; p_token: string }
+        Returns: Json
+      }
+      portal_permitido: { Args: { p_ip_hash: string }; Returns: boolean }
+      portal_registrar_intento: {
+        Args: { p_ip_hash: string }
+        Returns: undefined
+      }
+      preparar_link_pago: {
+        Args: { p_monto: number; p_pedido: string }
+        Returns: Json
+      }
       puede_escribir: { Args: { p_empresa: string }; Returns: boolean }
       recalcular_precios_cotizacion: {
         Args: { p_cotizacion: string }
         Returns: undefined
+      }
+      registrar_link_pago: {
+        Args: {
+          p_concepto: string
+          p_externo: string
+          p_monto: number
+          p_pedido: string
+          p_url: string
+          p_usuario: string
+        }
+        Returns: string
+      }
+      registrar_pago_mp: {
+        Args: {
+          p_empresa: string
+          p_fecha: string
+          p_monto: number
+          p_pago_externo: string
+          p_pedido: string
+        }
+        Returns: string
       }
       reordenar_catalogo: {
         Args: { p_ids: string[]; p_tabla: string }
