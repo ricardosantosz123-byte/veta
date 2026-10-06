@@ -252,6 +252,9 @@ export function FichaPedido() {
             {cliente}
             {p.empresa_cliente && ` · ${p.empresa_cliente}`}
           </Link>
+          {!cancelado && !p.cliente_apellidos?.trim() && (
+            <p className="text-xs text-muted-foreground">Sin apellidos: el buscador del portal no encontrará este pedido. Comparte el enlace de seguimiento.</p>
+          )}
         </div>
         {!cancelado && (
           <Button variant="outline" onClick={compartir}>

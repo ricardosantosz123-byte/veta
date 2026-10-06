@@ -2,8 +2,8 @@ import { createBrowserRouter } from 'react-router'
 import { Inicio, RequiereEmpresa, RequierePermiso, RequiereSesion } from '@/app/guardias'
 import { AppLayout } from '@/app/layout/app-layout'
 import { modulos } from '@/app/modulos'
-import { PaginaModulo, PaginaNoEncontrada, PortalEnConstruccion } from '@/app/paginas'
-import { PaginaCatalogo, PaginaClientes, PaginaCotizaciones, PaginaInsumos, PaginaMisOrdenes, PaginaPedidos, PaginaProduccion } from '@/app/paginas-lazy'
+import { PaginaModulo, PaginaNoEncontrada } from '@/app/paginas'
+import { PaginaCatalogo, PaginaClientes, PaginaCotizaciones, PaginaInsumos, PaginaMisOrdenes, PaginaPedidoPortal, PaginaPedidos, PaginaProduccion, PaginaSeguimiento } from '@/app/paginas-lazy'
 import { PaginaAjustes } from '@/features/ajustes/components/pagina-ajustes'
 import {
   PaginaEntrar,
@@ -54,9 +54,9 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  // Portal público del cliente final (se construye en la Fase 7): sin sesión y fuera del layout.
+  // Portal público del cliente final: sin sesión y fuera del layout; solo habla con la Edge Function `portal`.
   // Las rutas fijas de arriba (/entrar, /pedidos…) tienen prioridad sobre estas con :slug.
-  { path: '/:slug/p/:token', element: <PortalEnConstruccion /> },
-  { path: '/:slug/seguimiento', element: <PortalEnConstruccion /> },
+  { path: '/:slug/p/:token', element: <PaginaPedidoPortal /> },
+  { path: '/:slug/seguimiento', element: <PaginaSeguimiento /> },
   { path: '*', element: <PaginaNoEncontrada /> },
 ])

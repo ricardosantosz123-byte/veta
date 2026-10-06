@@ -68,6 +68,17 @@
 - Alerta "bajo mínimo" = `mínimo > 0 y existencia < mínimo` (estrictamente menor).
 - El valor del material entregado **no** se descuenta del pago al destajista.
 
+## Fase 7 (2026-10-06)
+- **A1** (⚠️ Decidida en modo nocturno, revisar): el link del portal sigue funcionando después de entregado (historial y garantía). Solo los pedidos cancelados no se muestran.
+- **B1** (⚠️ Decidida en modo nocturno, revisar): botón "¿Dudas? Escríbenos por WhatsApp" al teléfono de la mueblería, si lo tiene.
+- **C1** (⚠️ Decidida en modo nocturno, revisar): el portal muestra total, pagado y saldo, sin desglose.
+- Límite por IP (⚠️ Decidida en modo nocturno, revisar): 10 intentos cada 10 minutos. Cuentan las **búsquedas** y los **links que no existen**; abrir un link válido no gasta intentos (el token es un UUID imposible de adivinar). La IP solo se guarda como SHA-256(IP + `PORTAL_SALT`); los intentos de más de un día se borran solos.
+- El link solo abre bajo el slug de su mueblería (`portal_pedido(token, slug)`).
+- La función `portal` es pública (`verify_jwt = false`): la llave del proyecto es del formato nuevo `sb_publishable_…`, que no es un JWT.
+- CORS: solo `APP_ORIGINS` (`http://localhost:5173`, `http://127.0.0.1:5173`, `http://192.168.*:5173` para probar desde el celular en la red local). Al publicar hay que agregar el dominio real.
+- El acento de la mueblería solo se usa en la barra superior y en el botón de pago, con texto blanco o negro según el contraste. Lo demás va en grises, para no depender de colores de marca con poco contraste.
+- `PORTAL_SALT` lo generó Claude al azar (`openssl rand -hex 32`) dentro del shell; nunca se mostró.
+
 ## Herramientas (2026-10-05)
 - ~~Skills de antislop v3.2.20 en `.claude/skills/`, aplicando salvo contradicción con CLAUDE.md.~~ Reemplazado el mismo día:
 - **antislop se retiró del proyecto (las 6 skills).** Por qué:

@@ -8,6 +8,8 @@ const Pedidos = lazy(() => import('@/features/pedidos/components/pagina-pedidos'
 const Produccion = lazy(() => import('@/features/produccion/components/pagina-produccion'))
 const MisOrdenes = lazy(() => import('@/features/produccion/components/mis-ordenes'))
 const Insumos = lazy(() => import('@/features/insumos/components/pagina-insumos'))
+const PedidoPortal = lazy(() => import('@/features/portal/components/pagina-pedido-portal'))
+const Seguimiento = lazy(() => import('@/features/portal/components/pagina-seguimiento'))
 
 function Cargando() {
   return <div className="mx-auto h-64 w-full max-w-5xl animate-pulse rounded-xl bg-muted" aria-busy="true" aria-label="Cargando" />
@@ -50,5 +52,15 @@ export const PaginaMisOrdenes = () => (
 export const PaginaInsumos = () => (
   <Diferido>
     <Insumos />
+  </Diferido>
+)
+export const PaginaPedidoPortal = () => (
+  <Diferido>
+    <PedidoPortal />
+  </Diferido>
+)
+export const PaginaSeguimiento = () => (
+  <Diferido>
+    <Seguimiento />
   </Diferido>
 )

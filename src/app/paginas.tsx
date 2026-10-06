@@ -1,4 +1,4 @@
-import { PackageSearch, SearchX } from 'lucide-react'
+import { SearchX } from 'lucide-react'
 import { Link } from 'react-router'
 import type { Modulo } from '@/app/modulos'
 import { EstadoVacio } from '@/components/estado-vacio'
@@ -29,17 +29,6 @@ export function PaginaNoEncontrada() {
       <Button asChild>
         <Link to="/">Ir al inicio</Link>
       </Button>
-    </div>
-  )
-}
-
-/** Portal del cliente final: la ruta ya existe para que los enlaces compartidos funcionen; se construye en la Fase 7. */
-export function PortalEnConstruccion() {
-  return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-3 p-6 text-center">
-      <PackageSearch className="size-10 text-muted-foreground" aria-hidden />
-      <h1 className="text-xl font-semibold">Seguimiento de tu pedido</h1>
-      <p className="max-w-sm text-sm text-muted-foreground">Muy pronto podrás ver aquí el avance de tu pedido, tus pagos y tu saldo.</p>
     </div>
   )
 }

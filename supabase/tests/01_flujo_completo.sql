@@ -483,6 +483,26 @@ select pg_temp.ok((portal_pedido(:'tok')->'pedido'->>'saldo')::numeric = 0, 'por
 select pg_temp.ok(jsonb_array_length(portal_pedido(:'tok')->'items'->0->'etapas') = 2, 'portal muestra avance por etapa');
 select pg_temp.ok(portal_pedido(:'tok')::text not like '%9600%' and portal_pedido(:'tok')::text not like '%Sergio%',
   'portal no expone costos ni destajistas');
+-- Fase 7
+select pg_temp.ok(portal_pedido(:'tok', ' Muebleria-Sauce ') is not null, 'portal: el link abre bajo el slug de su mueblería');
+select pg_temp.ok(portal_pedido(:'tok', 'taller-brambila') is null, 'portal: el mismo link bajo otro slug no muestra nada');
+select pg_temp.ok((portal_pedido(:'tok')->'pedido'->>'fecha')::date = (select (created_at at time zone 'America/Mexico_City')::date from pedidos where folio = :ped_folio and empresa_id = :'emp_a'),
+  'portal: fecha del pedido en la Ciudad de México');
+select pg_temp.ok(portal_pedido(:'tok')->'pedido'->>'entregado_at' is not null and portal_pedido(:'tok')->'pedido'->>'en_produccion_at' is not null,
+  'portal: fechas de cada estado para la línea de tiempo');
+select pg_temp.ok(portal_pedido(:'tok')->>'link_pago' is null, 'portal: sin saldo no hay botón de pago');
+select pg_temp.ok(portal_pedido(:'tok')::text not like '%Listas en blanco%' and portal_pedido(:'tok')::text not like '%apellidos%'
+  and portal_pedido(:'tok')::text not like '%costo%' and portal_pedido(:'tok')::text not like '%margen%',
+  'portal: sin notas internas, apellidos ni costos');
+select pg_temp.ok(portal_pedido(gen_random_uuid()) is null, 'portal: token inexistente no muestra nada');
+select pg_temp.ok(portal_permitido(repeat('a', 64)), 'portal: una IP nueva puede intentar');
+select portal_registrar_intento(repeat('a', 64)) from generate_series(1, 10);
+select pg_temp.ok(not portal_permitido(repeat('a', 64)) and portal_permitido(repeat('b', 64)), 'portal: 10 intentos bloquean solo a esa IP');
+select pg_temp.falla($$select portal_registrar_intento('1.2.3.4')$$, 'portal: nunca se guarda la IP en claro');
+reset role;
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+select pg_temp.falla($$select portal_permitido(repeat('a', 64))$$, 'usuario autenticado no consulta el límite del portal');
+select pg_temp.falla($$select * from portal_intentos$$, 'usuario autenticado no lee los intentos del portal');
 reset role;
 set role anon;
 select pg_temp.falla(format($$select portal_pedido(%L)$$, :'tok'), 'anon no llama al portal directo');

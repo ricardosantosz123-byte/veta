@@ -1,7 +1,7 @@
 # Mapa de la base de datos
 
 > Claude Code: mantén esta nota al día con cada migración nueva (nombre, qué agrega y sus pruebas).
-> Última revisión contra veta-dev: 2026-10-05. Pruebas: `supabase/tests/01_flujo_completo.sql` (189).
+> Última revisión contra veta-dev: 2026-10-05. Pruebas: `supabase/tests/01_flujo_completo.sql` (201).
 
 ## Migraciones (`supabase/migrations/`)
 | Archivo | Contenido |
@@ -19,6 +19,7 @@
 | `20261010000002_fase5_v_pedidos.sql` | Recrea `v_pedidos` para incluir `inicio_autorizado_*` |
 | `20261011000001_fase6_insumos.sql` | Unidad cerrada, nombre único normalizado (`nombre_norm`), costo a 4 decimales, existencia nunca negativa, entrada con costo, ajuste con motivo, salida→orden con `destajista_id`, columnas protegidas, no borrar con movimientos; `crear_insumo`, `ajustar_existencia`, `material_entregado`; `v_insumos`, `v_movimientos_insumo`; comentario "Margen sobre destajos" en `v_pedido_resumen` |
 | `20261011000002_fase6_unidad_dm2.sql` | Unidad `dm2` (decímetro cuadrado) para piel |
+| `20261012000001_fase7_portal.sql` | `portal_pedido(token, slug)` con slug obligatorio en el portal, fecha en CDMX, fechas de cada estado y botón de pago solo con saldo; `portal_permitido` y `portal_registrar_intento` (límite por IP con hash) |
 
 > Ojo: una vista creada con `p.*` no ve columnas agregadas después; hay que recrearla (pasó con `v_cotizaciones` y `v_pedidos`).
 
@@ -51,7 +52,8 @@
 | `ajustar_existencia` | Admin, Producción | Ajuste por conteo físico, con motivo |
 | `material_entregado` | Admin, Producción, Contador; Destajista (lo suyo, sin valor) | Material entregado por orden |
 | `hoy_mx` | todos | "Hoy" en America/Mexico_City |
-| `portal_pedido` / `portal_buscar` | solo service_role (Edge Function `portal`, Fase 7) | Portal público |
+| `portal_pedido` / `portal_buscar` | solo service_role (Edge Function `portal`) | Portal público |
+| `portal_permitido` / `portal_registrar_intento` | solo service_role (Edge Function `portal`) | Límite de 10 intentos por IP cada 10 min |
 
 ## Vistas (todas `security_invoker`: aplican el RLS de quien consulta)
 | Vista | Para qué |
@@ -70,6 +72,7 @@
 |---|---|
 | `invitar` | Guarda la invitación (RLS) y, con Resend, manda el enlace mágico solo al invitado |
 | `notificar` | `cotizacion_enviada` y `pago_recibido` con PDF adjunto (responde `no_configurado` sin Resend) |
+| `portal` | Pública (`verify_jwt = false`). GET link y POST buscador; límite por IP, CORS de `APP_ORIGINS`, 404 genérico. Secretos: `PORTAL_SALT`, `APP_ORIGINS` (ya puestos en veta-dev) |
 
 ## Helpers de seguridad
 `es_miembro`, `tiene_rol`, `mi_destajista`, `puede_escribir`, `_valida_empresa`
