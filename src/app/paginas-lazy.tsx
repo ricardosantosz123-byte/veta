@@ -12,6 +12,18 @@ const PedidoPortal = lazy(() => import('@/features/portal/components/pagina-pedi
 const Seguimiento = lazy(() => import('@/features/portal/components/pagina-seguimiento'))
 const Suscripcion = lazy(() => import('@/features/suscripcion/pagina-suscripcion'))
 const Tablero = lazy(() => import('@/features/tablero/pagina-tablero'))
+const Inicio = lazy(() => import('@/features/landing/pagina-inicio'))
+const Privacidad = lazy(() => import('@/features/landing/paginas-legales'))
+const Terminos = lazy(() => import('@/features/landing/paginas-legales').then((m) => ({ default: m.PaginaTerminos })))
+
+// Fuera del módulo de cada fase: también se descargan hasta que se visitan (rendimiento de la carga inicial).
+const Ajustes = lazy(() => import('@/features/ajustes/components/pagina-ajustes').then((m) => ({ default: m.PaginaAjustes })))
+const Asistente = lazy(() => import('@/features/empresa/components/asistente-alta').then((m) => ({ default: m.AsistenteAlta })))
+const Layout = lazy(() => import('@/app/layout/app-layout').then((m) => ({ default: m.AppLayout })))
+const Entrar = lazy(() => import('@/features/auth/components/paginas-auth').then((m) => ({ default: m.PaginaEntrar })))
+const Registro = lazy(() => import('@/features/auth/components/paginas-auth').then((m) => ({ default: m.PaginaRegistro })))
+const Recuperar = lazy(() => import('@/features/auth/components/paginas-auth').then((m) => ({ default: m.PaginaRecuperar })))
+const Restablecer = lazy(() => import('@/features/auth/components/paginas-auth').then((m) => ({ default: m.PaginaRestablecer })))
 
 function Cargando() {
   return <div className="mx-auto h-64 w-full max-w-5xl animate-pulse rounded-xl bg-muted" aria-busy="true" aria-label="Cargando" />
@@ -74,5 +86,56 @@ export const PaginaSuscripcion = () => (
 export const PaginaTablero = () => (
   <Diferido>
     <Tablero />
+  </Diferido>
+)
+export const PaginaInicioPublica = () => (
+  <Diferido>
+    <Inicio />
+  </Diferido>
+)
+export const PaginaPrivacidad = () => (
+  <Diferido>
+    <Privacidad />
+  </Diferido>
+)
+export const PaginaTerminos = () => (
+  <Diferido>
+    <Terminos />
+  </Diferido>
+)
+export const PaginaAjustes = () => (
+  <Diferido>
+    <Ajustes />
+  </Diferido>
+)
+export const AsistenteAlta = () => (
+  <Diferido>
+    <Asistente />
+  </Diferido>
+)
+/** El layout completo (barra lateral) se descarga después de saber que hay sesión. */
+export const AppLayout = () => (
+  <Suspense fallback={<div className="min-h-svh" aria-busy="true" aria-label="Cargando" />}>
+    <Layout />
+  </Suspense>
+)
+export const PaginaEntrar = () => (
+  <Diferido>
+    <Entrar />
+  </Diferido>
+)
+export const PaginaRegistro = () => (
+  <Diferido>
+    <Registro />
+  </Diferido>
+)
+export const PaginaRecuperar = () => (
+  <Diferido>
+    <Recuperar />
+  </Diferido>
+)
+export const PaginaRestablecer = () => (
+  <Diferido>
+    <Restablecer />
   </Diferido>
 )

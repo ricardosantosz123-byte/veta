@@ -5,6 +5,7 @@ import { useEmpresaActiva } from '@/app/empresa-activa'
 import { modulosDe } from '@/app/modulos'
 import { EstadoVacio } from '@/components/estado-vacio'
 import { Skeleton } from '@/components/ui/skeleton'
+import { PaginaInicioPublica } from '@/app/paginas-lazy'
 import { useAuth } from '@/features/auth/auth-provider'
 import { mensajeError } from '@/lib/errores'
 import { puede, type Capacidad } from '@/lib/permisos'
@@ -31,11 +32,12 @@ function PantallaCarga() {
   )
 }
 
-/** Exige sesión. Sin sesión → /entrar?siguiente=<ruta actual>. */
+/** Exige sesión. Sin sesión → /entrar?siguiente=<ruta actual>; en "/" se muestra la landing pública. */
 export function RequiereSesion() {
   const { user, cargando, recuperando } = useAuth()
   const { pathname, search } = useLocation()
   if (cargando) return <PantallaCarga />
+  if (!user && pathname === '/') return <PaginaInicioPublica />
   if (!user) return <Navigate to={`/entrar?siguiente=${encodeURIComponent(pathname + search)}`} replace />
   if (recuperando) return <Navigate to="/restablecer" replace />
   return <Outlet />

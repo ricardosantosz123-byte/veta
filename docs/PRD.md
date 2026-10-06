@@ -170,7 +170,7 @@ Netlify (PWA React)  ──supabase-js──▶  Supabase
    │                                          ├─ notificar         → Resend (vía Database Webhooks)
    │                                          ├─ stripe-checkout / stripe-portal / stripe-webhook
    │                                          ├─ mp-conectar / mp-crear-link / mp-webhook
-   │                                          └─ avisos-prueba     (diario, programado)
+   │                                          └─ avisos            (pedido listo, pago MP y prueba por vencer; pg_net + pg_cron)
    └─ /{slug}/p/{token}  (portal, misma app)
 ```
 

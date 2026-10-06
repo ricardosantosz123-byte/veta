@@ -1,17 +1,29 @@
 import { createBrowserRouter } from 'react-router'
 import { Inicio, RequiereEmpresa, RequierePermiso, RequiereSesion } from '@/app/guardias'
-import { AppLayout } from '@/app/layout/app-layout'
 import { modulos } from '@/app/modulos'
 import { PaginaModulo, PaginaNoEncontrada } from '@/app/paginas'
-import { PaginaCatalogo, PaginaClientes, PaginaCotizaciones, PaginaInsumos, PaginaMisOrdenes, PaginaPedidoPortal, PaginaPedidos, PaginaProduccion, PaginaSeguimiento, PaginaSuscripcion, PaginaTablero } from '@/app/paginas-lazy'
-import { PaginaAjustes } from '@/features/ajustes/components/pagina-ajustes'
 import {
+  AppLayout,
+  AsistenteAlta,
+  PaginaAjustes,
+  PaginaCatalogo,
+  PaginaClientes,
+  PaginaCotizaciones,
   PaginaEntrar,
+  PaginaInsumos,
+  PaginaMisOrdenes,
+  PaginaPedidoPortal,
+  PaginaPedidos,
+  PaginaPrivacidad,
+  PaginaProduccion,
   PaginaRecuperar,
   PaginaRegistro,
   PaginaRestablecer,
-} from '@/features/auth/components/paginas-auth'
-import { AsistenteAlta } from '@/features/empresa/components/asistente-alta'
+  PaginaSeguimiento,
+  PaginaSuscripcion,
+  PaginaTablero,
+  PaginaTerminos,
+} from '@/app/paginas-lazy'
 
 // Páginas propias por módulo; los demás muestran su estado vacío hasta su fase.
 const paginas: Record<string, React.ReactNode> = {
@@ -34,6 +46,8 @@ export const router = createBrowserRouter([
   { path: '/registro', element: <PaginaRegistro /> },
   { path: '/recuperar', element: <PaginaRecuperar /> },
   { path: '/restablecer', element: <PaginaRestablecer /> },
+  { path: '/privacidad', element: <PaginaPrivacidad /> },
+  { path: '/terminos', element: <PaginaTerminos /> },
   {
     element: <RequiereSesion />,
     children: [
