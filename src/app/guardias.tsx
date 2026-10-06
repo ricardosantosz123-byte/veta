@@ -1,4 +1,4 @@
-import { Lock } from 'lucide-react'
+import { CloudOff, Lock } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router'
 import { useEmpresaActiva } from '@/app/empresa-activa'
@@ -6,6 +6,7 @@ import { modulosDe } from '@/app/modulos'
 import { EstadoVacio } from '@/components/estado-vacio'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/features/auth/auth-provider'
+import { mensajeError } from '@/lib/errores'
 import { puede, type Capacidad } from '@/lib/permisos'
 
 function PantallaCarga() {
@@ -42,8 +43,21 @@ export function RequiereSesion() {
 
 /** Exige al menos una empresa activa. Sin ninguna → asistente de alta. */
 export function RequiereEmpresa() {
-  const { membresias, cargando } = useEmpresaActiva()
+  const { membresias, cargando, error, reintentar } = useEmpresaActiva()
   if (cargando) return <PantallaCarga />
+  if (error) {
+    return (
+      <div className="mx-auto flex min-h-svh max-w-md items-center p-4">
+        <EstadoVacio
+          icono={CloudOff}
+          titulo="No pudimos cargar tus empresas"
+          descripcion={mensajeError(error)}
+          accion="Reintentar"
+          onAccion={reintentar}
+        />
+      </div>
+    )
+  }
   if (membresias.length === 0) return <Navigate to="/bienvenida" replace />
   return <Outlet />
 }

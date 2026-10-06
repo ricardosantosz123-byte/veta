@@ -25,6 +25,9 @@ export type EmpresaResumen = Membresia['empresa']
 interface EmpresaActivaContexto {
   membresias: Membresia[]
   cargando: boolean
+  /** Error al leer las membresías: no es lo mismo que no tener ninguna. */
+  error: unknown
+  reintentar: () => void
   empresa: EmpresaResumen | null
   rol: Rol | null
   /** false con la prueba vencida o la suscripción cancelada: la cuenta queda en solo lectura. */
@@ -43,13 +46,15 @@ function leerGuardada(): string | null {
 }
 
 export function EmpresaActivaProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth()
+  const { user, cargando: cargandoAuth } = useAuth()
   const [elegida, setElegida] = useState<string | null>(leerGuardada)
 
+  // Se lee hasta que aceptar_invitaciones() terminó: si no, un invitado recién registrado
+  // obtendría una lista vacía y la app lo mandaría al asistente de alta.
   const membresias = useQuery({
     queryKey: ['membresias', user?.id],
     queryFn: () => leerMembresias(user!.id),
-    enabled: !!user,
+    enabled: !!user && !cargandoAuth,
   })
 
   const lista = useMemo(() => membresias.data ?? [], [membresias.data])
@@ -79,6 +84,8 @@ export function EmpresaActivaProvider({ children }: { children: ReactNode }) {
   const valor: EmpresaActivaContexto = {
     membresias: lista,
     cargando: !!user && membresias.isPending,
+    error: membresias.error,
+    reintentar: () => void membresias.refetch(),
     empresa: activa?.empresa ?? null,
     rol: activa?.rol ?? null,
     // Mientras se consulta, se asume que sí: la base rechaza de todos modos si no.
