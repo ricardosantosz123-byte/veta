@@ -10,9 +10,9 @@ Instrucciones permanentes para Claude Code en este repositorio. Léelas completa
 - **Antes de decidir algo:** revisa `docs/mapa/02 Decisiones.md`. Si ya se decidió, respétalo; si cambia, regístralo ahí.
 - **Al cerrar cada fase o sesión:** actualiza `01 Estado actual`, `02 Decisiones` y `04 Mapa de la base`, y agrega una entrada en `06 Bitácora`.
 
-## Skills de antislop
+## Skills externas
 
-Las skills de antislop aplican salvo que contradigan este archivo; en conflicto, CLAUDE.md manda.
+No hay skills de diseño instaladas en el proyecto. De antislop (v3.2.20) se integraron solo las reglas de accesibilidad y móvil de la sección **Diseño** y su verificador de contraste (`scripts/contraste.py`). Ver `docs/mapa/02 Decisiones.md`.
 
 ## Qué es
 
@@ -70,6 +70,15 @@ supabase/
 
 Minimalista estilo Apple: fuente del sistema (`-apple-system`, SF Pro, Inter), escala de grises neutra, un acento (`--accent`, que toma `empresas.color_marca` en PDF y portal), radios de 12 px, bordes de 1 px sutiles, sombras mínimas, sin degradados, mucho espacio en blanco, modo claro y oscuro. Móvil primero en las vistas de Destajista y Portal; escritorio primero en Cotizador y Tablero. Números tabulares (`font-variant-numeric: tabular-nums`) en tablas de montos.
 
+Reglas de accesibilidad y uso (obligatorias en toda pantalla nueva o modificada):
+
+- **Contraste AA verificado, nunca a ojo:** 4.5:1 para texto normal y 3:1 para texto de 24 px o más, en modo claro y en modo oscuro. Se comprueba con `npm run contraste -- "#texto" "#fondo"`.
+- **Foco visible** en todo elemento interactivo (`:focus-visible`). Nunca `outline: none` sin un reemplazo.
+- **Errores en texto, no solo en color:** cada error dice qué pasó y cómo resolverlo. El color solo acompaña.
+- **Estados vacíos con acción:** explican por qué no hay datos y ofrecen el siguiente paso ("Crea tu primer modelo").
+- **Nada de datos inventados:** ni cifras, ni ejemplos, ni gráficas de relleno. Solo datos reales o un estado vacío.
+- **Móvil:** botones y áreas táctiles de mínimo 44 × 44 px, y `dvh` en lugar de `vh` para alturas de pantalla completa. Sin scroll horizontal.
+
 ## Comandos
 
 **Modo nube**: no hay Docker ni Supabase local. Se trabaja contra el proyecto `veta-dev` (project-ref `qrznjmtaljraownfrmbi`), ya ligado con `npx supabase link`. La CLI está instalada como dependencia de desarrollo: usa siempre `npx supabase`, nunca `supabase start` ni `supabase db reset`.
@@ -85,6 +94,7 @@ npx supabase gen types typescript --linked > src/types/database.ts
 PATH=/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH DATABASE_URL="$(cat supabase/.temp/pooler-url)" ./supabase/tests/run.sh
 npx supabase functions deploy <nombre> --use-api   # Edge Functions sin Docker (no hay functions serve local)
 npx supabase secrets set NOMBRE=valor              # secretos de Edge Functions (los secretos reales los pone el usuario)
+npm run contraste -- "#1d1d1f" "#f5f5f7"      # contraste WCAG AA de un par de colores
 npm run typecheck && npm run lint && npm run build
 ```
 
