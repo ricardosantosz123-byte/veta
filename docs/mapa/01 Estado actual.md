@@ -10,7 +10,7 @@
 | 2 | Catálogo y costeo | ✅ Completada | `265cb16` |
 | 3 | Clientes y cotizador | ✅ Completada | `f1534f5` |
 | 4 | Pedidos y cobranza | ✅ Completada | `6135d8a` |
-| 5 | Producción y destajistas | 🟡 Pruebas ✅ · falta la aceptación en la app | `78e2a7a` |
+| 5 | Producción y destajistas | ✅ Completada | `78e2a7a` + `38ff0e2` |
 | 6 | Insumos | ⚪ Pendiente | |
 | 7 | Portal del cliente final | ⚪ Pendiente (ruta pública `/:slug/p/:token` ya preparada) | |
 | 8 | Link de pago Mercado Pago | ⚪ Pendiente | |
@@ -24,7 +24,7 @@
   - (a) Admin autoriza el inicio sin anticipo (`autorizar_inicio_sin_anticipo`, visible en la línea de tiempo).
   - (b) Adelantos al destajista sin rebasar el costo acordado.
   - (c) "Por pagar" y "Comprometido" separados en `v_destajo_saldos`, `corte_destajistas` y `/mis-ordenes`.
-- [ ] Prueba de aceptación en la app (abajo).
+- [x] Prueba de aceptación en la app: P-1 con 3 órdenes de "Ricardo" terminadas → pedido **terminado** solo (2026-10-05, probado también desde el celular).
 
 ## Prueba de aceptación de la Fase 5
 1. P-1 (ya con anticipo) → **Mandar a producción** → asignar las etapas a "Ricardo" (destajista).
@@ -33,10 +33,11 @@
 4. Como Admin en P-1: el pedido queda **Terminado** y aparece el aviso de finiquito.
 
 ## Siguiente paso
-Cerrar la Fase 5 (pruebas en veta-dev + aceptación) y empezar la **Fase 6 · Insumos**.
+Empezar la **Fase 6 · Insumos**. Opcional antes: cobrar el finiquito del P-1 ($13,363.20) y marcarlo entregado.
 
 ## Datos de prueba
 - Silla **Natalia**: Carpintería 1,800 · Tapicería 900 · Nogal +600 · Piel +900 · markup 1.0 → **$8,400** General / **$9,800** Expo.
 - Cotización: 4 Natalia + mesa sobre diseño $12,000 − 10% → **$47,606.40**.
 - Cuentas de prueba: Admin `ricardosantosz123@gmail.com` · Vendedor `ventas@flexora.mx` · Destajista `rsantoszertuche@gmail.com` (destajista "Ricardo").
-- En veta-dev: empresa **Casa Sauce**, pedido **P-1** en producción (anticipo $20,044.80 cubierto, saldo $13,363.20).
+- En veta-dev: empresa **Casa Sauce**, pedido **P-1** terminado (3 órdenes de Ricardo terminadas), saldo $13,363.20 por cobrar.
+- Dev server en la red local: `npm run dev -- --host` → `http://192.168.100.8:5173` (la IP puede cambiar).
