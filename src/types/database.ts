@@ -1610,10 +1610,21 @@ export type Database = {
         Args: { p_empresa: string; p_id: string; p_tabla: unknown }
         Returns: undefined
       }
+      _validar_opciones: {
+        Args: { p_modelo: string; p_opciones: string[] }
+        Returns: undefined
+      }
       aceptar_invitaciones: { Args: never; Returns: number }
       calcular_precio: {
         Args: { p_lista?: string; p_modelo: string; p_opciones: string[] }
         Returns: number
+      }
+      costear_modelo: {
+        Args: { p_lista?: string; p_modelo: string; p_opciones: string[] }
+        Returns: {
+          costo: number
+          precio: number
+        }[]
       }
       crear_empresa: {
         Args: { p_nombre: string; p_slug: string }
@@ -1646,6 +1657,10 @@ export type Database = {
       puede_escribir: { Args: { p_empresa: string }; Returns: boolean }
       recalcular_precios_cotizacion: {
         Args: { p_cotizacion: string }
+        Returns: undefined
+      }
+      reordenar_catalogo: {
+        Args: { p_ids: string[]; p_tabla: string }
         Returns: undefined
       }
       slug_disponible: { Args: { p_slug: string }; Returns: boolean }

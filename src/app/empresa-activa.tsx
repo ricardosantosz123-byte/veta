@@ -10,7 +10,7 @@ async function leerMembresias(userId: string) {
   const { data, error } = await supabase
     .from('miembros')
     .select(
-      'id, rol, destajista_id, empresa:empresas(id, nombre, slug, logo_path, color_marca, estado_suscripcion, prueba_termina)',
+      'id, rol, destajista_id, empresa:empresas(id, nombre, slug, logo_path, color_marca, metodo_precio, estado_suscripcion, prueba_termina)',
     )
     .eq('user_id', userId)
     .eq('activo', true)

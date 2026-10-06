@@ -92,6 +92,7 @@ Fase 3:
 4. Enviar: (a) correo con el PDF adjunto vía Edge Function `notificar` (tipo cotizacion_enviada); (b) WhatsApp: src/lib/whatsapp.ts arma el link wa.me con el teléfono del cliente y un mensaje con folio, total, vigencia y link de descarga del PDF (súbelo a Storage privado y genera una URL firmada de 15 días). Marca la cotización como "enviada".
 5. Lista de cotizaciones con filtros por estado, vencimiento y vendedor; duplicar cotización.
 6. "Convertir en pedido": modal con checkboxes por renglón (venta por partes), incluir envío sí/no y fecha compromiso → `crear_pedido_desde_cotizacion`.
+7. Base de datos (migración nueva): el trigger de `cotizacion_items` debe rechazar un renglón con modelo (que no sea sobre diseño) si le falta una opción de un grupo obligatorio del modelo, con mensaje en español que nombre el grupo. Agrega su prueba en supabase/tests/01_flujo_completo.sql. (Desde la Fase 2, `calcular_precio` ya rechaza opciones de otros grupos, inactivas o repetidas por grupo; los obligatorios solo los validaba la interfaz.)
 ```
 
 **Aceptación**: cotizar 4 sillas más una mesa sobre diseño, descargar un PDF impecable, enviarlo por WhatsApp y vender solo las sillas. La cotización queda "parcial".

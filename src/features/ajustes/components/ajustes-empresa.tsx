@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -22,7 +23,8 @@ import {
 import { SelectorColor, SelectorLogo } from '@/features/empresa/components/selector-logo'
 import { ajustesEmpresaSchema, colorMarca } from '@/features/empresa/schemas'
 import { mensajeError } from '@/lib/errores'
-import type { Fila } from '@/lib/supabase'
+import type { Enum, Fila } from '@/lib/supabase'
+import { cn } from '@/lib/utils'
 
 type Entrada = z.input<typeof ajustesEmpresaSchema>
 type Salida = z.output<typeof ajustesEmpresaSchema>
@@ -85,6 +87,68 @@ function TarjetaMarca({ empresa, habilitado }: { empresa: Fila<'empresas'>; habi
         <div>
           <Button onClick={() => guardar.mutate()} disabled={!habilitado || !hayCambios || !colorValido || guardar.isPending}>
             {guardar.isPending ? 'Guardando…' : 'Guardar marca'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+const METODOS: { valor: Enum<'metodo_precio'>; titulo: string; descripcion: string }[] = [
+  {
+    valor: 'componentes',
+    titulo: 'Costo por etapas × markup',
+    descripcion: 'Capturas el costo de cada etapa y un markup por modelo.',
+  },
+  {
+    valor: 'base_ajustes',
+    titulo: 'Precio base + ajustes',
+    descripcion: 'Cada modelo tiene un precio base y cada opción suma o resta.',
+  },
+]
+
+function TarjetaMetodo({ empresa, habilitado }: { empresa: Fila<'empresas'>; habilitado: boolean }) {
+  const queryClient = useQueryClient()
+  const [metodo, setMetodo] = useState(empresa.metodo_precio)
+  const guardar = useMutation({
+    mutationFn: () => actualizarEmpresa(empresa.id, { metodo_precio: metodo }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['empresa', empresa.id] })
+      await queryClient.invalidateQueries({ queryKey: ['membresias'] })
+      await queryClient.invalidateQueries({ queryKey: ['catalogo', empresa.id] })
+      toast.success('Método de precio actualizado')
+    },
+    onError: (e) => toast.error(mensajeError(e)),
+  })
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Método de precio</CardTitle>
+        <CardDescription>
+          Cómo calcula el catálogo el precio de cada mueble. Al cambiarlo, los precios nuevos usan el otro método; los datos capturados del
+          anterior se conservan por si regresas.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <RadioGroup value={metodo} onValueChange={(v) => setMetodo(v as Enum<'metodo_precio'>)} className="grid gap-3 sm:grid-cols-2" aria-label="Método de precio" disabled={!habilitado}>
+          {METODOS.map((m) => (
+            <Label
+              key={m.valor}
+              htmlFor={`aj-metodo-${m.valor}`}
+              className={cn('flex cursor-pointer items-start gap-3 rounded-xl border p-4 font-normal', metodo === m.valor && 'border-primary bg-muted/50')}
+            >
+              <RadioGroupItem id={`aj-metodo-${m.valor}`} value={m.valor} className="mt-0.5" />
+              <span className="grid gap-1">
+                <span className="font-medium">{m.titulo}</span>
+                <span className="text-sm text-muted-foreground">{m.descripcion}</span>
+              </span>
+            </Label>
+          ))}
+        </RadioGroup>
+        <div>
+          <Button onClick={() => guardar.mutate()} disabled={!habilitado || metodo === empresa.metodo_precio || guardar.isPending}>
+            {guardar.isPending ? 'Guardando…' : 'Guardar método'}
           </Button>
         </div>
       </CardContent>
@@ -213,6 +277,7 @@ export function AjustesEmpresa({ empresaId }: { empresaId: string }) {
   return (
     <div className="grid gap-6">
       <TarjetaMarca key={`${empresa.id}-${empresa.logo_path}-${empresa.color_marca}`} empresa={empresa} habilitado={habilitado} />
+      <TarjetaMetodo key={`metodo-${empresa.metodo_precio}`} empresa={empresa} habilitado={habilitado} />
       <FormularioDatos empresa={empresa} habilitado={habilitado} />
     </div>
   )

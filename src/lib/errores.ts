@@ -15,7 +15,8 @@ const porCodigo: Record<string, string> = {
   signup_disabled: 'El registro está deshabilitado.',
   email_address_invalid: 'Ese correo no es válido.',
   session_not_found: 'Tu sesión expiró. Vuelve a entrar.',
-  '23505': 'Ya existe un registro con esos datos.',
+  '23505': 'Ya existe un registro con ese nombre.',
+  '23503': 'No se puede eliminar porque ya está en uso. Desactívalo en su lugar.',
   '42501': 'No tienes permiso para hacer esto.',
 }
 

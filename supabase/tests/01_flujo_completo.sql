@@ -66,6 +66,31 @@ insert into costos_modelo (empresa_id, modelo_id, etapa_id, opcion_id, costo) va
   (:'emp_a', :'m_nat', :'e_tap',  :'o_piel', 900);
 insert into listas_precios (empresa_id, nombre, incluye_iva, redondeo) values (:'emp_a', 'Expo', true, 100) returning id as l_expo \gset
 select id as l_gen from listas_precios where nombre = 'General' \gset
+select pg_temp.ok((select costo from costear_modelo(:'m_nat', array[:'o_nog', :'o_piel']::uuid[])) = 4200,
+  'costear_modelo: 1800 + 600 + 900 + 900 = 4,200');
+select pg_temp.ok((select precio from costear_modelo(:'m_nat', array[:'o_nog', :'o_piel']::uuid[], :'l_expo')) = 9800,
+  'costear_modelo devuelve el mismo precio que calcular_precio');
+insert into grupos_opcion (empresa_id, nombre) values (:'emp_a', 'Medida') returning id as g_med \gset
+insert into opciones (empresa_id, grupo_id, nombre) values (:'emp_a', :'g_med', 'Grande') returning id as o_gde \gset
+select pg_temp.falla(format($$select calcular_precio(%L, array[%L]::uuid[])$$, :'m_nat', :'o_gde'),
+  'calcular_precio rechaza una opción de un grupo que no aplica al modelo');
+update opciones set activo = false where id = :'o_enc';
+select pg_temp.falla(format($$select calcular_precio(%L, array[%L]::uuid[])$$, :'m_nat', :'o_enc'),
+  'calcular_precio rechaza una opción inactiva');
+update opciones set activo = true where id = :'o_enc';
+insert into modelos (empresa_id, nombre, sobre_diseno) values (:'emp_a', 'Mesa a medida', true) returning id as m_sd \gset
+select pg_temp.falla(format($$select calcular_precio(%L, '{}')$$, :'m_sd'), 'calcular_precio rechaza un modelo sobre diseño');
+select pg_temp.ok((select precio is null and costo = 0 from costear_modelo(:'m_sd', '{}')), 'costear_modelo: sobre diseño sin precio');
+delete from modelos where id = :'m_sd';
+select reordenar_catalogo('etapas', array(select id from etapas order by orden desc));
+select pg_temp.ok((select nombre from etapas order by orden limit 1) = 'Empaque', 'reordenar_catalogo guarda el orden nuevo');
+select pg_temp.falla(format($$select reordenar_catalogo('modelos', array[%L]::uuid[])$$, :'m_nat'), 'reordenar_catalogo solo acepta tablas permitidas');
+select pg_temp.falla(format($$select reordenar_catalogo('opciones', array[%L, %L]::uuid[])$$, :'o_enc', :'o_lin'),
+  'reordenar_catalogo no mezcla opciones de grupos distintos');
+select reordenar_catalogo('etapas', array(select id from etapas order by orden desc));
+update listas_precios set predeterminada = true where id = :'l_expo';
+select pg_temp.ok((select array_agg(nombre) from listas_precios where predeterminada) = array['Expo'], 'una sola lista predeterminada');
+update listas_precios set predeterminada = true where id = :'l_gen';
 
 -- Invitaciones
 insert into destajistas (empresa_id, nombre, especialidad) values (:'emp_a', 'Sergio Ávalos', 'Carpintería') returning id as d_sergio \gset
@@ -92,6 +117,11 @@ select pg_temp.ok(calcular_precio(:'m_nat', array[:'o_nog', :'o_piel']::uuid[], 
 select pg_temp.ok((select count(*) from costos_modelo) = 0, 'Vendedor no ve costos por etapa');
 select pg_temp.ok((select count(*) from modelo_costeo) = 0, 'Vendedor no ve markup');
 select pg_temp.ok((select count(*) from modelos) = 1, 'Vendedor sí ve el catálogo');
+select pg_temp.falla(format($$select calcular_precio(%L, array[%L, %L]::uuid[])$$, :'m_nat', :'o_enc', :'o_nog'),
+  'calcular_precio rechaza dos opciones del mismo grupo');
+select pg_temp.falla($$select costear_modelo('00000000-0000-0000-0000-000000000000'::uuid, '{}')$$, 'costear_modelo con modelo inexistente');
+select pg_temp.falla(format($$select * from costear_modelo(%L, '{}')$$, :'m_nat'), 'Vendedor no puede costear un modelo');
+select pg_temp.falla(format($$select reordenar_catalogo('etapas', array[%L]::uuid[])$$, :'e_carp'), 'Vendedor no reordena el catálogo');
 
 insert into clientes (empresa_id, nombre, apellidos, telefono) values (:'emp_a', 'Lucía', 'Pérez López', '3311112222') returning id as cli \gset
 insert into cotizaciones (empresa_id, cliente_id, lista_id, descuento_pct) values (:'emp_a', :'cli', :'l_gen', 10) returning id as cot, folio as cot_folio \gset
@@ -186,6 +216,10 @@ select set_config('request.jwt.claim.sub', :'contA', false); set role authentica
 select pg_temp.ok((select margen_bruto from v_pedido_resumen where id = :'ped') = 30240 - 16800,
   'Contador ve margen: 30,240 − 16,800 de mano de obra');
 select pg_temp.falla(format($$insert into clientes (empresa_id, nombre) values (%L, 'X')$$, :'emp_a'), 'Contador es solo lectura');
+select pg_temp.ok(calcular_precio(:'m_nat', array[:'o_nog', :'o_piel']::uuid[], :'l_gen') = 8400, 'Contador calcula precios (PRD §4)');
+select pg_temp.ok((select count(*) from modelo_costeo) = 1, 'Contador ve el markup');
+update modelo_costeo set markup = 2 where modelo_id = :'m_nat';  -- RLS: 0 filas, sin error
+select pg_temp.ok((select markup from modelo_costeo where modelo_id = :'m_nat') = 1.0, 'Contador no edita el markup');
 reset role;
 
 select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;

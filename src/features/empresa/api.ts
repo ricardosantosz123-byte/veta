@@ -4,11 +4,18 @@ export const BUCKET_PUBLICO = 'publico'
 export const LOGO_TIPOS = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
 export const LOGO_MAX_BYTES = 5 * 1024 * 1024
 
+/** Valida tipo y tamaño de una imagen (mismas reglas que el bucket publico). */
+export function validarImagen(f: File): string | null {
+  if (!LOGO_TIPOS.includes(f.type)) return 'Usa una imagen PNG, JPG, WEBP o SVG.'
+  if (f.size > LOGO_MAX_BYTES) return 'La imagen pesa más de 5 MB.'
+  return null
+}
+
 /** "Mueblería Sauce & Hijos" → "muebleria-sauce-hijos" */
 export function sugerirSlug(nombre: string): string {
   return nombre
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
