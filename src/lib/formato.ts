@@ -5,6 +5,8 @@ const ZONA = 'America/Mexico_City'
 
 const fmtMoneda = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
 const fmtNumero = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 2 })
+const fmtCantidad = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 3 })
+const fmtMonedaPrecisa = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2, maximumFractionDigits: 4 })
 const fmtPorcentaje = new Intl.NumberFormat('es-MX', { style: 'percent', maximumFractionDigits: 1 })
 
 type Monto = number | string | null | undefined
@@ -25,6 +27,18 @@ export function moneda(valor: Monto): string {
 export function numero(valor: Monto): string {
   const n = aNumero(valor)
   return n === null ? '—' : fmtNumero.format(n)
+}
+
+/** Costo unitario con hasta 4 decimales ($0.3333), como lo guarda la base para insumos. */
+export function monedaPrecisa(valor: Monto): string {
+  const n = aNumero(valor)
+  return n === null ? '—' : fmtMonedaPrecisa.format(n)
+}
+
+/** Cantidad de insumo con hasta 3 decimales (12.5, 0.125). */
+export function cantidad(valor: Monto): string {
+  const n = aNumero(valor)
+  return n === null ? '—' : fmtCantidad.format(n)
 }
 
 /** Recibe la fracción tal como la guarda la base (0.16 → "16%"). */

@@ -212,7 +212,7 @@ Fase 9:
 Lee CLAUDE.md y docs/PRD.md §5.9, §5.10, §7 y §9.
 
 Fase 10:
-1. Tablero (Admin/Contador): tarjetas KPI y gráficas simples según el PRD §5.10, usando v_pedido_resumen y consultas agregadas. Tablero del Vendedor sin costos.
+1. Tablero (Admin/Contador): tarjetas KPI y gráficas simples según el PRD §5.10, usando v_pedido_resumen y consultas agregadas. El indicador de margen se llama **"Margen sobre destajos"** y lleva la nota "No incluye material de insumos" (decisión de la Fase 6). Tablero del Vendedor sin costos.
 2. Avisos: Edge Function `notificar` con plantillas HTML minimalistas para cada evento del PRD §5.9; conéctala con Supabase Database Webhooks (pagos_cliente insert, pedidos update de estado). `avisos-prueba`: función programada diaria para la prueba por vencer.
 3. Bitácora (Admin): lista filtrable por tabla, usuario y fecha.
 4. Landing pública en / para usuarios sin sesión: propuesta de valor para mueblerías y talleres, capturas, sección de precios leída de una config, preguntas frecuentes y botón "Prueba 14 días sin tarjeta". Páginas /privacidad y /terminos (borrador, para revisión legal).

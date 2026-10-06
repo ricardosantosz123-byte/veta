@@ -700,6 +700,7 @@ export type Database = {
           id: string
           minimo: number
           nombre: string
+          nombre_norm: string
           proveedor: string | null
           tipo: string
           unidad: string
@@ -713,6 +714,7 @@ export type Database = {
           id?: string
           minimo?: number
           nombre: string
+          nombre_norm: string
           proveedor?: string | null
           tipo?: string
           unidad?: string
@@ -726,6 +728,7 @@ export type Database = {
           id?: string
           minimo?: number
           nombre?: string
+          nombre_norm?: string
           proveedor?: string | null
           tipo?: string
           unidad?: string
@@ -1093,6 +1096,7 @@ export type Database = {
           costo_unitario: number | null
           created_at: string
           created_by: string | null
+          destajista_id: string | null
           empresa_id: string
           id: string
           insumo_id: string
@@ -1105,6 +1109,7 @@ export type Database = {
           costo_unitario?: number | null
           created_at?: string
           created_by?: string | null
+          destajista_id?: string | null
           empresa_id: string
           id?: string
           insumo_id: string
@@ -1117,6 +1122,7 @@ export type Database = {
           costo_unitario?: number | null
           created_at?: string
           created_by?: string | null
+          destajista_id?: string | null
           empresa_id?: string
           id?: string
           insumo_id?: string
@@ -1125,6 +1131,20 @@ export type Database = {
           tipo?: Database["public"]["Enums"]["tipo_movimiento"]
         }
         Relationships: [
+          {
+            foreignKeyName: "movimientos_insumo_destajista_id_fkey"
+            columns: ["destajista_id"]
+            isOneToOne: false
+            referencedRelation: "destajistas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimientos_insumo_destajista_id_fkey"
+            columns: ["destajista_id"]
+            isOneToOne: false
+            referencedRelation: "v_destajo_saldos"
+            referencedColumns: ["destajista_id"]
+          },
           {
             foreignKeyName: "movimientos_insumo_empresa_id_fkey"
             columns: ["empresa_id"]
@@ -1137,6 +1157,13 @@ export type Database = {
             columns: ["insumo_id"]
             isOneToOne: false
             referencedRelation: "insumos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimientos_insumo_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "v_insumos"
             referencedColumns: ["id"]
           },
           {
@@ -1827,6 +1854,131 @@ export type Database = {
           },
         ]
       }
+      v_insumos: {
+        Row: {
+          activo: boolean | null
+          bajo_minimo: boolean | null
+          costo_unitario: number | null
+          empresa_id: string | null
+          existencia: number | null
+          id: string | null
+          minimo: number | null
+          nombre: string | null
+          proveedor: string | null
+          tipo: string | null
+          ultimo_movimiento_at: string | null
+          unidad: string | null
+          updated_at: string | null
+          valor_existencia: number | null
+        }
+        Insert: {
+          activo?: boolean | null
+          bajo_minimo?: never
+          costo_unitario?: number | null
+          empresa_id?: string | null
+          existencia?: number | null
+          id?: string | null
+          minimo?: number | null
+          nombre?: string | null
+          proveedor?: string | null
+          tipo?: string | null
+          ultimo_movimiento_at?: never
+          unidad?: string | null
+          updated_at?: string | null
+          valor_existencia?: never
+        }
+        Update: {
+          activo?: boolean | null
+          bajo_minimo?: never
+          costo_unitario?: number | null
+          empresa_id?: string | null
+          existencia?: number | null
+          id?: string | null
+          minimo?: number | null
+          nombre?: string | null
+          proveedor?: string | null
+          tipo?: string | null
+          ultimo_movimiento_at?: never
+          unidad?: string | null
+          updated_at?: string | null
+          valor_existencia?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insumos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_movimientos_insumo: {
+        Row: {
+          cantidad: number | null
+          costo_unitario: number | null
+          created_at: string | null
+          created_by: string | null
+          destajista: string | null
+          destajista_id: string | null
+          efecto: number | null
+          empresa_id: string | null
+          existencia_despues: number | null
+          id: string | null
+          insumo: string | null
+          insumo_id: string | null
+          nota: string | null
+          orden_folio: number | null
+          orden_id: string | null
+          tipo: Database["public"]["Enums"]["tipo_movimiento"] | null
+          unidad: string | null
+          valor: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimientos_insumo_destajista_id_fkey"
+            columns: ["destajista_id"]
+            isOneToOne: false
+            referencedRelation: "destajistas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimientos_insumo_destajista_id_fkey"
+            columns: ["destajista_id"]
+            isOneToOne: false
+            referencedRelation: "v_destajo_saldos"
+            referencedColumns: ["destajista_id"]
+          },
+          {
+            foreignKeyName: "movimientos_insumo_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimientos_insumo_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimientos_insumo_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "v_insumos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimientos_insumo_orden_id_fkey"
+            columns: ["orden_id"]
+            isOneToOne: false
+            referencedRelation: "ordenes_produccion"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_pagos: {
         Row: {
           anulado: boolean | null
@@ -2025,6 +2177,14 @@ export type Database = {
         Returns: undefined
       }
       aceptar_invitaciones: { Args: never; Returns: number }
+      ajustar_existencia: {
+        Args: {
+          p_existencia_contada: number
+          p_insumo: string
+          p_motivo: string
+        }
+        Returns: number
+      }
       autorizar_inicio_sin_anticipo: {
         Args: { p_pedido: string }
         Returns: undefined
@@ -2057,6 +2217,19 @@ export type Database = {
         Args: { p_nombre: string; p_slug: string }
         Returns: string
       }
+      crear_insumo: {
+        Args: {
+          p_costo_inicial?: number
+          p_empresa: string
+          p_existencia_inicial?: number
+          p_minimo?: number
+          p_nombre: string
+          p_proveedor?: string
+          p_tipo: string
+          p_unidad: string
+        }
+        Returns: string
+      }
       crear_pedido_desde_cotizacion: {
         Args: {
           p_cotizacion: string
@@ -2076,6 +2249,21 @@ export type Database = {
           p_orden: string
         }
         Returns: undefined
+      }
+      material_entregado: {
+        Args: { p_ordenes: string[] }
+        Returns: {
+          cantidad: number
+          destajista: string
+          entregado_at: string
+          insumo: string
+          insumo_id: string
+          movimiento_id: string
+          nota: string
+          orden_id: string
+          unidad: string
+          valor: number
+        }[]
       }
       mi_destajista: { Args: { p_empresa: string }; Returns: string }
       nombres_equipo: {

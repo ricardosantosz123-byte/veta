@@ -7,6 +7,7 @@ const Cotizaciones = lazy(() => import('@/features/cotizaciones/components/pagin
 const Pedidos = lazy(() => import('@/features/pedidos/components/pagina-pedidos'))
 const Produccion = lazy(() => import('@/features/produccion/components/pagina-produccion'))
 const MisOrdenes = lazy(() => import('@/features/produccion/components/mis-ordenes'))
+const Insumos = lazy(() => import('@/features/insumos/components/pagina-insumos'))
 
 function Cargando() {
   return <div className="mx-auto h-64 w-full max-w-5xl animate-pulse rounded-xl bg-muted" aria-busy="true" aria-label="Cargando" />
@@ -44,5 +45,10 @@ export const PaginaProduccion = () => (
 export const PaginaMisOrdenes = () => (
   <Diferido>
     <MisOrdenes />
+  </Diferido>
+)
+export const PaginaInsumos = () => (
+  <Diferido>
+    <Insumos />
   </Diferido>
 )

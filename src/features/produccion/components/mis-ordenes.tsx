@@ -9,6 +9,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
+import { type MaterialEntregado } from '@/features/insumos/api'
+import { ListaMaterial } from '@/features/insumos/components/material-entregado'
+import { useMaterialEntregado } from '@/features/insumos/hooks'
 import { Semaforo } from '@/features/pedidos/components/semaforo'
 import { avanzarOrden, leerMisPagos, leerOrdenes, leerSaldosDestajo, type Orden } from '@/features/produccion/api'
 import { mensajeError } from '@/lib/errores'
@@ -16,7 +19,7 @@ import { diasDesdeHoy, fecha, moneda } from '@/lib/formato'
 
 type Accion = { orden: Orden; estado: 'en_proceso' | 'terminada' }
 
-function TarjetaOrden({ o, onAccion, bloqueado }: { o: Orden; onAccion: (a: Accion) => void; bloqueado: boolean }) {
+function TarjetaOrden({ o, material, onAccion, bloqueado }: { o: Orden; material: MaterialEntregado[]; onAccion: (a: Accion) => void; bloqueado: boolean }) {
   const d = diasDesdeHoy(o.fecha_compromiso)
   const semaforo = o.estado === 'terminada' || d === null ? null : d < 0 ? 'atrasado' : d <= 3 ? 'por_vencer' : 'a_tiempo'
   return (
@@ -36,6 +39,12 @@ function TarjetaOrden({ o, onAccion, bloqueado }: { o: Orden; onAccion: (a: Acci
         <span>{o.fecha_compromiso ? `Entrega ${fecha(o.fecha_compromiso)}` : 'Sin fecha de entrega'}</span>
         <Semaforo semaforo={semaforo} dias={d} />
       </div>
+      {material.length > 0 && (
+        <div className="rounded-xl bg-muted/50 px-3 py-1">
+          <p className="pt-1.5 text-xs font-medium text-muted-foreground">Material que recibiste</p>
+          <ListaMaterial material={material} />
+        </div>
+      )}
       {o.estado === 'pendiente' && (
         <Button size="lg" className="h-14 text-base" disabled={bloqueado} onClick={() => onAccion({ orden: o, estado: 'en_proceso' })}>
           <Hammer aria-hidden /> Empecé
@@ -58,6 +67,8 @@ export default function MisOrdenes() {
   const ordenes = useQuery({ queryKey: ['produccion', empresa!.id, 'ordenes'], queryFn: () => leerOrdenes(empresa!.id) })
   const saldo = useQuery({ queryKey: ['produccion', empresa!.id, 'destajistas'], queryFn: () => leerSaldosDestajo(empresa!.id) })
   const pagos = useQuery({ queryKey: ['produccion', empresa!.id, 'mis-pagos'], queryFn: () => leerMisPagos(empresa!.id) })
+  const abiertas = (ordenes.data ?? []).filter((o) => o.estado === 'pendiente' || o.estado === 'en_proceso').map((o) => o.id)
+  const material = useMaterialEntregado(abiertas)
   const [accion, setAccion] = useState<Accion | null>(null)
   const [nota, setNota] = useState('')
 
@@ -113,7 +124,7 @@ export default function MisOrdenes() {
                 </h2>
                 <ul className="grid gap-3">
                   {g.lista.map((o) => (
-                    <TarjetaOrden key={o.id} o={o} onAccion={setAccion} bloqueado={soloLectura} />
+                    <TarjetaOrden key={o.id} o={o} material={material.data?.filter((m) => m.orden_id === o.id) ?? []} onAccion={setAccion} bloqueado={soloLectura} />
                   ))}
                 </ul>
               </section>

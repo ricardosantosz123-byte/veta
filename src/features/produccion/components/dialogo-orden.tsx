@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { descargar } from '@/features/cotizaciones/pdf/preparar'
+import { MaterialEntregadoOrden } from '@/features/insumos/components/material-entregado'
 import { nombreMetodo, subirPrivado, urlPrivadaQuinceDias } from '@/features/pedidos/api'
 import {
   actualizarOrden,
@@ -90,6 +91,7 @@ export function DialogoOrden({ orden: o, onCerrar }: Props) {
   const gestionar = usePuedeEditar('gestionar_produccion')
   const pagarPermitido = usePuedeEditar('pagar_destajos')
   const verCostos = usePuede('ver_costos')
+  const verInsumos = usePuede('ver_insumos')
   const destajistas = useQuery({ queryKey: ['produccion', empresa!.id, 'destajistas'], queryFn: () => leerSaldosDestajo(empresa!.id), enabled: !!o })
   const pagos = useQuery({ queryKey: ['produccion', empresa!.id, 'pagos', o?.id], queryFn: () => leerPagosOrden(o!.id), enabled: !!o })
   const [nota, setNota] = useState('')
@@ -254,6 +256,8 @@ export function DialogoOrden({ orden: o, onCerrar }: Props) {
             </Button>
           )}
         </div>
+
+        {verInsumos && <MaterialEntregadoOrden orden={o} />}
 
         {verCostos && (
           <section className="grid gap-3 border-t pt-4" aria-labelledby="ord-pagos">

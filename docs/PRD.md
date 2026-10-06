@@ -148,7 +148,7 @@ Madera, tela, piel, espuma, herrajes, acabados y empaque, con su unidad. Entrada
 
 ### 5.10 Tablero (Admin y Contador)
 
-Ventas del mes, cobrado del mes, cuentas por cobrar, conversión de cotización a pedido, margen bruto real por pedido (`v_pedido_resumen`: venta sin IVA menos el costo de las órdenes), pedidos por estado y por etapa, adeudo con destajistas, insumos bajo mínimo y cotizaciones por vencer. El Vendedor ve su propio tablero sin montos de costo.
+Ventas del mes, cobrado del mes, cuentas por cobrar, conversión de cotización a pedido, **margen sobre destajos** por pedido (`v_pedido_resumen`: venta sin IVA menos el costo de las órdenes; con la nota "No incluye material de insumos"), pedidos por estado y por etapa, adeudo con destajistas, insumos bajo mínimo y cotizaciones por vencer. El Vendedor ve su propio tablero sin montos de costo.
 
 ### 5.11 Suscripción
 

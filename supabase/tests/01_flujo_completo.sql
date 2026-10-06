@@ -238,6 +238,49 @@ insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, costo_uni
 insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, orden_id) values (:'emp_a', :'ins', 'salida', 3, :'o2');
 select pg_temp.ok((select existencia from insumos where id = :'ins') = 17, 'existencia 10+10−3 = 17');
 select pg_temp.ok((select costo_unitario from insumos where id = :'ins') = 110, 'costo promedio ponderado 110');
+-- Fase 6: reglas de insumos
+select pg_temp.ok((select destajista_id from movimientos_insumo where insumo_id = :'ins' and tipo = 'salida') = :'d_sergio',
+  'la salida ligada a una orden guarda a su destajista');
+select pg_temp.ok((select costo_unitario = 110 and valor = 330 from v_movimientos_insumo where insumo_id = :'ins' and tipo = 'salida'),
+  'la salida guarda el costo promedio del momento: 3 × 110 = 330');
+select pg_temp.ok((select insumo = 'Piel Napa Café' and cantidad = 3 and valor = 330 from material_entregado(array[:'o2']::uuid[])),
+  'material entregado aparece en su orden con su valor');
+select pg_temp.ok((select existencia_despues from v_movimientos_insumo where insumo_id = :'ins' order by created_at desc limit 1) = 17,
+  'historial con la existencia después de cada movimiento');
+select pg_temp.falla(format($$insert into insumos (empresa_id, nombre, tipo, unidad) values (%L, '  piel  napa cafe ', 'piel', 'm2')$$, :'emp_a'),
+  'nombre de insumo único sin mayúsculas, acentos ni espacios de más');
+select pg_temp.falla(format($$insert into insumos (empresa_id, nombre, unidad) values (%L, 'Tachuela', 'cm')$$, :'emp_a'),
+  'unidad fuera de la lista cerrada');
+select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad) values (%L, %L, 'entrada', 5)$$, :'emp_a', :'ins'),
+  'una entrada exige costo unitario');
+select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, costo_unitario, orden_id) values (%L, %L, 'entrada', 5, 100, %L)$$, :'emp_a', :'ins', :'o2'),
+  'solo una salida se liga a una orden');
+select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad) values (%L, %L, 'salida', 18)$$, :'emp_a', :'ins'),
+  'la existencia no queda negativa (hay 17, salen 18)');
+select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad) values (%L, %L, 'ajuste', -2)$$, :'emp_a', :'ins'),
+  'un ajuste exige motivo');
+select pg_temp.falla(format($$update insumos set costo_unitario = 1 where id = %L$$, :'ins'), 'el costo promedio no se escribe a mano');
+select pg_temp.falla(format($$update insumos set existencia = 999 where id = %L$$, :'ins'), 'la existencia no se escribe a mano');
+select pg_temp.falla(format($$update insumos set unidad = 'm' where id = %L$$, :'ins'), 'la unidad no cambia si ya hay movimientos');
+insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, nota) values (:'emp_a', :'ins', 'ajuste', -2, 'Merma por corte');
+select pg_temp.ok((select existencia from insumos where id = :'ins') = 15 and (select costo_unitario from insumos where id = :'ins') = 110,
+  'ajuste con motivo: 17 − 2 = 15 y el promedio no cambia');
+update insumos set minimo = 20 where id = :'ins';
+select pg_temp.ok((select bajo_minimo and valor_existencia = 1650 from v_insumos where id = :'ins'), 'alerta bajo mínimo (15 < 20) y valor 15 × 110');
+select pg_temp.falla(format($$select crear_insumo(%L, 'Hule espuma 2"', 'espuma', 'm2', 0, null, 5, null)$$, :'emp_a'),
+  'la existencia inicial exige costo unitario');
+select crear_insumo(:'emp_a', 'Hule espuma 2"', 'espuma', 'm2', 2, 'Espumas del Bajío', 5, 50.5) as ins2 \gset
+select pg_temp.ok((select existencia = 5 and costo_unitario = 50.5 from insumos where id = :'ins2'), 'alta con existencia inicial como primera entrada');
+insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, costo_unitario) values (:'emp_a', :'ins2', 'entrada', 3, 0.3333);
+select pg_temp.ok((select costo_unitario from insumos where id = :'ins2') = 31.6875, 'promedio con 4 decimales: (5×50.5 + 3×0.3333) / 8');
+select ajustar_existencia(:'ins2', 7, 'Conteo físico') as dif_conteo \gset
+select pg_temp.ok(:dif_conteo = -1 and (select existencia from insumos where id = :'ins2') = 7,
+  'ajuste por conteo físico: la base calcula la diferencia (8 → 7)');
+select pg_temp.falla(format($$select ajustar_existencia(%L, 7, 'Otra vez')$$, :'ins2'), 'conteo igual a la existencia no genera ajuste');
+update insumos set activo = false where id = :'ins2';
+select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad) values (%L, %L, 'salida', 1)$$, :'emp_a', :'ins2'),
+  'un insumo desactivado no registra movimientos');
+update insumos set activo = true where id = :'ins2';
 reset role;
 
 -- ============ Destajista: solo lo suyo ============
@@ -246,6 +289,9 @@ select pg_temp.ok((select count(*) from ordenes_produccion) = 2, 'destajista ve 
 select pg_temp.ok((select count(*) from pagos_destajista) = 1, 'destajista ve sus pagos');
 select pg_temp.ok((select count(*) from pedidos) = 0 and (select count(*) from clientes) = 0, 'destajista no ve pedidos ni clientes');
 select pg_temp.ok((select count(*) from costos_modelo) = 0, 'destajista no ve costeo');
+select pg_temp.ok((select count(*) from insumos) = 0 and (select count(*) from v_movimientos_insumo) = 0, 'destajista no ve insumos ni movimientos');
+select pg_temp.ok((select count(*) = 1 and bool_and(valor is null) and bool_and(cantidad = 3)
+  from material_entregado(array[:'o1', :'o2']::uuid[])), 'destajista ve el material que le entregaron, sin costos');
 select pg_temp.falla(format($$select marcar_avance_orden(%L, 'cancelada')$$, :'o1'), 'destajista no puede cancelar');
 select marcar_avance_orden(:'o1', 'en_proceso');
 select marcar_avance_orden(:'o1', 'terminada', 'Listas en blanco');
@@ -274,6 +320,8 @@ select set_config('request.jwt.claim.sub', :'vendA', false); set role authentica
 update pedidos set estado = 'entregado' where id = :'ped';
 select pg_temp.ok((select entregado_at is not null from pedidos where id = :'ped'), 'entregado con fecha');
 select pg_temp.ok((select count(*) from v_pedido_resumen) = 0, 'Vendedor no ve márgenes');
+select pg_temp.ok((select count(*) from v_insumos) = 0 and (select count(*) from material_entregado(array[:'o2']::uuid[])) = 0,
+  'Vendedor no ve insumos ni material entregado');
 reset role;
 
 select set_config('request.jwt.claim.sub', :'contA', false); set role authenticated;
@@ -284,6 +332,11 @@ select pg_temp.ok(calcular_precio(:'m_nat', array[:'o_nog', :'o_piel']::uuid[], 
 select pg_temp.ok((select count(*) from modelo_costeo) = 1, 'Contador ve el markup');
 update modelo_costeo set markup = 2 where modelo_id = :'m_nat';  -- RLS: 0 filas, sin error
 select pg_temp.ok((select markup from modelo_costeo where modelo_id = :'m_nat') = 1.0, 'Contador no edita el markup');
+select pg_temp.ok((select count(*) from v_insumos) = 2 and (select valor from material_entregado(array[:'o2']::uuid[])) = 330,
+  'Contador ve insumos y el valor del material');
+select pg_temp.falla(format($$select crear_insumo(%L, 'Clavo', 'herraje', 'pza')$$, :'emp_a'), 'Contador no da de alta insumos');
+select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, costo_unitario) values (%L, %L, 'entrada', 1, 1)$$, :'emp_a', :'ins'),
+  'Contador no registra movimientos');
 reset role;
 
 select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
@@ -325,6 +378,12 @@ select pg_temp.ok((select pagado = 21000 and cancelado_at is not null from pedid
 select pg_temp.falla(format($$insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (%L, %L, 10, 'efectivo')$$, :'emp_a', :'ped2'),
   'no se registran pagos manuales a un pedido cancelado');
 select pg_temp.falla(format($$update pedidos set estado = 'entregado' where id = %L$$, :'ped2'), 'un pedido cancelado no se reactiva');
+select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, orden_id) values (%L, %L, 'salida', 1, %L)$$, :'emp_a', :'ins', :'o4'),
+  'no se entrega material a una orden cancelada');
+select pg_temp.falla(format($$delete from insumos where id = %L$$, :'ins'), 'un insumo con movimientos no se borra: se desactiva');
+insert into insumos (empresa_id, nombre, unidad) values (:'emp_a', 'Insumo de prueba', 'pza') returning id as ins3 \gset
+delete from insumos where id = :'ins3';
+select pg_temp.ok((select count(*) from insumos where id = :'ins3') = 0, 'un insumo sin movimientos sí se borra');
 
 -- Fase 5: órdenes protegidas, inicio sin anticipo autorizado, adelantos y saldos de destajo
 insert into cotizaciones (empresa_id, cliente_id, lista_id) values (:'emp_a', :'cli', :'l_gen') returning id as cot5 \gset
@@ -402,6 +461,14 @@ select pg_temp.falla(format($$insert into clientes (empresa_id, nombre) values (
 select pg_temp.falla($$select portal_pedido(gen_random_uuid())$$, 'usuario autenticado no llama funciones del portal');
 select pg_temp.falla(format($$insert into invitaciones (empresa_id, email, rol, destajista_id) values (%L, 'x@b.mx', 'destajista', %L)$$, :'emp_b', :'d_sergio'),
   'B no puede invitar ligando un destajista de A');
+select pg_temp.ok((select count(*) from v_insumos) = 0 and (select count(*) from material_entregado(array[:'o2']::uuid[])) = 0,
+  'B no ve insumos ni material de A');
+select crear_insumo(:'emp_b', 'Piel Napa Café', 'piel', 'm2', 0, null, 4, 90) as ins_b \gset
+select pg_temp.ok((select existencia from insumos where id = :'ins_b') = 4, 'el mismo nombre de insumo sí se repite en otra empresa');
+select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, orden_id) values (%L, %L, 'salida', 1, %L)$$, :'emp_b', :'ins_b', :'o2'),
+  'B no liga material a una orden de A');
+select pg_temp.falla(format($$insert into movimientos_insumo (empresa_id, insumo_id, tipo, cantidad, costo_unitario) values (%L, %L, 'entrada', 1, 1)$$, :'emp_b', :'ins'),
+  'B no registra movimientos en un insumo de A');
 reset role;
 
 -- ============ Portal público (vía Edge Function con service_role) ============
