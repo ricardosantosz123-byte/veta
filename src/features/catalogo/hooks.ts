@@ -7,7 +7,7 @@ import {
   leerEtapas,
   leerGrupos,
   leerListas,
-  leerMarkup,
+  leerMargenVenta,
   leerModelo,
   leerModelos,
 } from '@/features/catalogo/api'
@@ -21,7 +21,7 @@ export const claves = {
   modelos: (e: string) => ['catalogo', e, 'modelos'] as const,
   modelo: (e: string, id: string) => ['catalogo', e, 'modelo', id] as const,
   costos: (e: string, id: string) => ['catalogo', e, 'costos', id] as const,
-  markup: (e: string, id: string) => ['catalogo', e, 'markup', id] as const,
+  margenVenta: (e: string, id: string) => ['catalogo', e, 'margen-venta', id] as const,
   listas: (e: string) => ['catalogo', e, 'listas'] as const,
   precio: (e: string) => ['catalogo', e, 'precio'] as const,
 }
@@ -55,9 +55,9 @@ export function useCostos(id: string, habilitado: boolean) {
   const e = useEmpresaId()
   return useQuery({ queryKey: claves.costos(e, id), queryFn: () => leerCostos(id), enabled: habilitado })
 }
-export function useMarkup(id: string, habilitado: boolean) {
+export function useMargenVenta(id: string, habilitado: boolean) {
   const e = useEmpresaId()
-  return useQuery({ queryKey: claves.markup(e, id), queryFn: () => leerMarkup(id), enabled: habilitado })
+  return useQuery({ queryKey: claves.margenVenta(e, id), queryFn: () => leerMargenVenta(id), enabled: habilitado })
 }
 export function useListas() {
   const e = useEmpresaId()

@@ -101,8 +101,8 @@ function TarjetaMarca({ empresa, habilitado }: { empresa: Fila<'empresas'>; habi
 const METODOS: { valor: Enum<'metodo_precio'>; titulo: string; descripcion: string }[] = [
   {
     valor: 'componentes',
-    titulo: 'Costo por etapas × markup',
-    descripcion: 'Capturas el costo de cada etapa y un markup por modelo.',
+    titulo: 'Costo por etapas + margen de venta',
+    descripcion: 'Capturas el costo de cada etapa y un margen de venta por modelo.',
   },
   {
     valor: 'base_ajustes',

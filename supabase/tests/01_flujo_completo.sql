@@ -53,7 +53,7 @@ select id as e_carp from etapas where nombre = 'Carpintería' \gset
 select id as e_tap  from etapas where nombre = 'Tapicería' \gset
 insert into categorias (empresa_id, nombre) values (:'emp_a', 'Silla') returning id as cat_silla \gset
 insert into modelos (empresa_id, categoria_id, nombre) values (:'emp_a', :'cat_silla', 'Natalia') returning id as m_nat \gset
-insert into modelo_costeo (modelo_id, empresa_id, markup) values (:'m_nat', :'emp_a', 1.0);
+insert into modelo_costeo (modelo_id, empresa_id, margen_venta) values (:'m_nat', :'emp_a', 0.5);
 insert into grupos_opcion (empresa_id, nombre, orden) values (:'emp_a', 'Madera', 1) returning id as g_mad \gset
 insert into grupos_opcion (empresa_id, nombre, orden) values (:'emp_a', 'Recubrimiento', 2) returning id as g_rec \gset
 insert into opciones (empresa_id, grupo_id, nombre) values (:'emp_a', :'g_mad', 'Encino') returning id as o_enc \gset
@@ -113,11 +113,11 @@ reset role;
 -- ============ Vendedor A: precios, cotización ============
 select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated;
 select pg_temp.ok(calcular_precio(:'m_nat', array[:'o_nog', :'o_piel']::uuid[], :'l_gen') = 8400,
-  'componentes: (1800+600+900+900) × (1+1.0) = 8,400');
+  'componentes con margen de venta: (1800+600+900+900) ÷ (1 − 0.50) = 8,400');
 select pg_temp.ok(calcular_precio(:'m_nat', array[:'o_nog', :'o_piel']::uuid[], :'l_expo') = 9800,
   'lista Expo: 8,400 × 1.16 = 9,744 → redondeo a 9,800');
 select pg_temp.ok((select count(*) from costos_modelo) = 0, 'Vendedor no ve costos por etapa');
-select pg_temp.ok((select count(*) from modelo_costeo) = 0, 'Vendedor no ve markup');
+select pg_temp.ok((select count(*) from modelo_costeo) = 0, 'Vendedor no ve el margen de venta');
 select pg_temp.ok((select count(*) from modelos) = 1, 'Vendedor sí ve el catálogo');
 select pg_temp.falla(format($$select calcular_precio(%L, array[%L, %L]::uuid[])$$, :'m_nat', :'o_enc', :'o_nog'),
   'calcular_precio rechaza dos opciones del mismo grupo');
@@ -221,7 +221,7 @@ reset role;
 -- ============ Producción A: órdenes por etapa ============
 select set_config('request.jwt.claim.sub', :'prodA', false); set role authenticated;
 select pg_temp.ok((select count(*) from costos_modelo) = 4, 'Producción ve costos por etapa');
-select pg_temp.ok((select count(*) from modelo_costeo) = 0, 'Producción no ve markup');
+select pg_temp.ok((select count(*) from modelo_costeo) = 0, 'Producción no ve el margen de venta');
 select pg_temp.ok((select count(*) from clientes) = 0, 'Producción no ve clientes');
 insert into ordenes_produccion (empresa_id, pedido_item_id, etapa_id, destajista_id, cantidad, costo_acordado)
   values (:'emp_a', :'pit', :'e_carp', :'d_sergio', 4, 9600) returning id as o1 \gset
@@ -332,9 +332,9 @@ select pg_temp.ok((select margen_bruto from v_pedido_resumen where id = :'ped') 
   'Contador ve margen: 30,240 − 16,800 de mano de obra');
 select pg_temp.falla(format($$insert into clientes (empresa_id, nombre) values (%L, 'X')$$, :'emp_a'), 'Contador es solo lectura');
 select pg_temp.ok(calcular_precio(:'m_nat', array[:'o_nog', :'o_piel']::uuid[], :'l_gen') = 8400, 'Contador calcula precios (PRD §4)');
-select pg_temp.ok((select count(*) from modelo_costeo) = 1, 'Contador ve el markup');
-update modelo_costeo set markup = 2 where modelo_id = :'m_nat';  -- RLS: 0 filas, sin error
-select pg_temp.ok((select markup from modelo_costeo where modelo_id = :'m_nat') = 1.0, 'Contador no edita el markup');
+select pg_temp.ok((select count(*) from modelo_costeo) = 1, 'Contador ve el margen de venta');
+update modelo_costeo set margen_venta = 0.9 where modelo_id = :'m_nat';  -- RLS: 0 filas, sin error
+select pg_temp.ok((select margen_venta from modelo_costeo where modelo_id = :'m_nat') = 0.5, 'Contador no edita el margen de venta');
 select pg_temp.ok((select count(*) from v_insumos) = 3 and (select valor from material_entregado(array[:'o2']::uuid[])) = 330,
   'Contador ve insumos y el valor del material');
 select pg_temp.falla(format($$select crear_insumo(%L, 'Clavo', 'herraje', 'pza')$$, :'emp_a'), 'Contador no da de alta insumos');
@@ -507,6 +507,14 @@ select pg_temp.falla(format($$insert into clientes (empresa_id, nombre) values (
 select pg_temp.falla($$select portal_pedido(gen_random_uuid())$$, 'usuario autenticado no llama funciones del portal');
 select pg_temp.falla(format($$insert into invitaciones (empresa_id, email, rol, destajista_id) values (%L, 'x@b.mx', 'destajista', %L)$$, :'emp_b', :'d_sergio'),
   'B no puede invitar ligando un destajista de A');
+-- Margen de venta: 30 % significa costo ÷ 0.70
+select id as e_carp_b from etapas where empresa_id = :'emp_b' and nombre = 'Carpintería' \gset
+insert into modelos (empresa_id, nombre) values (:'emp_b', 'Banco Tláloc') returning id as m_banco \gset
+insert into costos_modelo (empresa_id, modelo_id, etapa_id, costo) values (:'emp_b', :'m_banco', :'e_carp_b', 700);
+select pg_temp.ok(calcular_precio(:'m_banco', '{}') = 1400, 'sin margen capturado se usa 50 %: 700 ÷ 0.50 = 1,400');
+insert into modelo_costeo (modelo_id, empresa_id, margen_venta) values (:'m_banco', :'emp_b', 0.30);
+select pg_temp.ok(calcular_precio(:'m_banco', '{}') = 1000, 'margen de venta 30 %: 700 ÷ 0.70 = 1,000');
+select pg_temp.falla(format($$update modelo_costeo set margen_venta = 0.95 where modelo_id = %L$$, :'m_banco'), 'el margen de venta no pasa de 90 %');
 select pg_temp.ok((select count(*) from v_insumos) = 0 and (select count(*) from material_entregado(array[:'o2']::uuid[])) = 0,
   'B no ve insumos ni material de A');
 select crear_insumo(:'emp_b', 'Piel Napa Café', 'piel', 'm2', 0, null, 4, 90) as ins_b \gset

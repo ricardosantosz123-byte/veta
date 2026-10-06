@@ -120,6 +120,12 @@
 - **PWA**: íconos PNG generados del `icon.svg` actual (la "V"); cambian cuando haya logo definitivo.
 - **Rendimiento**: layout, Ajustes, asistente y páginas de acceso con carga diferida. Lighthouse móvil en la landing: 92 / 100 / 100 / 92.
 
+## Margen de venta (2026-10-06)
+- **"Markup" pasa a "Margen de venta" y cambia la fórmula:** `precio = costo ÷ (1 − margen)`. Un 30 % significa que el 30 % del precio de venta es utilidad (costo ÷ 0.70). Decisión de Ricardo.
+- Los valores que había se **convirtieron al margen equivalente** (`margen = markup ÷ (1 + markup)`), así ningún precio cambió: 100 % de markup = 50 % de margen. El sofá de la demo (90 % de markup) quedó en 47.37 % y su precio varía $0.54 por el redondeo a 4 decimales.
+- Sin capturar se usa 50 % (equivale al 100 % de markup anterior). Tope 90 % (precio = 10 × costo); la base lo valida con mensaje en español.
+- La columna `modelo_costeo.markup` queda **sin uso**, con su dato histórico (no se borró nada). La nueva es `margen_venta` (fracción).
+
 ## Lenguaje (2026-10-06)
 - **"Destajista" pasa a "Proveedor"** en todo lo que ve la gente (pantallas, roles, PDFs, WhatsApp, correos, landing, legales y mensajes de la base). Ricardo: la palabra suena vulgar.
   - El rol se muestra como **"Proveedor (fabricante)"**; el campo de Insumos dice **"Proveedor de insumos"**, para distinguirlos.

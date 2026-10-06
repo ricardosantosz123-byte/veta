@@ -6,8 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
-import { guardarCosto, guardarMarkup, type Costo, type Etapa, type Grupo } from '@/features/catalogo/api'
-import { useCostos, useEtapas, useMarkup, useRefrescarCatalogo } from '@/features/catalogo/hooks'
+import { guardarCosto, guardarMargenVenta, type Costo, type Etapa, type Grupo } from '@/features/catalogo/api'
+import { useCostos, useEtapas, useMargenVenta, useRefrescarCatalogo } from '@/features/catalogo/hooks'
 import { mensajeError } from '@/lib/errores'
 import { moneda, porcentaje } from '@/lib/formato'
 
@@ -40,11 +40,11 @@ function Celda({ valor, editar, etiqueta, onGuardar, ajuste }: { valor: number |
 export function CosteoModelo({ modeloId, grupos }: Props) {
   const { empresa } = useEmpresaActiva()
   const editar = usePuedeEditar('editar_catalogo')
-  const verMarkup = usePuede('ver_margen') // Admin y Contador; solo el Admin lo edita
+  const verMargen = usePuede('ver_margen') // Admin y Contador; solo el Admin lo edita
   const refrescar = useRefrescarCatalogo()
   const etapas = useEtapas()
   const costos = useCostos(modeloId, true)
-  const markup = useMarkup(modeloId, verMarkup)
+  const margen = useMargenVenta(modeloId, verMargen)
 
   const guardar = useMutation({
     mutationFn: (a: { existente: Costo | undefined; etapaId: string; opcionId: string | null; costo: number | null }) =>
@@ -55,8 +55,8 @@ export function CosteoModelo({ modeloId, grupos }: Props) {
       void refrescar()
     },
   })
-  const guardarMk = useMutation({
-    mutationFn: (m: number) => guardarMarkup(empresa!.id, modeloId, m),
+  const guardarMargen = useMutation({
+    mutationFn: (m: number) => guardarMargenVenta(empresa!.id, modeloId, m),
     onSuccess: refrescar,
     onError: (e) => toast.error(mensajeError(e)),
   })
@@ -81,7 +81,7 @@ export function CosteoModelo({ modeloId, grupos }: Props) {
     />
   )
 
-  const markupActual = markup.data === null || markup.data === undefined ? null : Number(markup.data)
+  const margenActual = margen.data === null || margen.data === undefined ? null : Number(margen.data)
 
   return (
     <Card>
@@ -147,23 +147,26 @@ export function CosteoModelo({ modeloId, grupos }: Props) {
           </p>
         )}
 
-        {verMarkup && (
-          <div className="grid max-w-xs gap-2">
-            <Label htmlFor="markup">Markup</Label>
+        {verMargen && (
+          <div className="grid max-w-sm gap-2">
+            <Label htmlFor="margen-venta">Margen de venta (%)</Label>
             {editar ? (
               <CampoMonto
-                id="markup"
-                // Se captura en % (100 = el doble del costo); la base lo guarda como 1.0.
-                valor={markupActual === null ? null : Math.round(markupActual * 1000) / 10}
-                onConfirmar={(v) => guardarMk.mutate((v ?? 100) / 100)}
-                placeholder="100"
-                aria-describedby="markup-nota"
+                id="margen-venta"
+                // Se captura en % (30 = 30 % del precio es utilidad); la base lo guarda como 0.30.
+                valor={margenActual === null ? null : Math.round(margenActual * 10000) / 100}
+                onConfirmar={(v) => {
+                  if (v !== null && (v < 0 || v > 90)) return toast.error('El margen de venta debe estar entre 0 % y 90 %.')
+                  guardarMargen.mutate((v ?? 50) / 100)
+                }}
+                placeholder="50"
+                aria-describedby="margen-venta-nota"
               />
             ) : (
-              <p className="text-lg font-medium tabular">{porcentaje(markupActual ?? 1)}</p>
+              <p className="text-lg font-medium tabular">{porcentaje(margenActual ?? 0.5)}</p>
             )}
-            <p id="markup-nota" className="text-sm text-muted-foreground">
-              En %: 100 = precio al doble del costo. {markupActual === null && 'Sin capturar se usa 100 %.'}
+            <p id="margen-venta-nota" className="text-sm text-muted-foreground">
+              El % del precio de venta que es utilidad: con 30 %, precio = costo ÷ 0.70. {margenActual === null && 'Sin capturar se usa 50 %.'}
               {!editar && ' Solo el Admin lo edita.'}
             </p>
           </div>

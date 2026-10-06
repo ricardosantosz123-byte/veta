@@ -62,11 +62,11 @@ export async function leerCostos(modeloId: string) {
 }
 export type Costo = Awaited<ReturnType<typeof leerCostos>>[number]
 
-/** Markup del modelo. RLS: solo Admin y Contador. null = sin capturar (la base usa 1.0). */
-export async function leerMarkup(modeloId: string) {
-  const { data, error } = await supabase.from('modelo_costeo').select('markup').eq('modelo_id', modeloId).maybeSingle()
+/** Margen de venta del modelo (fracción: 0.30 = 30 %). RLS: solo Admin y Contador. null = sin capturar (la base usa 0.50). */
+export async function leerMargenVenta(modeloId: string) {
+  const { data, error } = await supabase.from('modelo_costeo').select('margen_venta').eq('modelo_id', modeloId).maybeSingle()
   if (error) throw error
-  return data?.markup ?? null
+  return data?.margen_venta ?? null
 }
 
 export async function leerListas(empresaId: string) {
@@ -229,10 +229,11 @@ export async function guardarCosto(
   }
 }
 
-export async function guardarMarkup(empresaId: string, modeloId: string, markup: number) {
+/** Margen de venta como fracción (0.30 = 30 %). La base calcula precio = costo ÷ (1 − margen) y rechaza más de 90 %. */
+export async function guardarMargenVenta(empresaId: string, modeloId: string, margen_venta: number) {
   const { error } = await supabase
     .from('modelo_costeo')
-    .upsert({ modelo_id: modeloId, empresa_id: empresaId, markup }, { onConflict: 'modelo_id' })
+    .upsert({ modelo_id: modeloId, empresa_id: empresaId, margen_venta }, { onConflict: 'modelo_id' })
   if (error) throw error
 }
 

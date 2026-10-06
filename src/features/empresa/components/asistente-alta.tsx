@@ -37,10 +37,10 @@ const PASOS = ['Tu empresa', 'Tu marca', 'Tus precios'] as const
 const metodos = [
   {
     valor: 'componentes',
-    titulo: 'Costo por etapas × markup',
+    titulo: 'Costo por etapas + margen de venta',
     descripcion:
-      'Capturas lo que te cuesta cada etapa (carpintería, laca, tapicería…) y un markup por modelo. Ideal si fabricas o mandas a maquilar.',
-    ejemplo: 'Carpintería 1,800 + Tapicería 900, con 100 % de markup → $5,400',
+      'Capturas lo que te cuesta cada etapa (carpintería, laca, tapicería…) y un margen de venta por modelo. Ideal si fabricas o mandas a maquilar.',
+    ejemplo: 'Carpintería 1,800 + Tapicería 900 = 2,700 de costo; con 40 % de margen de venta → $4,500',
   },
   {
     valor: 'base_ajustes',

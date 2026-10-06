@@ -995,16 +995,19 @@ export type Database = {
       modelo_costeo: {
         Row: {
           empresa_id: string
+          margen_venta: number
           markup: number
           modelo_id: string
         }
         Insert: {
           empresa_id: string
+          margen_venta?: number
           markup?: number
           modelo_id: string
         }
         Update: {
           empresa_id?: string
+          margen_venta?: number
           markup?: number
           modelo_id?: string
         }
@@ -2204,6 +2207,7 @@ export type Database = {
       }
     }
     Functions: {
+      _avisar: { Args: { p_datos?: Json; p_tipo: string }; Returns: undefined }
       _calcular_costo: {
         Args: { p_modelo: string; p_opciones: string[] }
         Returns: number

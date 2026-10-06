@@ -23,7 +23,7 @@ import {
   crearOpciones,
   guardarCosto,
   guardarGruposModelo,
-  guardarMarkup,
+  guardarMargenVenta,
   subirFotoModelo,
 } from '@/features/catalogo/api'
 import { useCategorias, useEtapas, useGrupos, useRefrescarCatalogo } from '@/features/catalogo/hooks'
@@ -111,7 +111,7 @@ export function AsistenteModelo() {
   const [foto, setFoto] = useState<File | null>(null)
   const [elegidos, setElegidos] = useState<string[]>([])
   const [costos, setCostos] = useState<Record<string, number | null>>({})
-  const [markupPct, setMarkupPct] = useState<number | null>(100)
+  const [margenPct, setMargenPct] = useState<number | null>(50)
   const [precioBase, setPrecioBase] = useState<number | null>(null)
 
   const crear = useMutation({
@@ -142,7 +142,7 @@ export function AsistenteModelo() {
         for (const [etapaId, costo] of Object.entries(costos)) {
           if (costo !== null) await intentar('Costos', () => guardarCosto(e, id, undefined, etapaId, null, costo))
         }
-        await intentar('Markup', () => guardarMarkup(e, id, (markupPct ?? 100) / 100))
+        await intentar('Margen de venta', () => guardarMargenVenta(e, id, (margenPct ?? 50) / 100))
       }
       return { id, avisos }
     },
@@ -215,7 +215,7 @@ export function AsistenteModelo() {
                 (sobreDiseno
                   ? 'Es sobre diseño: el precio se captura a mano en cada cotización.'
                   : componentes
-                    ? 'Lo que te cuesta cada etapa y tu markup. Los ajustes por opción (Nogal +600…) se capturan en la ficha del modelo.'
+                    ? 'Lo que te cuesta cada etapa y tu margen de venta. Los ajustes por opción (Nogal +600…) se capturan en la ficha del modelo.'
                     : 'El precio base antes de los ajustes por opción y de la lista de precios.')}
             </CardDescription>
           </CardHeader>
@@ -328,11 +328,18 @@ export function AsistenteModelo() {
                 </div>
                 <p className="text-sm text-muted-foreground">Deja vacías las etapas que este modelo no lleva.</p>
                 <div className="grid grid-cols-[1fr_10rem] items-center gap-3 border-t pt-4">
-                  <Label htmlFor="am-markup" className="grid gap-0.5">
-                    Markup (%)
-                    <span className="font-normal text-muted-foreground">100 = precio al doble del costo</span>
+                  <Label htmlFor="am-margen" className="grid gap-0.5">
+                    Margen de venta (%)
+                    <span className="font-normal text-muted-foreground">30 = el 30 % del precio es utilidad (costo ÷ 0.70)</span>
                   </Label>
-                  <CampoMonto id="am-markup" valor={markupPct} onConfirmar={setMarkupPct} />
+                  <CampoMonto
+                    id="am-margen"
+                    valor={margenPct}
+                    onConfirmar={(v) => {
+                      if (v !== null && (v < 0 || v > 90)) return toast.error('El margen de venta debe estar entre 0 % y 90 %.')
+                      setMargenPct(v)
+                    }}
+                  />
                 </div>
               </>
             )}

@@ -49,7 +49,7 @@ Un mismo modelo de datos atiende a ambos: en el taller el "destajista" puede ser
 | Ver catálogo y precios | ✅ | ✅ | ✅ | | ✅ | |
 | Editar catálogo y precios | ✅ | | | | | |
 | Ver costos por etapa | ✅ | | ✅ | | ✅ | |
-| Ver markup y margen | ✅ | | | | ✅ | |
+| Ver margen de venta y márgenes | ✅ | | | | ✅ | |
 | Clientes y cotizaciones | ✅ | ✅ | | | 👁 | |
 | Convertir a pedido y registrar cobros | ✅ | ✅ | | | 👁 | |
 | Anular un pago | ✅ | | | | | |
@@ -76,8 +76,8 @@ Un usuario puede pertenecer a varias empresas (por ejemplo, un tapicero que trab
 ### 5.2 Catálogo y costeo
 
 - **Categorías** (Silla, Banco, Mesa, Cubierta, Base, Sofá…), **modelos** con foto y **grupos de opciones** (Madera, Recubrimiento, Tela/Color, Medida…) asignados por modelo.
-- **Método A · Costo por etapas × markup** (`componentes`). Cada modelo tiene un costo base por etapa y ajustes por opción. Por ejemplo: Carpintería 1,800; Tapicería 900; Nogal +600 en Carpintería; Piel +900 en Tapicería.
-  `precio = Σ costos aplicables × (1 + markup del modelo)`.
+- **Método A · Costo por etapas + margen de venta** (`componentes`). Cada modelo tiene un costo base por etapa y ajustes por opción. Por ejemplo: Carpintería 1,800; Tapicería 900; Nogal +600 en Carpintería; Piel +900 en Tapicería.
+  `precio = Σ costos aplicables ÷ (1 − margen de venta del modelo)`. Un margen de 30 % significa que el 30 % del precio es utilidad (costo ÷ 0.70). Tope: 90 %. (Antes de 2026-10-06 era `× (1 + markup)`.)
 - **Método B · Precio base + ajustes** (`base_ajustes`). `precio = precio base del modelo + Σ ajustes de las opciones elegidas`.
 - **Listas de precios**: factor, si incluyen IVA y redondeo hacia arriba (por ejemplo, la lista "Expo" con IVA incluido y redondeada a la centena).
 - **Mueble sobre diseño**: el modelo se marca `sobre_diseno` o el renglón va sin modelo. En ambos casos el precio es manual.

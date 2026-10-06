@@ -10,7 +10,7 @@
 - Totales, pagado, saldo y anticipo los calcula la base; el navegador no puede alterarlos.
 
 ## Precios
-- Método A: `precio = Σ(costo base por etapa + ajustes de opciones) × (1 + markup)`.
+- Método A: `precio = Σ(costo base por etapa + ajustes de opciones) ÷ (1 − margen de venta)`. 30 % → costo ÷ 0.70; sin capturar, 50 %; tope 90 %.
 - Método B: `precio = precio base + Σ ajustes de opciones`.
 - Listas: factor, IVA incluido o no, redondeo hacia arriba. Ejemplo: General (sin IVA) y Expo (IVA incluido, a la centena).
 - Mueble sobre diseño = precio manual.
@@ -25,8 +25,8 @@
 ## Visibilidad
 | Rol | Ve | No ve |
 |---|---|---|
-| Vendedor | catálogo, precios, clientes, cotizaciones, pedidos | costos, markup, márgenes |
-| Producción | costos por etapa, órdenes, insumos | markup, clientes |
+| Vendedor | catálogo, precios, clientes, cotizaciones, pedidos | costos, margen de venta, márgenes |
+| Producción | costos por etapa, órdenes, insumos | margen de venta, clientes |
 | Destajista | solo sus órdenes y sus pagos | todo lo demás |
 | Contador | todo en lectura, márgenes | no edita |
 | Cliente final | su pedido en el portal | costos, destajistas, notas |
