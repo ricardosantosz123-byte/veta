@@ -425,3 +425,7 @@ verify_jwt = false
 # Webhook de Stripe: sin JWT (verifica la firma con STRIPE_WEBHOOK_SECRET).
 [functions.stripe-webhook]
 verify_jwt = false
+
+# Avisos del sistema: sin JWT (la llaman pg_net y pg_cron con x-avisos-secreto).
+[functions.avisos]
+verify_jwt = false

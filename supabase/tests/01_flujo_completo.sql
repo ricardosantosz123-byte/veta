@@ -616,6 +616,11 @@ reset role;
 select set_config('request.jwt.claim.sub', :'adminB', false); set role authenticated;
 select pg_temp.falla(format($$select tablero(%L)$$, :'emp_a'), 'B no ve el tablero de A');
 reset role;
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+select pg_temp.falla($$select _avisar('pedido_terminado')$$, 'la app no dispara avisos del sistema');
+reset role;
+select _avisar('prueba_por_vencer');  -- sin secretos en Vault o dentro de la transacción: no falla ni rompe nada
+select pg_temp.ok(true, 'un aviso nunca rompe la operación que lo dispara');
 
 rollback;
 \echo '==== TODAS LAS PRUEBAS PASARON ===='
