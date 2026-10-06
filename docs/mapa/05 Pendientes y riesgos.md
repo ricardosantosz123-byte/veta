@@ -12,8 +12,12 @@
 - [ ] Guardar el token de Mercado Pago de cada empresa en Supabase Vault (hoy está en `empresa_secretos`).
 
 ## Técnicos
+- [ ] Contraste en modo claro: el rojo `--destructive` (#e7000b) sobre fondos rojizos (`bg-destructive/5` o `/10`: la insignia y el botón "destructive" de shadcn, el aviso de cancelación del pedido) da ~4.4:1 y no pasa AA. Sobre blanco sí (4.77:1). En Insumos se usó contorno sobre blanco.
 - [ ] Bundle de JavaScript > 500 kB: cargar los módulos por separado (lazy), ya iniciado en Catálogo.
 - [ ] Íconos PNG de la PWA cuando haya logo.
+
+## V2
+- [ ] **Costo de material en el margen:** integrar el material de insumos al margen del pedido, distinguiendo si el material lo pone la empresa o el destajista, para no contarlo dos veces. Hoy el margen es "Margen sobre destajos" y el material solo se ve en la ficha de la orden (decisión de la Fase 6). Base lista: cada salida guarda su costo promedio (`movimientos_insumo.costo_unitario`) y su orden.
 
 ## Decisiones abiertas
 - ¿Tope de descuento manual por rol? `precio_sugerido` ya permite medirlo.

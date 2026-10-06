@@ -14,6 +14,14 @@
 
 ---
 
+### 2026-10-05 (noche, sin supervisión) · Fase 6
+- Hecho: migración `fase6_insumos` (12 huecos del esquema corregidos), Insumos (lista, ficha, entrada/salida/ajuste por conteo), "Material entregado" en la orden y en Mis órdenes; `.claude/settings.json` con permisos; contraseña de veta-dev en `~/.pgpass` y `~/.zshrc` (la puso Ricardo).
+- Decisiones nuevas: 1A, 2A, 3A + unidades cerradas, nombre normalizado, existencia inicial con costo (→ [[02 Decisiones#Fase 6 (2026-10-05)]]); V2: material en el margen (→ [[05 Pendientes y riesgos#V2]]).
+- Pruebas: run.sh ✅ 188 contra veta-dev (ensayo previo en transacción revertida) · typecheck/lint/build ✅ · contraste AA ✅ (insignia "Bajo mínimo" con contorno).
+- Sin probar: la interfaz en el navegador (Claude no inicia sesión con cuentas reales).
+- Commit: `0a27cce` (permisos), `1aa465c` (Fase 6).
+- Siguiente paso: prueba de aceptación de la Fase 6 (ver [[01 Estado actual]]).
+
 ### 2026-10-05 · Cierre de la Fase 5
 - Hecho: Fase 5 completa (órdenes, kanban, Por programar, destajistas, corte semanal, Mis órdenes, PDFs); prueba extra del corte con comprometido; mapa de Obsidian y sección "Memoria del proyecto" en CLAUDE.md.
 - Decisiones nuevas: las de la Fase 5 ya están en [[02 Decisiones#Fase 5]]; `docs/mapa/.obsidian/` fuera de git.

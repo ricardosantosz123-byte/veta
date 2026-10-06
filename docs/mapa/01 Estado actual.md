@@ -1,6 +1,6 @@
 # Estado actual
 
-> Actualizar al cerrar cada fase. Última actualización: 2026-10-05 (confirmado con `git log`).
+> Actualizar al cerrar cada fase. Última actualización: 2026-10-05 (noche, Fase 6 construida).
 
 ## Fases
 | Fase | Tema | Estado | Commit |
@@ -11,29 +11,28 @@
 | 3 | Clientes y cotizador | ✅ Completada | `f1534f5` |
 | 4 | Pedidos y cobranza | ✅ Completada | `6135d8a` |
 | 5 | Producción y destajistas | ✅ Completada | `78e2a7a` + `38ff0e2` |
-| 6 | Insumos | ⚪ Pendiente | |
+| 6 | Insumos | 🟡 Construida, falta la prueba en la app | `1aa465c` |
 | 7 | Portal del cliente final | ⚪ Pendiente (ruta pública `/:slug/p/:token` ya preparada) | |
 | 8 | Link de pago Mercado Pago | ⚪ Pendiente | |
 | 9 | Suscripción Stripe | ⚪ Pendiente | |
 | 10 | Tablero, avisos, landing, lanzamiento | ⚪ Pendiente | |
 
-## Fase 5: qué falta para cerrarla
-- [x] `supabase/tests/run.sh` contra veta-dev: **154 pruebas en verde** (2026-10-05).
-- [x] Push a GitHub.
-- [x] Los tres ajustes, cada uno con su prueba:
-  - (a) Admin autoriza el inicio sin anticipo (`autorizar_inicio_sin_anticipo`, visible en la línea de tiempo).
-  - (b) Adelantos al destajista sin rebasar el costo acordado.
-  - (c) "Por pagar" y "Comprometido" separados en `v_destajo_saldos`, `corte_destajistas` y `/mis-ordenes`.
-- [x] Prueba de aceptación en la app: P-1 con 3 órdenes de "Ricardo" terminadas → pedido **terminado** solo (2026-10-05, probado también desde el celular).
+## Fase 6: qué falta para cerrarla
+- [x] Migración `20261011000001_fase6_insumos.sql` aplicada en veta-dev; `run.sh`: **188 pruebas en verde** (34 nuevas).
+- [x] Interfaz: Insumos (lista, alerta bajo mínimo, ficha con historial, entrada/salida/ajuste), "Material entregado" en la ficha de la orden y en "Mis órdenes".
+- [x] typecheck, lint y build ✅.
+- [ ] **Prueba de aceptación en la app** (Ricardo; Claude no inicia sesión con cuentas reales).
 
-## Prueba de aceptación de la Fase 5
-1. P-1 (ya con anticipo) → **Mandar a producción** → asignar las etapas a "Ricardo" (destajista).
-2. Producción → Tablero: aparecen las órdenes.
-3. Como Destajista (`rsantoszertuche@gmail.com`) en **Mis órdenes**: Empecé → Terminé en cada una.
-4. Como Admin en P-1: el pedido queda **Terminado** y aparece el aviso de finiquito.
+## Prueba de aceptación de la Fase 6
+1. Como Admin → **Insumos → Nuevo insumo**: "Piel Napa café", piel, m2, mínimo 5, existencia inicial 10 a $100.
+2. En su ficha → **Entrada**: 10 m2 a $120 → costo promedio **$110**, existencia 20.
+3. **Producción → Tablero** → abre una orden de P-1 → **Entregar material**: 3 m2 de esa piel → aparece en "Material entregado" con valor **$330**.
+4. En la ficha del insumo: existencia 17 y la salida en el historial con "Orden O-n · entregado a Ricardo".
+5. Como Destajista (`rsantoszertuche@gmail.com`) en **Mis órdenes**: el material solo se muestra en órdenes **abiertas** (pendientes o en proceso). Las de P-1 ya están terminadas: para verlo, entrega material a una orden abierta de Ricardo (otro pedido) → "Material que recibiste: … m² Piel Napa café", sin montos.
+6. **Ajuste por conteo** a 2 con motivo → aparece **Bajo mínimo** en la lista.
 
 ## Siguiente paso
-Empezar la **Fase 6 · Insumos**. Opcional antes: cobrar el finiquito del P-1 ($13,363.20) y marcarlo entregado.
+Hacer la prueba de aceptación de la Fase 6 y marcarla ✅. Luego **Fase 7 · Portal del cliente final**.
 
 ## Datos de prueba
 - Silla **Natalia**: Carpintería 1,800 · Tapicería 900 · Nogal +600 · Piel +900 · markup 1.0 → **$8,400** General / **$9,800** Expo.

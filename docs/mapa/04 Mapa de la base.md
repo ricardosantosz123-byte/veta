@@ -1,7 +1,7 @@
 # Mapa de la base de datos
 
 > Claude Code: mantén esta nota al día con cada migración nueva (nombre, qué agrega y sus pruebas).
-> Última revisión contra veta-dev: 2026-10-05. Pruebas: `supabase/tests/01_flujo_completo.sql` (153).
+> Última revisión contra veta-dev: 2026-10-05. Pruebas: `supabase/tests/01_flujo_completo.sql` (188).
 
 ## Migraciones (`supabase/migrations/`)
 | Archivo | Contenido |
@@ -17,6 +17,7 @@
 | `20261009000001_fase4_pedidos.sql` | `hoy_mx()`; estados del pedido (manual solo entregado/cancelado); pagos con folio R-n, solo anulables; Mercado Pago con saldo a favor; cancelar con motivo; `v_pedidos`, `v_pagos` |
 | `20261010000001_fase5_produccion.sql` | Órdenes protegidas; reglas de avance; inicio sin anticipo autorizado; adelantos; `sugerir_ordenes`, `v_destajo_saldos`, `corte_destajistas` |
 | `20261010000002_fase5_v_pedidos.sql` | Recrea `v_pedidos` para incluir `inicio_autorizado_*` |
+| `20261011000001_fase6_insumos.sql` | Unidad cerrada, nombre único normalizado (`nombre_norm`), costo a 4 decimales, existencia nunca negativa, entrada con costo, ajuste con motivo, salida→orden con `destajista_id`, columnas protegidas, no borrar con movimientos; `crear_insumo`, `ajustar_existencia`, `material_entregado`; `v_insumos`, `v_movimientos_insumo`; comentario "Margen sobre destajos" en `v_pedido_resumen` |
 
 > Ojo: una vista creada con `p.*` no ve columnas agregadas después; hay que recrearla (pasó con `v_cotizaciones` y `v_pedidos`).
 
@@ -45,6 +46,9 @@
 | `sugerir_ordenes` | Admin, Producción | Etapas y costo sugerido por renglón |
 | `marcar_avance_orden` | Destajista (solo avanza las suyas), Producción, Admin | Avance de producción |
 | `corte_destajistas` | Admin, Producción, Contador | Corte del periodo por destajista |
+| `crear_insumo` | Admin, Producción | Alta con existencia inicial (exige costo) |
+| `ajustar_existencia` | Admin, Producción | Ajuste por conteo físico, con motivo |
+| `material_entregado` | Admin, Producción, Contador; Destajista (lo suyo, sin valor) | Material entregado por orden |
 | `hoy_mx` | todos | "Hoy" en America/Mexico_City |
 | `portal_pedido` / `portal_buscar` | solo service_role (Edge Function `portal`, Fase 7) | Portal público |
 
@@ -56,7 +60,9 @@
 | `v_pedidos` | Pedido + cliente + anticipo faltante, saldo a favor, semáforo |
 | `v_pagos` | Pago + pagado acumulado + saldo después (recibos) |
 | `v_destajo_saldos` | Por destajista: por pagar, comprometido, adelantos |
-| `v_pedido_resumen` | Margen bruto por pedido (Admin y Contador) |
+| `v_pedido_resumen` | Margen sobre destajos por pedido (Admin y Contador); no incluye material |
+| `v_insumos` | Insumo + `bajo_minimo`, `valor_existencia`, último movimiento |
+| `v_movimientos_insumo` | Historial con efecto, valor, existencia después, orden y destajista |
 
 ## Edge Functions
 | Función | Para qué |

@@ -55,6 +55,19 @@
 - Se permiten adelantos al destajista sin rebasar el costo acordado.
 - Saldos del destajista separados en **Por pagar** (terminadas) y **Comprometido** (pendientes y en proceso).
 
+## Fase 6 (2026-10-05)
+- **1A:** la base **bloquea** la existencia negativa (salida o ajuste); el error dice "Registra primero la entrada o haz un ajuste".
+- **2A:** el Destajista ve el material que le entregaron en "Mis órdenes" (nombre y cantidad, **sin costos**) vía `material_entregado`.
+- **3A:** el material **no** entra al margen en V1. El indicador se llama **"Margen sobre destajos"** con la nota "No incluye material de insumos" (PRD §5.10, FASES Fase 10, comentario en `v_pedido_resumen`). Integrarlo es V2 → [[05 Pendientes y riesgos#V2]].
+- Unidades: lista cerrada `pza, m, m2, pie_tabla, kg, l`. Nombre único por empresa sin distinguir mayúsculas, acentos ni espacios (`nombre_norm` con `_norm`).
+- Toda entrada lleva costo, también la existencia inicial del alta (`crear_insumo`).
+- Ajuste = **conteo físico** (`ajustar_existencia`): la persona escribe cuánto hay y la base calcula la diferencia; exige motivo.
+- Costo promedio ponderado con **4 decimales**; salidas y ajustes guardan el promedio del momento (valor del material). Renglón bloqueado (`for update`) al calcular.
+- La salida ligada a una orden guarda al destajista de ese momento (`movimientos_insumo.destajista_id`); no se entrega material a órdenes canceladas ni de otra empresa.
+- Un insumo con movimientos no se borra (se desactiva); uno inactivo no registra movimientos; la unidad no cambia si ya hay movimientos.
+- Alerta "bajo mínimo" = `mínimo > 0 y existencia < mínimo` (estrictamente menor).
+- El valor del material entregado **no** se descuenta del pago al destajista.
+
 ## Herramientas (2026-10-05)
 - ~~Skills de antislop v3.2.20 en `.claude/skills/`, aplicando salvo contradicción con CLAUDE.md.~~ Reemplazado el mismo día:
 - **antislop se retiró del proyecto (las 6 skills).** Por qué:
