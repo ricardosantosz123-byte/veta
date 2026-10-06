@@ -12,6 +12,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
+      // El generador de PDF (~1.2 MB) se descarga al usarlo; no hace falta en la instalación.
+      workbox: { globIgnores: ['**/generar-*.js'] },
       manifest: {
         name: 'Veta',
         short_name: 'Veta',

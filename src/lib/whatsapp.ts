@@ -12,3 +12,27 @@ export function enlaceWhatsApp(texto: string, telefono?: string | null): string 
   const tel = normalizarTelefono(telefono)
   return `https://wa.me/${tel ?? ''}?text=${encodeURIComponent(texto)}`
 }
+
+interface DatosCotizacion {
+  cliente: string
+  empresa: string
+  folio: number
+  total: string
+  vigencia: string
+  ivaIncluido: boolean
+  enlacePdf: string
+}
+
+/** Mensaje prearmado para mandar una cotización por WhatsApp. */
+export function mensajeCotizacion(d: DatosCotizacion): string {
+  return [
+    `Hola ${d.cliente}, te comparto la cotización C-${d.folio} de ${d.empresa}.`,
+    ``,
+    `Total: ${d.total}${d.ivaIncluido ? ' (IVA incluido)' : ''}`,
+    `Vigencia: hasta el ${d.vigencia}`,
+    ``,
+    `Descárgala aquí: ${d.enlacePdf}`,
+    ``,
+    `Cualquier duda, con gusto te ayudo.`,
+  ].join('\n')
+}

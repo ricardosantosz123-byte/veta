@@ -253,12 +253,14 @@ export type Database = {
           descripcion: string
           empresa_id: string
           id: string
+          importe: number | null
           modelo_id: string | null
           opcion_ids: string[]
           opciones_texto: string | null
           orden: number
           pedido_id: string | null
           precio_manual: boolean
+          precio_sugerido: number | null
           precio_unitario: number | null
           vendido: boolean
         }
@@ -269,12 +271,14 @@ export type Database = {
           descripcion?: string
           empresa_id: string
           id?: string
+          importe?: number | null
           modelo_id?: string | null
           opcion_ids?: string[]
           opciones_texto?: string | null
           orden?: number
           pedido_id?: string | null
           precio_manual?: boolean
+          precio_sugerido?: number | null
           precio_unitario?: number | null
           vendido?: boolean
         }
@@ -285,12 +289,14 @@ export type Database = {
           descripcion?: string
           empresa_id?: string
           id?: string
+          importe?: number | null
           modelo_id?: string | null
           opcion_ids?: string[]
           opciones_texto?: string | null
           orden?: number
           pedido_id?: string | null
           precio_manual?: boolean
+          precio_sugerido?: number | null
           precio_unitario?: number | null
           vendido?: boolean
         }
@@ -300,6 +306,13 @@ export type Database = {
             columns: ["cotizacion_id"]
             isOneToOne: false
             referencedRelation: "cotizaciones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cotizacion_items_cotizacion_id_fkey"
+            columns: ["cotizacion_id"]
+            isOneToOne: false
+            referencedRelation: "v_cotizaciones"
             referencedColumns: ["id"]
           },
           {
@@ -336,6 +349,7 @@ export type Database = {
         Row: {
           cliente_id: string
           created_at: string
+          descuento_monto: number | null
           descuento_pct: number
           empresa_id: string
           envio: number
@@ -356,6 +370,7 @@ export type Database = {
         Insert: {
           cliente_id: string
           created_at?: string
+          descuento_monto?: number | null
           descuento_pct?: number
           empresa_id: string
           envio?: number
@@ -376,6 +391,7 @@ export type Database = {
         Update: {
           cliente_id?: string
           created_at?: string
+          descuento_monto?: number | null
           descuento_pct?: number
           empresa_id?: string
           envio?: number
@@ -399,6 +415,13 @@ export type Database = {
             columns: ["cliente_id"]
             isOneToOne: false
             referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cotizaciones_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "v_clientes"
             referencedColumns: ["id"]
           },
           {
@@ -502,6 +525,7 @@ export type Database = {
           id: string
           iva: number
           logo_path: string | null
+          logo_pdf_path: string | null
           metodo_precio: Database["public"]["Enums"]["metodo_precio"]
           mp_conectado: boolean
           nombre: string
@@ -527,6 +551,7 @@ export type Database = {
           id?: string
           iva?: number
           logo_path?: string | null
+          logo_pdf_path?: string | null
           metodo_precio?: Database["public"]["Enums"]["metodo_precio"]
           mp_conectado?: boolean
           nombre: string
@@ -552,6 +577,7 @@ export type Database = {
           id?: string
           iva?: number
           logo_path?: string | null
+          logo_pdf_path?: string | null
           metodo_precio?: Database["public"]["Enums"]["metodo_precio"]
           mp_conectado?: boolean
           nombre?: string
@@ -1358,6 +1384,7 @@ export type Database = {
           empresa_id: string
           estado_produccion: Database["public"]["Enums"]["estado_produccion"]
           id: string
+          importe: number | null
           modelo_id: string | null
           opciones_texto: string | null
           pedido_id: string
@@ -1371,6 +1398,7 @@ export type Database = {
           empresa_id: string
           estado_produccion?: Database["public"]["Enums"]["estado_produccion"]
           id?: string
+          importe?: number | null
           modelo_id?: string | null
           opciones_texto?: string | null
           pedido_id: string
@@ -1384,6 +1412,7 @@ export type Database = {
           empresa_id?: string
           estado_produccion?: Database["public"]["Enums"]["estado_produccion"]
           id?: string
+          importe?: number | null
           modelo_id?: string | null
           opciones_texto?: string | null
           pedido_id?: string
@@ -1435,6 +1464,7 @@ export type Database = {
           cotizacion_id: string | null
           created_at: string
           created_by: string | null
+          descuento_monto: number | null
           descuento_pct: number
           direccion_entrega: string | null
           empresa_id: string
@@ -1463,6 +1493,7 @@ export type Database = {
           cotizacion_id?: string | null
           created_at?: string
           created_by?: string | null
+          descuento_monto?: number | null
           descuento_pct?: number
           direccion_entrega?: string | null
           empresa_id: string
@@ -1491,6 +1522,7 @@ export type Database = {
           cotizacion_id?: string | null
           created_at?: string
           created_by?: string | null
+          descuento_monto?: number | null
           descuento_pct?: number
           direccion_entrega?: string | null
           empresa_id?: string
@@ -1521,10 +1553,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pedidos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "v_clientes"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pedidos_cotizacion_id_fkey"
             columns: ["cotizacion_id"]
             isOneToOne: false
             referencedRelation: "cotizaciones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_cotizacion_id_fkey"
+            columns: ["cotizacion_id"]
+            isOneToOne: false
+            referencedRelation: "v_cotizaciones"
             referencedColumns: ["id"]
           },
           {
@@ -1556,6 +1602,122 @@ export type Database = {
       }
     }
     Views: {
+      v_clientes: {
+        Row: {
+          apellidos: string | null
+          cotizaciones: number | null
+          created_at: string | null
+          direccion: string | null
+          email: string | null
+          empresa_cliente: string | null
+          empresa_id: string | null
+          id: string | null
+          nombre: string | null
+          notas: string | null
+          pedidos: number | null
+          saldo: number | null
+          telefono: string | null
+        }
+        Insert: {
+          apellidos?: string | null
+          cotizaciones?: never
+          created_at?: string | null
+          direccion?: string | null
+          email?: string | null
+          empresa_cliente?: string | null
+          empresa_id?: string | null
+          id?: string | null
+          nombre?: string | null
+          notas?: string | null
+          pedidos?: never
+          saldo?: never
+          telefono?: string | null
+        }
+        Update: {
+          apellidos?: string | null
+          cotizaciones?: never
+          created_at?: string | null
+          direccion?: string | null
+          email?: string | null
+          empresa_cliente?: string | null
+          empresa_id?: string | null
+          id?: string | null
+          nombre?: string | null
+          notas?: string | null
+          pedidos?: never
+          saldo?: never
+          telefono?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clientes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_cotizaciones: {
+        Row: {
+          cliente_apellidos: string | null
+          cliente_id: string | null
+          cliente_nombre: string | null
+          created_at: string | null
+          descuento_monto: number | null
+          descuento_pct: number | null
+          empresa_cliente: string | null
+          empresa_id: string | null
+          envio: number | null
+          estado: Database["public"]["Enums"]["estado_cotizacion"] | null
+          estado_efectivo:
+            | Database["public"]["Enums"]["estado_cotizacion"]
+            | null
+          fecha: string | null
+          folio: number | null
+          id: string | null
+          iva: number | null
+          lista_id: string | null
+          notas: string | null
+          precios_con_iva: boolean | null
+          renglones: number | null
+          subtotal: number | null
+          total: number | null
+          updated_at: string | null
+          vendedor_id: string | null
+          vigencia_hasta: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cotizaciones_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cotizaciones_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "v_clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cotizaciones_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cotizaciones_lista_id_fkey"
+            columns: ["lista_id"]
+            isOneToOne: false
+            referencedRelation: "listas_precios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_pedido_resumen: {
         Row: {
           cliente: string | null
@@ -1591,6 +1753,7 @@ export type Database = {
       }
       _empresa_de_ruta: { Args: { p_name: string }; Returns: string }
       _norm: { Args: { t: string }; Returns: string }
+      _normalizar_telefono: { Args: { p: string }; Returns: string }
       _siguiente_folio: {
         Args: { p_empresa: string; p_tipo: string }
         Returns: number
@@ -1639,6 +1802,7 @@ export type Database = {
         }
         Returns: string
       }
+      duplicar_cotizacion: { Args: { p_cotizacion: string }; Returns: string }
       es_miembro: { Args: { p_empresa: string }; Returns: boolean }
       marcar_avance_orden: {
         Args: {
@@ -1649,6 +1813,14 @@ export type Database = {
         Returns: undefined
       }
       mi_destajista: { Args: { p_empresa: string }; Returns: string }
+      nombres_equipo: {
+        Args: { p_empresa: string }
+        Returns: {
+          nombre: string
+          rol: Database["public"]["Enums"]["rol_miembro"]
+          user_id: string
+        }[]
+      }
       portal_buscar: {
         Args: { p_apellidos: string; p_folio: number; p_slug: string }
         Returns: string

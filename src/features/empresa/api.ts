@@ -1,3 +1,4 @@
+import { convertirAPng, TIPOS_PDF } from '@/features/empresa/png'
 import { supabase, type Tablas } from '@/lib/supabase'
 
 export const BUCKET_PUBLICO = 'publico'
@@ -51,6 +52,7 @@ export type EmpresaEditable = Pick<
   | 'email'
   | 'direccion'
   | 'logo_path'
+  | 'logo_pdf_path'
   | 'color_marca'
   | 'metodo_precio'
   | 'iva'
@@ -73,6 +75,18 @@ export async function subirLogo(empresaId: string, archivo: File): Promise<strin
     .upload(ruta, archivo, { contentType: archivo.type, cacheControl: '31536000', upsert: false })
   if (error) throw error
   return ruta
+}
+
+/**
+ * Sube el logo y, si es SVG o WEBP, una copia PNG para el PDF (react-pdf no lee esos formatos).
+ * Con PNG o JPG, la misma ruta sirve para las dos cosas.
+ */
+export async function subirLogoConCopia(empresaId: string, archivo: File) {
+  const logo_path = await subirLogo(empresaId, archivo)
+  if (TIPOS_PDF.includes(archivo.type)) return { logo_path, logo_pdf_path: logo_path }
+  const png = await convertirAPng(archivo)
+  const logo_pdf_path = await subirLogo(empresaId, png)
+  return { logo_path, logo_pdf_path }
 }
 
 export async function borrarArchivoPublico(ruta: string) {

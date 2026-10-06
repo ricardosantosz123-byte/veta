@@ -1,16 +1,30 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, type ReactNode } from 'react'
 
 // Módulos grandes: se descargan hasta que se visitan.
 const Catalogo = lazy(() => import('@/features/catalogo/components/pagina-catalogo'))
+const Clientes = lazy(() => import('@/features/clientes/components/pagina-clientes'))
+const Cotizaciones = lazy(() => import('@/features/cotizaciones/components/pagina-cotizaciones'))
 
 function Cargando() {
   return <div className="mx-auto h-64 w-full max-w-5xl animate-pulse rounded-xl bg-muted" aria-busy="true" aria-label="Cargando" />
 }
 
-export function PaginaCatalogo() {
-  return (
-    <Suspense fallback={<Cargando />}>
-      <Catalogo />
-    </Suspense>
-  )
+function Diferido({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<Cargando />}>{children}</Suspense>
 }
+
+export const PaginaCatalogo = () => (
+  <Diferido>
+    <Catalogo />
+  </Diferido>
+)
+export const PaginaClientes = () => (
+  <Diferido>
+    <Clientes />
+  </Diferido>
+)
+export const PaginaCotizaciones = () => (
+  <Diferido>
+    <Cotizaciones />
+  </Diferido>
+)

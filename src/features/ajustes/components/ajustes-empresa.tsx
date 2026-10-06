@@ -17,7 +17,7 @@ import {
   actualizarEmpresa,
   borrarArchivoPublico,
   leerEmpresa,
-  subirLogo,
+  subirLogoConCopia,
   urlPublica,
 } from '@/features/empresa/api'
 import { SelectorColor, SelectorLogo } from '@/features/empresa/components/selector-logo'
@@ -54,10 +54,14 @@ function TarjetaMarca({ empresa, habilitado }: { empresa: Fila<'empresas'>; habi
 
   const guardar = useMutation({
     mutationFn: async () => {
-      const nuevoLogo = logo ? await subirLogo(empresa.id, logo) : null
-      await actualizarEmpresa(empresa.id, { color_marca: color, ...(nuevoLogo ? { logo_path: nuevoLogo } : {}) })
-      // El anterior se borra después de guardar el nuevo; si falla, solo queda un archivo huérfano.
-      if (nuevoLogo && empresa.logo_path) await borrarArchivoPublico(empresa.logo_path).catch(() => undefined)
+      const rutas = logo ? await subirLogoConCopia(empresa.id, logo) : null
+      await actualizarEmpresa(empresa.id, { color_marca: color, ...(rutas ?? {}) })
+      // Los anteriores se borran después de guardar los nuevos; si falla, solo quedan archivos huérfanos.
+      if (rutas) {
+        for (const viejo of new Set([empresa.logo_path, empresa.logo_pdf_path])) {
+          if (viejo) await borrarArchivoPublico(viejo).catch(() => undefined)
+        }
+      }
     },
     onSuccess: async () => {
       setLogo(null)

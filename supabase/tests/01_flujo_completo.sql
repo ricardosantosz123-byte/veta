@@ -134,9 +134,48 @@ insert into cotizacion_items (empresa_id, cotizacion_id, descripcion, cantidad, 
 
 select pg_temp.ok((select opciones_texto from cotizacion_items where id = :'it1') = 'Nogal · Piel Napa', 'snapshot legible de opciones');
 select pg_temp.ok((select subtotal from cotizaciones where id = :'cot') = 45600, 'subtotal 4×8,400 + 12,000 = 45,600');
+select pg_temp.ok((select importe from cotizacion_items where id = :'it1') = 33600, 'importe del renglón 4 × 8,400 = 33,600');
+select pg_temp.ok((select descuento_monto from cotizaciones where id = :'cot') = 4560, 'monto de descuento 10% de 45,600 = 4,560');
 select pg_temp.ok((select total from cotizaciones where id = :'cot') = 47606.40, 'total con 10% desc. e IVA: 41,040 × 1.16 = 47,606.40');
 select pg_temp.ok((select count(*) from cotizacion_item_costos) = 0, 'Vendedor no ve el costo congelado');
 select pg_temp.ok((select vigencia_hasta - fecha from cotizaciones where id = :'cot') = 15, 'vigencia 15 días');
+
+-- Fase 3: teléfono, precio que no se falsifica, columnas y estado protegidos, sugerido, duplicar
+select pg_temp.ok((select telefono from clientes where id = :'cli') = '523311112222', 'teléfono se normaliza a 52 + 10 dígitos');
+insert into clientes (empresa_id, nombre, apellidos, telefono, email)
+  values (:'emp_a', ' Ana ', 'Ruiz', '+52 (33) 2222-3333', ' Ana@Correo.MX ') returning id as cli2 \gset
+select pg_temp.ok((select telefono = '523322223333' and email = 'ana@correo.mx' and nombre = 'Ana' from clientes where id = :'cli2'),
+  'teléfono con +52, espacios y guiones; correo en minúsculas');
+update cotizacion_items set precio_unitario = 1 where id = :'it1';
+select pg_temp.ok((select precio_unitario from cotizacion_items where id = :'it1') = 8400, 'precio automático no se falsifica desde el cliente');
+select pg_temp.falla(format($$update cotizacion_items set vendido = true where id = %L$$, :'it1'), 'el cliente no marca renglones como vendidos');
+select pg_temp.falla(format($$update cotizaciones set total = 1 where id = %L$$, :'cot'), 'el cliente no escribe totales');
+select pg_temp.falla(format($$update cotizaciones set estado = 'aceptada' where id = %L$$, :'cot'), 'no se marca aceptada sin vender');
+update cotizaciones set estado = 'enviada' where id = :'cot';
+select pg_temp.ok((select estado from cotizaciones where id = :'cot') = 'enviada', 'marcar como enviada');
+insert into cotizaciones (empresa_id, cliente_id, lista_id) values (:'emp_a', :'cli2', :'l_gen') returning id as cot2 \gset
+select pg_temp.falla(format($$insert into cotizacion_items (empresa_id, cotizacion_id, modelo_id, opcion_ids) values (%L, %L, %L, array[%L]::uuid[])$$,
+  :'emp_a', :'cot2', :'m_nat', :'o_nog'), 'falta una opción de un grupo obligatorio');
+insert into cotizacion_items (empresa_id, cotizacion_id, modelo_id, opcion_ids, precio_unitario, precio_manual)
+  values (:'emp_a', :'cot2', :'m_nat', array[:'o_nog', :'o_piel']::uuid[], 7392, true) returning id as it3 \gset
+select pg_temp.ok((select precio_unitario = 7392 and precio_sugerido = 8400 from cotizacion_items where id = :'it3'),
+  'renglón manual guarda el precio sugerido del catálogo');
+update cotizaciones set lista_id = :'l_expo' where id = :'cot2';
+select recalcular_precios_cotizacion(:'cot2');
+select pg_temp.ok((select precio_unitario = 7392 and precio_sugerido = 9800 from cotizacion_items where id = :'it3'),
+  'al cambiar de lista se actualiza el sugerido, no el precio manual');
+update cotizacion_items set precio_manual = false where id = :'it3';
+select pg_temp.ok((select precio_unitario = 9800 and precio_sugerido is null from cotizacion_items where id = :'it3'), 'volver a automático recalcula el precio');
+select duplicar_cotizacion(:'cot') as cot3 \gset
+select pg_temp.ok((select count(*) from cotizacion_items where cotizacion_id = :'cot3') = 2
+  and (select estado = 'borrador' and folio > :cot_folio from cotizaciones where id = :'cot3'), 'duplicar copia renglones con folio nuevo');
+update cotizaciones set vigencia_hasta = current_date - 1 where id = :'cot3';
+select pg_temp.ok((select estado_efectivo from v_cotizaciones where id = :'cot3') = 'vencida', 'vencida se deriva de la vigencia');
+select pg_temp.ok((select count(*) from nombres_equipo(:'emp_a')) = 5, 'nombres_equipo lista a los miembros');
+reset role;  -- limpieza para no alterar los conteos de pruebas posteriores
+delete from cotizaciones where id in (:'cot2', :'cot3');
+delete from clientes where id = :'cli2';
+select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated;
 
 -- Cambiar a lista Expo y recalcular (el renglón manual se respeta)
 update cotizaciones set lista_id = :'l_expo' where id = :'cot';
@@ -163,6 +202,7 @@ update pedidos set pagado = 999999, total = 1 where id = :'ped';
 select pg_temp.ok((select pagado = 15000 and total = 35078.40 from pedidos where id = :'ped'), 'pagado y total no se alteran a mano');
 insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (:'emp_a', :'ped', 6047.04, 'efectivo');
 select pg_temp.ok((select estado from pedidos where id = :'ped') = 'en_produccion', 'anticipo cubierto → en producción');
+select pg_temp.ok((select saldo = 14031.36 and pedidos = 1 and cotizaciones = 1 from v_clientes where id = :'cli'), 'v_clientes: saldo y conteos del cliente');
 select id as pit from pedido_items where pedido_id = :'ped' \gset
 select folio as ped_folio, token_portal as tok from pedidos where id = :'ped' \gset
 reset role;

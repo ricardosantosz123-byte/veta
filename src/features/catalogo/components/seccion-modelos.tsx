@@ -9,14 +9,11 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { MiniaturaModelo } from '@/features/catalogo/components/foto-modelo'
 import { useCategorias, useModelos } from '@/features/catalogo/hooks'
+import { normalizar } from '@/lib/texto'
 import { cn } from '@/lib/utils'
 
 const TODAS = '__todas__'
 const SIN = '__sin__'
-
-function normalizar(t: string) {
-  return t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-}
 
 export function SeccionModelos() {
   const editar = usePuedeEditar('editar_catalogo')

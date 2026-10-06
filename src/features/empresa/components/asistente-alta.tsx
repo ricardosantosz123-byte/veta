@@ -19,7 +19,7 @@ import {
   actualizarEmpresa,
   crearEmpresa,
   slugDisponible,
-  subirLogo,
+  subirLogoConCopia,
   sugerirSlug,
 } from '@/features/empresa/api'
 import { SelectorColor, SelectorLogo } from '@/features/empresa/components/selector-logo'
@@ -104,16 +104,16 @@ export function AsistenteAlta() {
       const id = creada.current ?? (await crearEmpresa(v.nombre, v.slug))
       creada.current = id
       // La empresa ya existe: si el logo falla, se avisa y se puede subir después en Ajustes.
-      let logo_path: string | null = null
+      let rutas: { logo_path: string; logo_pdf_path: string } | null = null
       let avisoLogo: string | null = null
       if (logo) {
         try {
-          logo_path = await subirLogo(id, logo)
+          rutas = await subirLogoConCopia(id, logo)
         } catch (e) {
           avisoLogo = mensajeError(e)
         }
       }
-      await actualizarEmpresa(id, { color_marca: v.color, metodo_precio: v.metodo, ...(logo_path ? { logo_path } : {}) })
+      await actualizarEmpresa(id, { color_marca: v.color, metodo_precio: v.metodo, ...(rutas ?? {}) })
       return { id, avisoLogo }
     },
     onSuccess: async ({ id, avisoLogo }) => {
