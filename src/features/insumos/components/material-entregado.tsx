@@ -57,11 +57,11 @@ export function MaterialEntregadoOrden({ orden }: Props) {
       ) : material.error ? (
         <p className="text-sm text-destructive">{mensajeError(material.error)}</p>
       ) : material.data.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Sin material entregado. Registra aquí la tela, piel o herrajes que le das al destajista.</p>
+        <p className="text-sm text-muted-foreground">Sin material entregado. Registra aquí la tela, piel o herrajes que le das al proveedor.</p>
       ) : (
         <>
           <ListaMaterial material={material.data} conValor />
-          <p className="text-xs text-muted-foreground">Valor al costo promedio del día de la entrega. No se descuenta del pago al destajista.</p>
+          <p className="text-xs text-muted-foreground">Valor al costo promedio del día de la entrega. No se descuenta del pago al proveedor.</p>
         </>
       )}
       {abierto && (

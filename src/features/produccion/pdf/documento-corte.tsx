@@ -32,17 +32,17 @@ const s = StyleSheet.create({
 export function DocumentoCorte({ empresa, desde, hasta, filas }: DatosCorte) {
   const acento = /^#[0-9a-fA-F]{6}$/.test(empresa.color_marca) ? empresa.color_marca : TINTA
   return (
-    <Document title={`Corte de destajo ${desde} a ${hasta} · ${empresa.nombre}`} author={empresa.nombre} language="es-MX">
+    <Document title={`Corte de proveedores ${desde} a ${hasta} · ${empresa.nombre}`} author={empresa.nombre} language="es-MX">
       <Page size="LETTER" orientation="landscape" style={s.pagina}>
         <View style={[s.barra, { backgroundColor: acento }]} fixed />
         <Text style={s.marca}>{empresa.nombre}</Text>
-        <Text style={s.titulo}>Corte de destajo</Text>
+        <Text style={s.titulo}>Corte de proveedores</Text>
         <Text style={s.periodo}>
           Del {fecha(desde)} al {fecha(hasta)}
         </Text>
 
         <View style={s.enc} fixed>
-          <Text style={[s.cNombre, s.etiqueta]}>Destajista</Text>
+          <Text style={[s.cNombre, s.etiqueta]}>Proveedor</Text>
           <Text style={[s.cNum, s.etiqueta]}>Órdenes term.</Text>
           <Text style={[s.cNum, s.etiqueta]}>Terminado</Text>
           <Text style={[s.cNum, s.etiqueta]}>Pagado</Text>

@@ -92,7 +92,7 @@ export const modulos: Modulo[] = [
     permiso: 'ver_produccion',
     vacio: {
       titulo: 'No hay órdenes de producción',
-      descripcion: 'Asigna cada etapa a un destajista y sigue el avance en un tablero.',
+      descripcion: 'Asigna cada etapa a un proveedor y sigue el avance en un tablero.',
       accion: 'Crea una orden',
     },
   },

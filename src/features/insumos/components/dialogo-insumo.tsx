@@ -175,7 +175,7 @@ export function DialogoInsumo({ insumo: i, onCerrar, onCreado, onBorrado }: Prop
             <Campo id="ins-minimo" etiqueta={`Mínimo (${nombreUnidad[unidadElegida]})`} error={errors.minimo?.message} ayuda="Avisa cuando la existencia baje de aquí. Vacío: sin alerta.">
               <Input id="ins-minimo" inputMode="decimal" autoComplete="off" className="text-right tabular" aria-invalid={!!errors.minimo} aria-describedby="ins-minimo-nota" {...form.register('minimo')} />
             </Campo>
-            <Campo id="ins-proveedor" etiqueta="Proveedor (opcional)" error={errors.proveedor?.message}>
+            <Campo id="ins-proveedor" etiqueta="Proveedor de insumos (opcional)" error={errors.proveedor?.message}>
               <Input id="ins-proveedor" aria-invalid={!!errors.proveedor} {...form.register('proveedor')} />
             </Campo>
           </div>

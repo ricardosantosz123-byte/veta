@@ -14,24 +14,24 @@ const REGISTRO = 'Prueba gratis' // un solo texto para la misma acción en toda 
 const FLUJO = [
   { icono: FileText, titulo: 'Cotiza', texto: 'Tu catálogo calcula el precio con la madera, la tela y el acabado. Mandas el PDF por WhatsApp.' },
   { icono: Wallet, titulo: 'Cobra el anticipo', texto: 'Al cubrir el anticipo, el pedido pasa solo a producción. Cada pago deja su recibo.' },
-  { icono: Hammer, titulo: 'Produce', texto: 'Asignas carpintería, laca y tapicería a cada destajista con su pago acordado.' },
+  { icono: Hammer, titulo: 'Produce', texto: 'Asignas carpintería, laca y tapicería a cada proveedor con su pago acordado.' },
   { icono: Truck, titulo: 'Entrega liquidado', texto: 'Nada sale del taller con saldo pendiente. Tu cliente sabe cuánto le falta.' },
 ]
 
 const MAS = [
   { icono: BadgeDollarSign, titulo: 'Links de pago con Mercado Pago', texto: 'Para el anticipo o el saldo. El dinero llega a tu cuenta y el pago se registra solo.' },
   { icono: Boxes, titulo: 'Insumos con alertas', texto: 'Tela, piel, espuma y herrajes con existencia, costo promedio y aviso bajo el mínimo.' },
-  { icono: LayoutDashboard, titulo: 'Tablero del mes', texto: 'Ventas, cobranza, lo que debes a destajistas y el margen de cada pedido.' },
-  { icono: Users, titulo: 'Cada quien ve lo suyo', texto: 'El vendedor no ve costos; el destajista solo ve sus órdenes y lo que se le debe.' },
+  { icono: LayoutDashboard, titulo: 'Tablero del mes', texto: 'Ventas, cobranza, lo que debes a proveedores y el margen de cada pedido.' },
+  { icono: Users, titulo: 'Cada quien ve lo suyo', texto: 'El vendedor no ve costos; el proveedor solo ve sus órdenes y lo que se le debe.' },
 ]
 
 const PREGUNTAS = [
   { p: '¿Necesito tarjeta para probar?', r: `No. Tienes ${planes.diasPrueba} días con todo incluido. Al terminar, la cuenta queda en solo lectura hasta que te suscribas; tus datos no se borran.` },
-  { p: '¿Mis destajistas tienen que usar la app?', r: 'No es obligatorio. Puedes mandarles cada orden en PDF por WhatsApp. Si quieren, entran desde su celular para marcar "Empecé" y "Terminé" y ver lo que se les debe.' },
+  { p: '¿Mis proveedores tienen que usar la app?', r: 'No es obligatorio. Puedes mandarles cada orden en PDF por WhatsApp. Si quieren, entran desde su celular para marcar "Empecé" y "Terminé" y ver lo que se les debe.' },
   { p: '¿Emite facturas (CFDI)?', r: 'Todavía no. Por ahora marcas el pedido como facturado y adjuntas el CFDI de tu sistema de facturación. La facturación integrada viene después.' },
   { p: '¿A qué cuenta llega el dinero de Mercado Pago?', r: 'A la tuya. Conectas tu propia cuenta de Mercado Pago; nosotros nunca tocamos tu dinero.' },
-  { p: '¿Funciona en el celular?', r: 'Sí. Se usa desde el navegador y puedes instalarla en la pantalla de inicio. El portal del cliente y la vista del destajista están pensados primero para celular.' },
-  { p: '¿Quién ve mis costos y márgenes?', r: 'Solo el Admin y el Contador. El Vendedor ve precios pero no costos; el destajista solo ve sus órdenes.' },
+  { p: '¿Funciona en el celular?', r: 'Sí. Se usa desde el navegador y puedes instalarla en la pantalla de inicio. El portal del cliente y la vista del proveedor están pensados primero para celular.' },
+  { p: '¿Quién ve mis costos y márgenes?', r: 'Solo el Admin y el Contador. El Vendedor ve precios pero no costos; el proveedor solo ve sus órdenes.' },
 ]
 
 /** Captura real de la app en un marco sobrio. La imagen se ancla arriba dentro de una proporción fija. */
@@ -99,7 +99,7 @@ export default function PaginaInicio() {
           <div className="entrada grid justify-items-start gap-6">
             <h1 className="text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">{marca.lema}</h1>
             <p className="max-w-md text-lg text-pretty text-muted-foreground">
-              Cotiza, cobra anticipos y manda a producir con tus destajistas. Tu cliente ve el avance desde su celular.
+              Cotiza, cobra anticipos y manda a producir con tus proveedores. Tu cliente ve el avance desde su celular.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button size="lg" className="h-12 px-6 text-base active:scale-[0.98]" asChild>
@@ -158,10 +158,10 @@ export default function PaginaInicio() {
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:py-24 lg:grid-cols-2" aria-labelledby="titulo-produccion">
           <div className="aparece grid content-start gap-5">
             <h2 id="titulo-produccion" className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-              Cada destajista sabe qué hacer y cuánto le pagas
+              Cada proveedor sabe qué hacer y cuánto le pagas
             </h2>
             <p className="max-w-[60ch] text-pretty text-muted-foreground">
-              Cada etapa del mueble es una orden con su destajista, su fecha y su pago acordado. Ellos marcan &ldquo;Empecé&rdquo; y &ldquo;Terminé&rdquo; desde el celular y tú ves el avance en
+              Cada etapa del mueble es una orden con su proveedor, su fecha y su pago acordado. Ellos marcan &ldquo;Empecé&rdquo; y &ldquo;Terminé&rdquo; desde el celular y tú ves el avance en
               un tablero.
             </p>
             <ul className="grid gap-2 text-sm">
@@ -174,7 +174,7 @@ export default function PaginaInicio() {
           </div>
           <Captura
             src="/landing/produccion.jpg"
-            alt="Tablero de producción: órdenes de laca pendientes y en proceso, con su destajista, su pago y los días que faltan"
+            alt="Tablero de producción: órdenes de laca pendientes y en proceso, con su proveedor, su pago y los días que faltan"
             ancho={800}
             alto={1031}
             className="aparece aspect-[4/3.4]"

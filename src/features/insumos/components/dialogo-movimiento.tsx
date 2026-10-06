@@ -21,7 +21,7 @@ const SIN_ORDEN = '__sin__'
 const TITULO: Record<TipoDialogo, string> = { entrada: 'Registrar entrada', salida: 'Registrar salida', ajuste: 'Ajustar existencia' }
 const AYUDA: Record<TipoDialogo, string> = {
   entrada: 'Lo que compras o recibes. Su costo actualiza el costo promedio.',
-  salida: 'Lo que sale del almacén. Si se lo entregas a un destajista, lígala a su orden.',
+  salida: 'Lo que sale del almacén. Si se lo entregas a un proveedor, lígala a su orden.',
   ajuste: 'Cuenta lo que hay físicamente: la base registra la diferencia con su motivo.',
 }
 

@@ -10,14 +10,14 @@ export const nombreRol: Record<Rol, string> = {
   admin: 'Admin',
   vendedor: 'Vendedor',
   produccion: 'Producción',
-  destajista: 'Destajista',
+  destajista: 'Proveedor (fabricante)',
   contador: 'Contador',
 }
 
 export const descripcionRol: Record<Rol, string> = {
   admin: 'Todo: empresa, usuarios, catálogo, costos, márgenes y suscripción.',
   vendedor: 'Clientes, cotizaciones, pedidos y cobros. No ve costos ni márgenes.',
-  produccion: 'Órdenes, destajistas, costos por etapa e insumos. No ve clientes.',
+  produccion: 'Órdenes, proveedores, costos por etapa e insumos. No ve clientes.',
   destajista: 'Solo sus órdenes, sus avances y sus pagos.',
   contador: 'Consulta todo en solo lectura, con costos y márgenes.',
 }

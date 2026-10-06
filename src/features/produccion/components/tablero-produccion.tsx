@@ -181,7 +181,7 @@ export function TableroProduccion() {
   if (ordenes.error) return <p className="text-sm text-destructive">{mensajeError(ordenes.error)}</p>
   if (ordenes.data.length === 0)
     return (
-      <EstadoVacio icono={Factory} titulo="No hay órdenes de producción" descripcion="Ve a «Por programar» para mandar un pedido a producción: se crean las órdenes por etapa con su destajista y su pago." />
+      <EstadoVacio icono={Factory} titulo="No hay órdenes de producción" descripcion="Ve a «Por programar» para mandar un pedido a producción: se crean las órdenes por etapa con su proveedor y su pago." />
     )
 
   const abierta = ordenes.data.find((o) => o.id === abiertaId) ?? null
@@ -210,11 +210,11 @@ export function TableroProduccion() {
           })}
         </nav>
         <Select value={destajista} onValueChange={setDestajista}>
-          <SelectTrigger className="w-48" aria-label="Filtrar por destajista">
+          <SelectTrigger className="w-48" aria-label="Filtrar por proveedor">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={TODOS}>Todos los destajistas</SelectItem>
+            <SelectItem value={TODOS}>Todos los proveedores</SelectItem>
             <SelectItem value={SIN}>Sin asignar</SelectItem>
             {destajistas.map(([id, nombre]) => (
               <SelectItem key={id} value={id}>

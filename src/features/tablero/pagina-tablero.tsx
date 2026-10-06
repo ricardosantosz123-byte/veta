@@ -147,13 +147,13 @@ export default function PaginaTablero() {
           {t.completo && t.margen_mes && (
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
               <Indicador
-                titulo="Margen sobre destajos del mes"
+                titulo="Margen sobre fabricación del mes"
                 valor={t.margen_mes.pct === null ? '—' : `${Number(t.margen_mes.pct).toLocaleString('es-MX')}%`}
                 nota={`${moneda(t.margen_mes.margen)} · No incluye material de insumos`}
               />
-              <Indicador titulo="Costo de producción del mes" valor={moneda(t.margen_mes.costo)} nota="Órdenes a destajistas" />
-              <Indicador titulo="Por pagar a destajistas" valor={moneda(t.destajistas?.por_pagar)} nota="Órdenes terminadas" alerta={Number(t.destajistas?.por_pagar) > 0} />
-              <Indicador titulo="Comprometido con destajistas" valor={moneda(t.destajistas?.comprometido)} nota="Órdenes en curso, menos adelantos" />
+              <Indicador titulo="Costo de producción del mes" valor={moneda(t.margen_mes.costo)} nota="Órdenes a proveedores" />
+              <Indicador titulo="Por pagar a proveedores" valor={moneda(t.destajistas?.por_pagar)} nota="Órdenes terminadas" alerta={Number(t.destajistas?.por_pagar) > 0} />
+              <Indicador titulo="Comprometido con proveedores" valor={moneda(t.destajistas?.comprometido)} nota="Órdenes en curso, menos adelantos" />
             </div>
           )}
 
@@ -241,7 +241,7 @@ export default function PaginaTablero() {
           {t.completo && t.margen_pedidos && t.margen_pedidos.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Margen sobre destajos por pedido</CardTitle>
+                <CardTitle className="text-base">Margen sobre fabricación por pedido</CardTitle>
                 <CardDescription>Venta sin IVA menos el costo de las órdenes. No incluye material de insumos.</CardDescription>
               </CardHeader>
               <CardContent className="overflow-x-auto">
@@ -250,7 +250,7 @@ export default function PaginaTablero() {
                     <tr>
                       <th className="py-2 font-medium">Pedido</th>
                       <th className="py-2 text-right font-medium">Venta sin IVA</th>
-                      <th className="py-2 text-right font-medium">Destajos</th>
+                      <th className="py-2 text-right font-medium">Proveedores</th>
                       <th className="py-2 text-right font-medium">Margen</th>
                     </tr>
                   </thead>

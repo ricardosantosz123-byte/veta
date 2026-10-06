@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 const PESTANAS = [
   { ruta: '', nombre: 'Tablero' },
   { ruta: 'programar', nombre: 'Por programar' },
-  { ruta: 'destajistas', nombre: 'Destajistas' },
+  { ruta: 'destajistas', nombre: 'Proveedores' },
   { ruta: 'corte', nombre: 'Corte semanal' },
 ]
 

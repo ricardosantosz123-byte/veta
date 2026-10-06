@@ -91,10 +91,10 @@ function DialogoRol({ miembro, onCerrar }: { miembro: Miembro | null; onCerrar: 
         </div>
         {rol === 'destajista' && (
           <div className="grid gap-2">
-            <Label htmlFor="rol-destajista">Destajista</Label>
+            <Label htmlFor="rol-destajista">Proveedor</Label>
             <Select value={destajista} onValueChange={setDestajista}>
               <SelectTrigger id="rol-destajista" className="w-full">
-                <SelectValue placeholder={destajistas.isPending ? 'Cargando…' : 'Elige un destajista'} />
+                <SelectValue placeholder={destajistas.isPending ? 'Cargando…' : 'Elige un proveedor'} />
               </SelectTrigger>
               <SelectContent>
                 {destajistas.data?.map((d) => (
@@ -105,7 +105,7 @@ function DialogoRol({ miembro, onCerrar }: { miembro: Miembro | null; onCerrar: 
               </SelectContent>
             </Select>
             {destajistas.data?.length === 0 && (
-              <p className="text-sm text-muted-foreground">No hay destajistas. Créalo al invitar a un destajista nuevo.</p>
+              <p className="text-sm text-muted-foreground">No hay proveedores. Créalo al invitar a un proveedor nuevo.</p>
             )}
           </div>
         )}
@@ -281,7 +281,7 @@ export function AjustesUsuarios({ empresaId }: { empresaId: string }) {
             <EstadoVacio
               icono={Users}
               titulo="Sin invitaciones pendientes"
-              descripcion="Invita a tu equipo: vendedores, producción, destajistas o tu contador."
+              descripcion="Invita a tu equipo: vendedores, producción, proveedores o tu contador."
               accion="Invitar a alguien"
               onAccion={() => setInvitando(true)}
               accionDeshabilitada={!habilitado}

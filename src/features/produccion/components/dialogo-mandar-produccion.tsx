@@ -154,7 +154,7 @@ export function DialogoMandarProduccion({ abierto, onCerrar, pedido }: Props) {
                                 className="col-span-2 sm:col-span-1"
                               />
                               <Select value={f.destajista} onValueChange={(v) => cambiar(s, { destajista: v })} disabled={!f.elegida}>
-                                <SelectTrigger className="w-full" aria-label={`Destajista para ${s.etapa}`}>
+                                <SelectTrigger className="w-full" aria-label={`Proveedor para ${s.etapa}`}>
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>

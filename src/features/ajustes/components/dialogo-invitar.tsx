@@ -37,9 +37,9 @@ const schema = z
   })
   .superRefine((v, ctx) => {
     if (v.rol !== 'destajista') return
-    if (!v.destajista) ctx.addIssue({ code: 'custom', path: ['destajista'], message: 'Elige el destajista o crea uno nuevo.' })
+    if (!v.destajista) ctx.addIssue({ code: 'custom', path: ['destajista'], message: 'Elige el proveedor o crea uno nuevo.' })
     if (v.destajista === NUEVO && v.nuevo_nombre.length < 2)
-      ctx.addIssue({ code: 'custom', path: ['nuevo_nombre'], message: 'Escribe el nombre del destajista.' })
+      ctx.addIssue({ code: 'custom', path: ['nuevo_nombre'], message: 'Escribe el nombre del proveedor.' })
   })
 type Entrada = z.input<typeof schema>
 type Salida = z.output<typeof schema>
@@ -81,7 +81,7 @@ export function DialogoInvitar({ abierto, onCerrar }: Props) {
             especialidad: v.nuevo_especialidad || null,
             email: v.email,
           })
-          // Si después falla la invitación, el destajista ya existe: que aparezca en la lista al reintentar.
+          // Si después falla la invitación, el proveedor ya existe: que aparezca en la lista al reintentar.
           form.setValue('destajista', destajista_id)
           nombre = v.nuevo_nombre
           telefono = v.nuevo_telefono || null
@@ -188,14 +188,14 @@ export function DialogoInvitar({ abierto, onCerrar }: Props) {
 
             {rol === 'destajista' && (
               <>
-                <Campo id="inv-destajista" etiqueta="Destajista" error={errors.destajista?.message} ayuda="Sus órdenes y pagos quedarán ligados a esta cuenta.">
+                <Campo id="inv-destajista" etiqueta="Proveedor" error={errors.destajista?.message} ayuda="Sus órdenes y pagos quedarán ligados a esta cuenta.">
                   <Controller
                     control={form.control}
                     name="destajista"
                     render={({ field }) => (
                       <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger id="inv-destajista" className="w-full" aria-describedby="inv-destajista-nota" aria-invalid={!!errors.destajista}>
-                          <SelectValue placeholder={destajistas.isPending ? 'Cargando…' : 'Elige un destajista'} />
+                          <SelectValue placeholder={destajistas.isPending ? 'Cargando…' : 'Elige un proveedor'} />
                         </SelectTrigger>
                         <SelectContent>
                           {destajistas.data?.map((d) => (
@@ -204,7 +204,7 @@ export function DialogoInvitar({ abierto, onCerrar }: Props) {
                               {d.especialidad ? ` · ${d.especialidad}` : ''}
                             </SelectItem>
                           ))}
-                          <SelectItem value={NUEVO}>+ Crear destajista nuevo</SelectItem>
+                          <SelectItem value={NUEVO}>+ Crear proveedor nuevo</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
@@ -212,7 +212,7 @@ export function DialogoInvitar({ abierto, onCerrar }: Props) {
                 </Campo>
                 {destajista === NUEVO && (
                   <div className="grid gap-4 rounded-xl border p-4">
-                    <Campo id="inv-nuevo-nombre" etiqueta="Nombre del destajista" error={errors.nuevo_nombre?.message}>
+                    <Campo id="inv-nuevo-nombre" etiqueta="Nombre del proveedor" error={errors.nuevo_nombre?.message}>
                       <Input id="inv-nuevo-nombre" aria-describedby="inv-nuevo-nombre-nota" aria-invalid={!!errors.nuevo_nombre} {...form.register('nuevo_nombre')} />
                     </Campo>
                     <div className="grid gap-4 sm:grid-cols-2">

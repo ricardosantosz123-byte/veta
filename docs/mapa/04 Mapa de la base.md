@@ -20,6 +20,7 @@
 | `20261011000001_fase6_insumos.sql` | Unidad cerrada, nombre único normalizado (`nombre_norm`), costo a 4 decimales, existencia nunca negativa, entrada con costo, ajuste con motivo, salida→orden con `destajista_id`, columnas protegidas, no borrar con movimientos; `crear_insumo`, `ajustar_existencia`, `material_entregado`; `v_insumos`, `v_movimientos_insumo`; comentario "Margen sobre destajos" en `v_pedido_resumen` |
 | `20261011000002_fase6_unidad_dm2.sql` | Unidad `dm2` (decímetro cuadrado) para piel |
 | `20261015000001_fase10_tablero.sql` | `tablero(empresa)`: indicadores del PRD §5.10 (completo para Admin/Contador, propio y sin costos para el Vendedor) |
+| `20261016000001_texto_proveedor.sql` | Texto visible "destajista" → "proveedor": mensaje de `_tg_orden_before` y comentarios "Margen sobre fabricación" en `v_pedido_resumen` |
 | `20261015000002_fase10_avisos.sql` | `pg_net` y `pg_cron`; `_avisar()` (lee URL y secreto de Vault); triggers `aviso_pedido_terminado` y `aviso_pago_mp`; tarea `veta-avisos-prueba` (diaria 15:00 UTC) |
 | `20261014000001_fase9_stripe.sql` | `empresas.cancela_al_final`; tabla `stripe_eventos` (solo service_role); `guardar_cliente_stripe`, `aplicar_suscripcion_stripe` (mapeo PRD §5.11) |
 | `20261013000001_fase8_mercado_pago.sql` | `empresas.mp_cuenta`; `links_pago.concepto/pagado_at/pago_id`; política `lp_upd` (solo cancelar un link activo); `mp_guardar_conexion`, `mp_desconectar`, `preparar_link_pago`, `registrar_link_pago`, `registrar_pago_mp` |

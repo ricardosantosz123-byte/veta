@@ -92,7 +92,7 @@ export async function pagarDestajo(empresaId: string, ordenId: string, p: { mont
   if (error) throw error
 }
 
-/** Pagos del destajista que ve la sesión (RLS: el Destajista solo ve los suyos). */
+/** Pagos del proveedor que ve la sesión (RLS: el Destajista solo ve los suyos). */
 export async function leerMisPagos(empresaId: string) {
   const { data, error } = await supabase
     .from('pagos_destajista')

@@ -113,7 +113,7 @@ export const TABLAS_BITACORA = {
   pedidos: 'Pedidos',
   pagos_cliente: 'Pagos de clientes',
   ordenes_produccion: 'Órdenes de producción',
-  pagos_destajista: 'Pagos a destajistas',
+  pagos_destajista: 'Pagos a proveedores',
   modelos: 'Modelos del catálogo',
   miembros: 'Usuarios',
 } as const

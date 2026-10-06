@@ -154,7 +154,7 @@ export function FichaPedido() {
     mutationFn: () => autorizarInicio(id),
     onSuccess: async () => {
       await refrescar()
-      toast.success('Inicio autorizado: los destajistas ya pueden empezar')
+      toast.success('Inicio autorizado: los proveedores ya pueden empezar')
     },
     onError: (e) => toast.error(mensajeError(e)),
   })
@@ -326,7 +326,7 @@ export function FichaPedido() {
       )}
       {p.estado === 'anticipo_pendiente' && p.inicio_autorizado_at && (
         <p role="status" className="rounded-xl border p-3 text-sm text-muted-foreground">
-          <KeyRound className="mr-1 inline size-4" aria-hidden /> Inicio autorizado sin anticipo el {fechaHora(p.inicio_autorizado_at)}: los destajistas ya pueden empezar.
+          <KeyRound className="mr-1 inline size-4" aria-hidden /> Inicio autorizado sin anticipo el {fechaHora(p.inicio_autorizado_at)}: los proveedores ya pueden empezar.
         </p>
       )}
 
@@ -587,7 +587,7 @@ export function FichaPedido() {
           <AlertDialogHeader>
             <AlertDialogTitle>¿Autorizar el inicio de P-{p.folio} sin anticipo?</AlertDialogTitle>
             <AlertDialogDescription>
-              Los destajistas podrán empezar sus órdenes aunque falten {moneda(p.anticipo_faltante)} del anticipo. Queda registrado quién lo autorizó y cuándo.
+              Los proveedores podrán empezar sus órdenes aunque falten {moneda(p.anticipo_faltante)} del anticipo. Queda registrado quién lo autorizó y cuándo.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

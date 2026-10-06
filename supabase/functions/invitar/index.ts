@@ -18,7 +18,7 @@ const NOMBRE_ROL: Record<Rol, string> = {
   admin: 'Admin',
   vendedor: 'Vendedor',
   produccion: 'Producción',
-  destajista: 'Destajista',
+  destajista: 'Proveedor (fabricante)',
   contador: 'Contador',
 }
 
@@ -41,7 +41,7 @@ function validar(cuerpo: unknown): Entrada | string {
   if (typeof c.empresa_id !== 'string' || !UUID.test(c.empresa_id)) return 'Empresa inválida.'
   if (!EMAIL.test(email) || email.length > 254) return 'Ese correo no es válido.'
   if (!ROLES.includes(rol)) return 'Rol inválido.'
-  if (rol === 'destajista' && (!destajista_id || !UUID.test(destajista_id))) return 'Elige el destajista.'
+  if (rol === 'destajista' && (!destajista_id || !UUID.test(destajista_id))) return 'Elige el proveedor.'
   return { empresa_id: c.empresa_id, email, rol, destajista_id: rol === 'destajista' ? destajista_id : null }
 }
 

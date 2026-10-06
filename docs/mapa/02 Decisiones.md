@@ -120,6 +120,12 @@
 - **PWA**: íconos PNG generados del `icon.svg` actual (la "V"); cambian cuando haya logo definitivo.
 - **Rendimiento**: layout, Ajustes, asistente y páginas de acceso con carga diferida. Lighthouse móvil en la landing: 92 / 100 / 100 / 92.
 
+## Lenguaje (2026-10-06)
+- **"Destajista" pasa a "Proveedor"** en todo lo que ve la gente (pantallas, roles, PDFs, WhatsApp, correos, landing, legales y mensajes de la base). Ricardo: la palabra suena vulgar.
+  - El rol se muestra como **"Proveedor (fabricante)"**; el campo de Insumos dice **"Proveedor de insumos"**, para distinguirlos.
+  - "Margen sobre destajos" pasa a **"Margen sobre fabricación"** (sigue con la nota "No incluye material de insumos"). "Corte de destajo" pasa a "Corte de proveedores".
+  - Los **nombres internos no cambian** (tabla `destajistas`, rol `destajista`, columnas `destajista_id`, `v_destajo_saldos`): renombrarlos sería riesgoso y nadie los ve. Los documentos internos (PRD, FASES, mapa) siguen usando "destajista" como término técnico.
+
 ## Herramientas (2026-10-05)
 - ~~Skills de antislop v3.2.20 en `.claude/skills/`, aplicando salvo contradicción con CLAUDE.md.~~ Reemplazado el mismo día:
 - **antislop se retiró del proyecto (las 6 skills).** Por qué:

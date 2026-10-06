@@ -182,7 +182,7 @@ export function DialogoOrden({ orden: o, onCerrar }: Props) {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="grid gap-2">
-            <Label htmlFor="ord-dest">Destajista</Label>
+            <Label htmlFor="ord-dest">Proveedor</Label>
             <Select
               value={o.destajista_id ?? SIN}
               onValueChange={(v) => cambiar.mutate({ destajista_id: v === SIN ? null : v })}
@@ -262,7 +262,7 @@ export function DialogoOrden({ orden: o, onCerrar }: Props) {
         {verCostos && (
           <section className="grid gap-3 border-t pt-4" aria-labelledby="ord-pagos">
             <h3 id="ord-pagos" className="font-medium">
-              Pagos al destajista
+              Pagos al proveedor
             </h3>
             {pagos.data?.length ? (
               <ul className="divide-y text-sm">

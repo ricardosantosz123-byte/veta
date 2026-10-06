@@ -75,7 +75,7 @@ function FormularioDestajista({ registro: d, onCerrar }: { registro: Registro | 
     mutationFn: (v: Salida) => guardarDestajista(empresa!.id, nuevo ? null : d.id, { ...v, telefono: v.telefono && v.telefono.length === 10 ? `52${v.telefono}` : v.telefono }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['produccion', empresa!.id] })
-      toast.success(nuevo ? 'Destajista agregado' : 'Destajista actualizado')
+      toast.success(nuevo ? 'Proveedor agregado' : 'Proveedor actualizado')
       onCerrar()
     },
   })
@@ -85,7 +85,7 @@ function FormularioDestajista({ registro: d, onCerrar }: { registro: Registro | 
       <DialogContent className="sm:max-w-md">
         <form onSubmit={form.handleSubmit((v) => guardar.mutate(v))} noValidate className="grid gap-4">
           <DialogHeader>
-            <DialogTitle>{nuevo ? 'Nuevo destajista' : `Editar ${d.nombre}`}</DialogTitle>
+            <DialogTitle>{nuevo ? 'Nuevo proveedor' : `Editar ${d.nombre}`}</DialogTitle>
             <DialogDescription>Quien produce una etapa por pieza: carpintero, laqueador, tapicero…</DialogDescription>
           </DialogHeader>
           <Campo id="des-nombre" etiqueta="Nombre" error={errors.nombre?.message}>
@@ -106,7 +106,7 @@ function FormularioDestajista({ registro: d, onCerrar }: { registro: Registro | 
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="externo">Externo (taller propio)</SelectItem>
-                      <SelectItem value="interno">Interno (a destajo en tu taller)</SelectItem>
+                      <SelectItem value="interno">Interno (por pieza en tu taller)</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
@@ -222,12 +222,12 @@ export function Destajistas() {
       {editar && (
         <div className="flex justify-end">
           <Button onClick={() => setEditando('nuevo')}>
-            <Plus aria-hidden /> Nuevo destajista
+            <Plus aria-hidden /> Nuevo proveedor
           </Button>
         </div>
       )}
       {saldos.data.length === 0 ? (
-        <EstadoVacio icono={Users} titulo="Aún no hay destajistas" descripcion="Da de alta a quienes producen cada etapa para asignarles órdenes." />
+        <EstadoVacio icono={Users} titulo="Aún no hay proveedores" descripcion="Da de alta a quienes producen cada etapa para asignarles órdenes." />
       ) : (
         <Card className="py-0">
           <ul className="divide-y">

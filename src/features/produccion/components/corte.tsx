@@ -48,7 +48,7 @@ export function Corte() {
           comprometido: Number(f.comprometido),
         })),
       })
-      descargar(blob, `Corte-destajo-${desde}-a-${hasta}.pdf`)
+      descargar(blob, `Corte-proveedores-${desde}-a-${hasta}.pdf`)
     },
     onError: (e) => toast.error(`No se pudo generar el PDF: ${mensajeError(e)}`),
   })
@@ -98,7 +98,7 @@ export function Corte() {
           <table className="w-full min-w-[44rem] text-sm">
             <thead className="text-left text-xs tracking-wide text-muted-foreground uppercase">
               <tr className="border-b">
-                <th className="px-4 py-2.5 font-medium">Destajista</th>
+                <th className="px-4 py-2.5 font-medium">Proveedor</th>
                 <th className="px-2 py-2.5 text-right font-medium">Terminado</th>
                 <th className="px-2 py-2.5 text-right font-medium">Pagado</th>
                 <th className="px-2 py-2.5 text-right font-medium">Por pagar</th>

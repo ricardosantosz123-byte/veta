@@ -45,7 +45,7 @@ const s = StyleSheet.create({
   pieDer: { position: 'absolute', bottom: 24, right: 44, width: 150, textAlign: 'right', fontSize: 7.5, color: GRIS },
 })
 
-/** Orden para el destajista: qué hacer, cuántas piezas, para cuándo y cuánto se le paga. Sin datos del cliente. */
+/** Orden para el proveedor: qué hacer, cuántas piezas, para cuándo y cuánto se le paga. Sin datos del cliente. */
 export function DocumentoOrden({ empresa, logo, orden: o, destajista }: DatosOrden) {
   const acento = /^#[0-9a-fA-F]{6}$/.test(empresa.color_marca) ? empresa.color_marca : TINTA
   return (
@@ -65,7 +65,7 @@ export function DocumentoOrden({ empresa, logo, orden: o, destajista }: DatosOrd
 
         <View style={s.datos}>
           <View>
-            <Text style={s.etiqueta}>Destajista</Text>
+            <Text style={s.etiqueta}>Proveedor</Text>
             <Text style={s.fuerte}>{destajista ?? 'Sin asignar'}</Text>
           </View>
           <View>
@@ -102,7 +102,7 @@ export function DocumentoOrden({ empresa, logo, orden: o, destajista }: DatosOrd
 
         <View style={s.firmas}>
           <Text style={s.firma}>Entrega {empresa.nombre}</Text>
-          <Text style={s.firma}>Recibe {destajista ?? 'destajista'}</Text>
+          <Text style={s.firma}>Recibe {destajista ?? 'proveedor'}</Text>
         </View>
 
         <Text style={s.pieIzq} fixed>

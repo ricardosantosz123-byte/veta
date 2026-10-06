@@ -34,14 +34,14 @@ export default function PaginaPrivacidad() {
       <h2>1. Quién es responsable</h2>
       <p>
         <strong>[Razón social y domicilio del titular de {marca.nombre}, por completar]</strong> es responsable de los datos de las personas que crean una cuenta (dueños y usuarios de
-        las mueblerías). Respecto de los datos de los <strong>clientes finales</strong> y <strong>destajistas</strong> que cada mueblería captura, la mueblería es la responsable y{' '}
+        las mueblerías). Respecto de los datos de los <strong>clientes finales</strong> y <strong>proveedores</strong> que cada mueblería captura, la mueblería es la responsable y{' '}
         {marca.nombre} actúa como <strong>encargado</strong>: los trata solo por cuenta y bajo instrucciones de la mueblería.
       </p>
       <h2>2. Qué datos tratamos</h2>
       <ul>
         <li>De usuarios: nombre, correo electrónico, rol y datos de la empresa (razón social, RFC, teléfono, domicilio, logo).</li>
         <li>De clientes finales (capturados por la mueblería): nombre, apellidos, teléfono, correo, domicilio de entrega, pedidos y pagos.</li>
-        <li>De destajistas (capturados por la mueblería): nombre, teléfono, especialidad, órdenes y pagos.</li>
+        <li>De proveedores (capturados por la mueblería): nombre, teléfono, especialidad, órdenes y pagos.</li>
         <li>Datos técnicos: registros de uso y, en el portal público, un identificador cifrado (hash) de la dirección IP para evitar abusos.</li>
       </ul>
       <p>No tratamos datos personales sensibles. Los pagos con tarjeta los procesan Stripe y Mercado Pago; {marca.nombre} no recibe ni guarda números de tarjeta.</p>
@@ -76,7 +76,7 @@ export function PaginaTerminos() {
       </p>
       <h2>1. El servicio</h2>
       <p>
-        {marca.nombre} permite cotizar, registrar pedidos y pagos, organizar la producción con destajistas, llevar insumos y compartir el avance con clientes finales. Las
+        {marca.nombre} permite cotizar, registrar pedidos y pagos, organizar la producción con proveedores, llevar insumos y compartir el avance con clientes finales. Las
         funcionalidades pueden cambiar con el tiempo.
       </p>
       <h2>2. Prueba y suscripción</h2>
@@ -88,7 +88,7 @@ export function PaginaTerminos() {
       </ul>
       <h2>3. Tu cuenta y tus datos</h2>
       <ul>
-        <li>Eres responsable de los usuarios que invitas y de la información que capturan, incluidos los datos de tus clientes y destajistas.</li>
+        <li>Eres responsable de los usuarios que invitas y de la información que capturan, incluidos los datos de tus clientes y proveedores.</li>
         <li>Tus datos son tuyos. Si cancelas, puedes pedir una copia o su eliminación escribiendo a {marca.correoSoporte}. [Plazo de conservación por definir.]</li>
       </ul>
       <h2>4. Cobros a tus clientes</h2>
