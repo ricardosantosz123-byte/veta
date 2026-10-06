@@ -101,6 +101,25 @@
 - Un customer de Stripe por empresa, creado una sola vez (`guardar_cliente_stripe`, clave de idempotencia `customer-<empresa>`).
 - SDK `npm:stripe@23` solo en Edge Functions (verificación de firma); no entra al bundle del navegador.
 
+## Fase 10 (2026-10-06)
+- **Tablero** calculado en la base (`tablero(empresa)`), en una llamada:
+  - Ventas del mes = total **con IVA** de los pedidos creados en el mes (CDMX), sin cancelados. (⚠️ Decidida en modo nocturno, revisar)
+  - Conversión = cotizaciones vendidas (parcial o aceptada) entre cotizaciones no borrador de los **últimos 90 días**. (⚠️ Decidida en modo nocturno, revisar)
+  - "Por vencer" = cotizaciones enviadas que vencen en los próximos **3 días**. (⚠️ Decidida en modo nocturno, revisar)
+  - El Vendedor ve **solo lo suyo**: sus cotizaciones (`vendedor_id`) y los pedidos que nacieron de ellas (o que él creó), sin costos ni márgenes. Producción no tiene tablero de ventas. (⚠️ Decidida en modo nocturno, revisar)
+  - Gráficas: barras de una sola serie en el color del texto (sin depender del color), tooltip por barra y tabla para lectores de pantalla. Sin librerías de gráficas.
+- **Avisos**: función nueva `avisos` (pública con `x-avisos-secreto`) para eventos del sistema, separada de `notificar`, que sigue trabajando con la sesión del usuario. (⚠️ Decidida en modo nocturno, revisar)
+  - Automáticos: pedido terminado → cliente (con link al portal); pago de **Mercado Pago** → cliente; prueba por vencer (3 días antes y el último día) → Admins, con `pg_cron` diario a las 9:00 CDMX.
+  - Los pagos **manuales** siguen saliendo desde la app con el recibo PDF (`notificar`), no por trigger: la base no genera el PDF. (⚠️ Decidida en modo nocturno, revisar)
+  - "Orden asignada al destajista" sigue siendo WhatsApp prearmado desde la ficha de la orden (ya existía), sin correo, como dice el PRD.
+  - La URL de las funciones y el secreto viven en **Supabase Vault** (`veta_funciones_url`, `veta_avisos_secreto`); `AVISOS_SECRET` lo generó Claude al azar sin mostrarlo. Si faltan, `_avisar()` no hace nada y nunca rompe la operación.
+  - Se activaron **pg_net** y **pg_cron** en veta-dev (migración).
+- **Bitácora**: pestaña de Ajustes (Admin), filtros por tabla, usuario y fechas. (⚠️ Decidida en modo nocturno, revisar)
+- **Landing** (borrador): sin capturas ni cifras; los precios se leen de `src/config/planes.ts` y muestran "Precio por anunciar" mientras sean `null`. (⚠️ Decidida en modo nocturno, revisar)
+- **Privacidad y términos**: borradores con aviso visible; Veta encargado y la mueblería responsable de los datos de sus clientes (LFPDPPP). Faltan razón social, domicilio, reembolsos y jurisdicción.
+- **PWA**: íconos PNG generados del `icon.svg` actual (la "V"); cambian cuando haya logo definitivo.
+- **Rendimiento**: layout, Ajustes, asistente y páginas de acceso con carga diferida. Lighthouse móvil en la landing: 92 / 100 / 100 / 92.
+
 ## Herramientas (2026-10-05)
 - ~~Skills de antislop v3.2.20 en `.claude/skills/`, aplicando salvo contradicción con CLAUDE.md.~~ Reemplazado el mismo día:
 - **antislop se retiró del proyecto (las 6 skills).** Por qué:

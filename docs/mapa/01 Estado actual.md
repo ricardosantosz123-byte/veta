@@ -1,6 +1,6 @@
 # Estado actual
 
-> Actualizar al cerrar cada fase. Última actualización: 2026-10-05 (noche, Fase 6 construida).
+> Actualizar al cerrar cada fase. Última actualización: 2026-10-06 (noche autónoma: Fases 7 a 10).
 
 ## Fases
 | Fase | Tema | Estado | Commit |
@@ -12,10 +12,10 @@
 | 4 | Pedidos y cobranza | ✅ Completada | `6135d8a` |
 | 5 | Producción y destajistas | ✅ Completada | `78e2a7a` + `38ff0e2` |
 | 6 | Insumos | ✅ Completada | `1aa465c` + `ddea1f1` (unidad dm² para piel) |
-| 7 | Portal del cliente final | 🟡 Construida (noche), falta la prueba desde el celular | ver [[07 Reporte nocturno]] |
-| 8 | Link de pago Mercado Pago | 🟡 Construida (noche) y desplegada; falta probar con cuentas de prueba de Mercado Pago | ver [[07 Reporte nocturno]] |
-| 9 | Suscripción Stripe | 🟡 Código y pruebas listos (noche); funciones sin desplegar hasta tener las llaves de Stripe | ver [[07 Reporte nocturno]] |
-| 10 | Tablero, avisos, landing, lanzamiento | ⚪ Pendiente | |
+| 7 | Portal del cliente final | 🟡 Construida (noche), falta la prueba desde el celular | `aaa616e` · [[07 Reporte nocturno]] |
+| 8 | Link de pago Mercado Pago | 🟡 Construida (noche) y desplegada; falta probar con cuentas de prueba de Mercado Pago | `826bce9` · [[07 Reporte nocturno]] |
+| 9 | Suscripción Stripe | 🟡 Código y pruebas listos (noche); funciones sin desplegar hasta tener las llaves de Stripe | `65f6fef` · [[07 Reporte nocturno]] |
+| 10 | Tablero, avisos, landing, lanzamiento | 🟡 Construida (noche) salvo lo que requiere dominio, Resend real y Netlify | `8e9d67b` + `9ee5346` + `c56b73b` · [[07 Reporte nocturno]] |
 
 ## Fase 6: cierre
 - [x] Migración `20261011000001_fase6_insumos.sql` y `20261011000002_fase6_unidad_dm2.sql` aplicadas en veta-dev; `run.sh`: **189 pruebas en verde** (35 nuevas).
@@ -33,7 +33,7 @@
 6. **Ajuste por conteo** a 2 con motivo → aparece **Bajo mínimo** en la lista.
 
 ## Siguiente paso
-**Fase 7 · Portal del cliente final**: plan propuesto, esperando confirmación.
+Leer [[07 Reporte nocturno]]: decisiones ⚠️ por revisar, cuentas y llaves que faltan y pruebas de aceptación de las Fases 7 a 10.
 
 ## Datos de prueba
 - Silla **Natalia**: Carpintería 1,800 · Tapicería 900 · Nogal +600 · Piel +900 · markup 1.0 → **$8,400** General / **$9,800** Expo.

@@ -14,6 +14,13 @@
 
 ---
 
+### 2026-10-06 (noche, sin supervisión) · Fases 7 a 10
+- Hecho: portal público + función `portal`; Mercado Pago (conectar, link, webhook); Stripe (código y funciones sin desplegar); tablero, bitácora, avisos con pg_net/pg_cron/Vault, landing y legales en borrador, PWA, rendimiento y guía de despliegue.
+- Decisiones nuevas: marcadas con ⚠️ en [[02 Decisiones]] (Fases 7 a 10).
+- Pruebas: run.sh ✅ 243 contra veta-dev (cada migración ensayada antes en transacción revertida) · typecheck/lint/build ✅ · `deno check` de las 10 funciones ✅ · Lighthouse landing 92/100/100/92.
+- Commits: `aaa616e` (7), `826bce9` (8), `65f6fef` (9), `8e9d67b` `9ee5346` `c56b73b` (10).
+- Siguiente paso: leer [[07 Reporte nocturno]].
+
 ### 2026-10-06 · Fase 6: ajuste de unidades
 - Hecho: Ricardo probó la Fase 6 en la app (funciona). Pidió medir la piel en dm² o piezas → migración `fase6_unidad_dm2`; al elegir tipo Piel la unidad se sugiere en dm².
 - Pruebas: run.sh ✅ 189 · typecheck/lint/build ✅.

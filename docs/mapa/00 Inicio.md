@@ -16,10 +16,12 @@ SaaS por suscripción para mueblerías y talleres (carpintería, laca, tapicerí
 | [[04 Mapa de la base]] | Tablas, funciones, vistas y migraciones |
 | [[05 Pendientes y riesgos]] | Lo que falta antes de lanzar |
 | [[06 Bitácora]] | Una entrada por sesión |
+| [[07 Reporte nocturno]] | Resultado del trabajo autónomo de las Fases 6 a 10: decisiones por revisar, llaves que faltan y pruebas de aceptación |
 
 ## Documentos fuente
 - Especificación completa: `docs/PRD.md`
 - Prompts por fase: `docs/FASES.md`
+- Guía de despliegue a producción: `docs/DESPLIEGUE.md`
 - Reglas permanentes de código: `CLAUDE.md`
 - Prototipo visual: canvas "Veta · Prototipo" en Claude (6 pantallas)
 

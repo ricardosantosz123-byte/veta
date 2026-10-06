@@ -1,7 +1,7 @@
 # Mapa de la base de datos
 
 > Claude Code: mantén esta nota al día con cada migración nueva (nombre, qué agrega y sus pruebas).
-> Última revisión contra veta-dev: 2026-10-06. Pruebas: `supabase/tests/01_flujo_completo.sql` (234).
+> Última revisión contra veta-dev: 2026-10-06. Pruebas: `supabase/tests/01_flujo_completo.sql` (243).
 
 ## Migraciones (`supabase/migrations/`)
 | Archivo | Contenido |
@@ -19,6 +19,8 @@
 | `20261010000002_fase5_v_pedidos.sql` | Recrea `v_pedidos` para incluir `inicio_autorizado_*` |
 | `20261011000001_fase6_insumos.sql` | Unidad cerrada, nombre único normalizado (`nombre_norm`), costo a 4 decimales, existencia nunca negativa, entrada con costo, ajuste con motivo, salida→orden con `destajista_id`, columnas protegidas, no borrar con movimientos; `crear_insumo`, `ajustar_existencia`, `material_entregado`; `v_insumos`, `v_movimientos_insumo`; comentario "Margen sobre destajos" en `v_pedido_resumen` |
 | `20261011000002_fase6_unidad_dm2.sql` | Unidad `dm2` (decímetro cuadrado) para piel |
+| `20261015000001_fase10_tablero.sql` | `tablero(empresa)`: indicadores del PRD §5.10 (completo para Admin/Contador, propio y sin costos para el Vendedor) |
+| `20261015000002_fase10_avisos.sql` | `pg_net` y `pg_cron`; `_avisar()` (lee URL y secreto de Vault); triggers `aviso_pedido_terminado` y `aviso_pago_mp`; tarea `veta-avisos-prueba` (diaria 15:00 UTC) |
 | `20261014000001_fase9_stripe.sql` | `empresas.cancela_al_final`; tabla `stripe_eventos` (solo service_role); `guardar_cliente_stripe`, `aplicar_suscripcion_stripe` (mapeo PRD §5.11) |
 | `20261013000001_fase8_mercado_pago.sql` | `empresas.mp_cuenta`; `links_pago.concepto/pagado_at/pago_id`; política `lp_upd` (solo cancelar un link activo); `mp_guardar_conexion`, `mp_desconectar`, `preparar_link_pago`, `registrar_link_pago`, `registrar_pago_mp` |
 | `20261012000001_fase7_portal.sql` | `portal_pedido(token, slug)` con slug obligatorio en el portal, fecha en CDMX, fechas de cada estado y botón de pago solo con saldo; `portal_permitido` y `portal_registrar_intento` (límite por IP con hash) |
@@ -57,6 +59,8 @@
 | `mp_desconectar` | Admin | Borra el token, desconecta y cancela links activos |
 | `mp_guardar_conexion` / `registrar_link_pago` / `registrar_pago_mp` | solo service_role (Edge Functions de Mercado Pago) | Guardar token, guardar link, registrar pago aprobado (idempotente) |
 | `guardar_cliente_stripe` / `aplicar_suscripcion_stripe` | solo service_role (Edge Functions de Stripe) | Ligar customer y aplicar el estado actual de la suscripción |
+| `tablero` | Admin, Contador (completo); Vendedor (lo suyo, sin costos) | Indicadores del Tablero |
+| `_avisar` | solo la base (triggers y pg_cron) | Llama a la Edge Function `avisos` vía pg_net |
 | `material_entregado` | Admin, Producción, Contador; Destajista (lo suyo, sin valor) | Material entregado por orden |
 | `hoy_mx` | todos | "Hoy" en America/Mexico_City |
 | `portal_pedido` / `portal_buscar` | solo service_role (Edge Function `portal`) | Portal público |
@@ -85,7 +89,13 @@
 | `stripe-checkout` | Admin: customer + Checkout Session (subscription). **Sin desplegar** (faltan secretos de Stripe) |
 | `stripe-portal` | Admin: sesión del Portal de Cliente. **Sin desplegar** |
 | `stripe-webhook` | Pública con firma (`verify_jwt = false`): relee la suscripción y llama `aplicar_suscripcion_stripe`. **Sin desplegar** |
+| `avisos` | Pública con `x-avisos-secreto` (`verify_jwt = false`): pedido terminado, pago de Mercado Pago y prueba por vencer. Desplegada; sin Resend responde `no_configurado` |
 | `portal` | Pública (`verify_jwt = false`). GET link y POST buscador; límite por IP, CORS de `APP_ORIGINS`, 404 genérico. Secretos: `PORTAL_SALT`, `APP_ORIGINS` (ya puestos en veta-dev) |
+
+## Configuración fuera de las migraciones (veta-dev)
+- **Vault:** `veta_funciones_url`, `veta_avisos_secreto` (para `_avisar`).
+- **Secretos de funciones:** `APP_URL`, `APP_ORIGINS`, `PORTAL_SALT`, `AVISOS_SECRET`. Faltan los de Stripe y Resend (ver `supabase/functions/.env.example`).
+- **Extensiones:** `pg_net`, `pg_cron` (job `veta-avisos-prueba`).
 
 ## Helpers de seguridad
 `es_miembro`, `tiene_rol`, `mi_destajista`, `puede_escribir`, `_valida_empresa`

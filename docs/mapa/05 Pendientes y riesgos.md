@@ -15,7 +15,15 @@
 ## Técnicos
 - [ ] Contraste en modo claro: el rojo `--destructive` (#e7000b) sobre fondos rojizos (`bg-destructive/5` o `/10`: la insignia y el botón "destructive" de shadcn, el aviso de cancelación del pedido) da ~4.4:1 y no pasa AA. Sobre blanco sí (4.77:1). En Insumos se usó contorno sobre blanco.
 - [ ] Bundle de JavaScript > 500 kB: cargar los módulos por separado (lazy), ya iniciado en Catálogo.
-- [ ] Íconos PNG de la PWA cuando haya logo.
+- [x] Íconos PNG de la PWA (generados de la "V" actual; regenerar con el logo definitivo).
+
+## Fases 8 a 10 (lo que solo puede hacer Ricardo)
+- [ ] Cuentas de prueba de Mercado Pago (vendedor y comprador) y prueba de pago real en veta-dev.
+- [ ] Stripe: cuenta, producto con precio mensual y anual, Portal de Cliente; secretos `STRIPE_*`; desplegar `stripe-checkout`, `stripe-portal` y `stripe-webhook`; endpoint del webhook.
+- [ ] Resend + dominio: `RESEND_API_KEY`, `EMAIL_FROM`; SMTP de Auth; **Confirm email**.
+- [ ] Datos legales en `/privacidad` y `/terminos` (razón social, domicilio, reembolsos, jurisdicción) y revisión del abogado.
+- [ ] `marca.correoSoporte` sigue siendo `soporte@tudominio.com`.
+- [ ] Probar en la app, con sesión, las pantallas nuevas: Tablero, Bitácora, Cobros en línea, Link de pago y Suscripción (Claude no inicia sesión con cuentas reales).
 
 ## V2
 - [ ] **Costo de material en el margen:** integrar el material de insumos al margen del pedido, distinguiendo si el material lo pone la empresa o el destajista, para no contarlo dos veces. Hoy el margen es "Margen sobre destajos" y el material solo se ve en la ficha de la orden (decisión de la Fase 6). Base lista: cada salida guarda su costo promedio (`movimientos_insumo.costo_unitario`) y su orden.
