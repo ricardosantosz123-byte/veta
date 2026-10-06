@@ -2,6 +2,8 @@
 -- cobranza, producción por destajista, insumos y portal público.
 -- Uso: psql -v ON_ERROR_STOP=1 -f 00_supabase_stub.sql -f ../migrations/*.sql -f 01_flujo_completo.sql
 \set QUIET on
+-- Misma zona que Supabase (UTC): así las pruebas detectan si algo usa la fecha UTC en lugar de hoy_mx().
+set timezone to 'UTC';
 \pset tuples_only on
 \pset format unaligned
 
@@ -169,7 +171,7 @@ select pg_temp.ok((select precio_unitario = 9800 and precio_sugerido is null fro
 select duplicar_cotizacion(:'cot') as cot3 \gset
 select pg_temp.ok((select count(*) from cotizacion_items where cotizacion_id = :'cot3') = 2
   and (select estado = 'borrador' and folio > :cot_folio from cotizaciones where id = :'cot3'), 'duplicar copia renglones con folio nuevo');
-update cotizaciones set vigencia_hasta = current_date - 1 where id = :'cot3';
+update cotizaciones set vigencia_hasta = hoy_mx() - 1 where id = :'cot3';
 select pg_temp.ok((select estado_efectivo from v_cotizaciones where id = :'cot3') = 'vencida', 'vencida se deriva de la vigencia');
 select pg_temp.ok((select count(*) from nombres_equipo(:'emp_a')) = 5, 'nombres_equipo lista a los miembros');
 reset role;  -- limpieza para no alterar los conteos de pruebas posteriores
@@ -198,10 +200,19 @@ select pg_temp.ok((select precio_unitario from cotizacion_items where id = :'it1
 -- Cobranza
 insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (:'emp_a', :'ped', 15000, 'transferencia');
 select pg_temp.ok((select estado from pedidos where id = :'ped') = 'anticipo_pendiente', 'con 15,000 sigue esperando anticipo');
-update pedidos set pagado = 999999, total = 1 where id = :'ped';
-select pg_temp.ok((select pagado = 15000 and total = 35078.40 from pedidos where id = :'ped'), 'pagado y total no se alteran a mano');
+select pg_temp.falla(format($$update pedidos set pagado = 999999, total = 1 where id = %L$$, :'ped'), 'pagado y total no se alteran a mano');
+select pg_temp.falla(format($$update pedidos set descuento_pct = 50 where id = %L$$, :'ped'), 'el descuento del pedido no cambia después de vender');
+select pg_temp.falla(format($$update pedidos set estado = 'en_produccion' where id = %L$$, :'ped'), 'el estado del pedido no se fuerza a mano');
+select pg_temp.falla(format($$insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (%L, %L, 999999, 'efectivo')$$, :'emp_a', :'ped'),
+  'pago manual mayor al saldo se rechaza');
+select pg_temp.falla(format($$insert into pagos_cliente (empresa_id, pedido_id, monto, metodo, fecha) values (%L, %L, 10, 'efectivo', hoy_mx() + 1)$$, :'emp_a', :'ped'),
+  'pago con fecha futura (Ciudad de México) se rechaza');
+select pg_temp.ok((select fecha = hoy_mx() and folio is not null from pagos_cliente where pedido_id = :'ped' order by created_at limit 1),
+  'pago con folio de recibo y fecha de hoy en la Ciudad de México');
+select pg_temp.ok((select saldo_despues from v_pagos where pedido_id = :'ped' order by created_at limit 1) = 20078.40, 'v_pagos: saldo después del primer pago');
 insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (:'emp_a', :'ped', 6047.04, 'efectivo');
 select pg_temp.ok((select estado from pedidos where id = :'ped') = 'en_produccion', 'anticipo cubierto → en producción');
+select pg_temp.ok((select en_produccion_at is not null from pedidos where id = :'ped'), 'fecha de inicio de producción para la línea de tiempo');
 select pg_temp.ok((select saldo = 14031.36 and pedidos = 1 and cotizaciones = 1 from v_clientes where id = :'cli'), 'v_clientes: saldo y conteos del cliente');
 select id as pit from pedido_items where pedido_id = :'ped' \gset
 select folio as ped_folio, token_portal as tok from pedidos where id = :'ped' \gset
@@ -248,7 +259,20 @@ select pg_temp.ok((select estado from pedidos where id = :'ped') = 'terminado', 
 select pg_temp.falla(format($$update pedidos set estado = 'entregado' where id = %L$$, :'ped'), 'no se entrega con saldo pendiente');
 insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (:'emp_a', :'ped', 14031.36, 'transferencia');
 select pg_temp.ok((select estado from pedidos where id = :'ped') = 'liquidado', 'finiquito → liquidado');
+reset role;
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+select id as pago_fin from pagos_cliente where pedido_id = :'ped' and monto = 14031.36 \gset
+select pg_temp.falla(format($$update pagos_cliente set monto = 1 where id = %L$$, :'pago_fin'), 'el monto de un pago no se edita');
+select pg_temp.falla(format($$update pagos_cliente set anulado = true where id = %L$$, :'pago_fin'), 'anular un pago exige motivo');
+update pagos_cliente set anulado = true, motivo_anulacion = 'Transferencia rebotada' where id = :'pago_fin';
+select pg_temp.ok((select estado = 'terminado' and liquidado_at is null from pedidos where id = :'ped'), 'anular el finiquito regresa el pedido a terminado');
+select pg_temp.falla(format($$update pagos_cliente set anulado = false where id = %L$$, :'pago_fin'), 'un pago anulado no se restaura');
+insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (:'emp_a', :'ped', 14031.36, 'transferencia');
+select pg_temp.ok((select estado from pedidos where id = :'ped') = 'liquidado', 'nuevo finiquito → liquidado otra vez');
+reset role;
+select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated;
 update pedidos set estado = 'entregado' where id = :'ped';
+select pg_temp.ok((select entregado_at is not null from pedidos where id = :'ped'), 'entregado con fecha');
 select pg_temp.ok((select count(*) from v_pedido_resumen) = 0, 'Vendedor no ve márgenes');
 reset role;
 
@@ -265,6 +289,42 @@ reset role;
 select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
 select pg_temp.ok((select costo_unitario from cotizacion_item_costos where item_id = :'it1') = 4200, 'Admin ve costo congelado 4,200');
 select pg_temp.ok((select count(*) from bitacora) > 10, 'bitácora registra movimientos');
+select pg_temp.falla(format($$update pagos_cliente set anulado = true, motivo_anulacion = 'x' where pedido_id = %L$$, :'ped'),
+  'no se anulan pagos de un pedido entregado');
+
+-- Fase 4: Mercado Pago con saldo a favor, link de pago, semáforo y cancelación
+select crear_pedido_desde_cotizacion(:'cot', array[:'it2']::uuid[], false) as ped2 \gset
+select pg_temp.ok((select estado from cotizaciones where id = :'cot') = 'aceptada', 'vender el resto deja la cotización aceptada');
+select id as pit2 from pedido_items where pedido_id = :'ped2' \gset
+reset role;
+insert into links_pago (empresa_id, pedido_id, monto, url) values (:'emp_a', :'ped2', 5000, 'https://mp.test/1');  -- lo haría mp-crear-link
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (:'emp_a', :'ped2', 1000, 'efectivo');
+select pg_temp.ok((select estado from links_pago where pedido_id = :'ped2') = 'expirado', 'un pago manual expira el link de pago activo');
+reset role;
+set role service_role;  -- webhook de Mercado Pago
+insert into pagos_cliente (empresa_id, pedido_id, monto, metodo, externo_id) values (:'emp_a', :'ped2', 20000, 'mercado_pago', 'mp-123');
+reset role;
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+select pg_temp.ok((select saldo_a_favor from v_pedidos where id = :'ped2') = 21000 - 12528, 'pago de Mercado Pago mayor al saldo: se acepta y queda saldo a favor');
+update pedidos set fecha_compromiso = hoy_mx() - 1 where id = :'ped2';
+select pg_temp.ok((select semaforo from v_pedidos where id = :'ped2') = 'atrasado', 'semáforo atrasado con la fecha de la Ciudad de México');
+insert into ordenes_produccion (empresa_id, pedido_item_id, etapa_id, cantidad, costo_acordado) values (:'emp_a', :'pit2', :'e_carp', 1, 3000) returning id as o3 \gset
+insert into ordenes_produccion (empresa_id, pedido_item_id, etapa_id, cantidad, costo_acordado) values (:'emp_a', :'pit2', :'e_tap', 1, 2000) returning id as o4 \gset
+select marcar_avance_orden(:'o3', 'en_proceso');
+reset role;
+select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated;
+select pg_temp.falla(format($$update pedidos set estado = 'cancelado', motivo_cancelacion = 'x' where id = %L$$, :'ped2'), 'solo el Admin cancela un pedido');
+reset role;
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+select pg_temp.falla(format($$update pedidos set estado = 'cancelado' where id = %L$$, :'ped2'), 'cancelar exige motivo');
+update pedidos set estado = 'cancelado', motivo_cancelacion = 'El cliente se arrepintió' where id = :'ped2';
+select pg_temp.ok((select estado from ordenes_produccion where id = :'o4') = 'cancelada'
+  and (select estado from ordenes_produccion where id = :'o3') = 'en_proceso', 'cancelar: la orden pendiente se cancela, la en proceso se queda');
+select pg_temp.ok((select pagado = 21000 and cancelado_at is not null from pedidos where id = :'ped2'), 'cancelar conserva lo cobrado');
+select pg_temp.falla(format($$insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (%L, %L, 10, 'efectivo')$$, :'emp_a', :'ped2'),
+  'no se registran pagos manuales a un pedido cancelado');
+select pg_temp.falla(format($$update pedidos set estado = 'entregado' where id = %L$$, :'ped2'), 'un pedido cancelado no se reactiva');
 reset role;
 
 -- ============ Aislamiento entre empresas ============

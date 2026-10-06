@@ -343,6 +343,13 @@ export type Database = {
             referencedRelation: "v_pedido_resumen"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "cotizacion_items_pedido_fk"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos"
+            referencedColumns: ["id"]
+          },
         ]
       }
       cotizaciones: {
@@ -841,6 +848,13 @@ export type Database = {
             referencedRelation: "v_pedido_resumen"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "links_pago_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos"
+            referencedColumns: ["id"]
+          },
         ]
       }
       listas_precios: {
@@ -1260,42 +1274,54 @@ export type Database = {
       pagos_cliente: {
         Row: {
           anulado: boolean
+          anulado_at: string | null
+          anulado_por: string | null
           comprobante_path: string | null
           created_at: string
           empresa_id: string
           externo_id: string | null
           fecha: string
+          folio: number | null
           id: string
           metodo: Database["public"]["Enums"]["metodo_pago"]
           monto: number
+          motivo_anulacion: string | null
           pedido_id: string
           referencia: string | null
           registrado_por: string | null
         }
         Insert: {
           anulado?: boolean
+          anulado_at?: string | null
+          anulado_por?: string | null
           comprobante_path?: string | null
           created_at?: string
           empresa_id: string
           externo_id?: string | null
           fecha?: string
+          folio?: number | null
           id?: string
           metodo: Database["public"]["Enums"]["metodo_pago"]
           monto: number
+          motivo_anulacion?: string | null
           pedido_id: string
           referencia?: string | null
           registrado_por?: string | null
         }
         Update: {
           anulado?: boolean
+          anulado_at?: string | null
+          anulado_por?: string | null
           comprobante_path?: string | null
           created_at?: string
           empresa_id?: string
           externo_id?: string | null
           fecha?: string
+          folio?: number | null
           id?: string
           metodo?: Database["public"]["Enums"]["metodo_pago"]
           monto?: number
+          motivo_anulacion?: string | null
           pedido_id?: string
           referencia?: string | null
           registrado_por?: string | null
@@ -1320,6 +1346,13 @@ export type Database = {
             columns: ["pedido_id"]
             isOneToOne: false
             referencedRelation: "v_pedido_resumen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagos_cliente_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos"
             referencedColumns: ["id"]
           },
         ]
@@ -1454,12 +1487,20 @@ export type Database = {
             referencedRelation: "v_pedido_resumen"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "pedido_items_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos"
+            referencedColumns: ["id"]
+          },
         ]
       }
       pedidos: {
         Row: {
           anticipo_pct: number
           anticipo_requerido: number
+          cancelado_at: string | null
           cliente_id: string
           cotizacion_id: string | null
           created_at: string
@@ -1468,14 +1509,18 @@ export type Database = {
           descuento_pct: number
           direccion_entrega: string | null
           empresa_id: string
+          en_produccion_at: string | null
           entregado_at: string | null
           envio: number
           estado: Database["public"]["Enums"]["estado_pedido"]
+          factura_path: string | null
           facturado: boolean
           fecha_compromiso: string | null
           folio: number | null
           id: string
           iva: number
+          liquidado_at: string | null
+          motivo_cancelacion: string | null
           notas: string | null
           pagado: number
           precios_con_iva: boolean
@@ -1489,6 +1534,7 @@ export type Database = {
         Insert: {
           anticipo_pct?: number
           anticipo_requerido?: number
+          cancelado_at?: string | null
           cliente_id: string
           cotizacion_id?: string | null
           created_at?: string
@@ -1497,14 +1543,18 @@ export type Database = {
           descuento_pct?: number
           direccion_entrega?: string | null
           empresa_id: string
+          en_produccion_at?: string | null
           entregado_at?: string | null
           envio?: number
           estado?: Database["public"]["Enums"]["estado_pedido"]
+          factura_path?: string | null
           facturado?: boolean
           fecha_compromiso?: string | null
           folio?: number | null
           id?: string
           iva?: number
+          liquidado_at?: string | null
+          motivo_cancelacion?: string | null
           notas?: string | null
           pagado?: number
           precios_con_iva?: boolean
@@ -1518,6 +1568,7 @@ export type Database = {
         Update: {
           anticipo_pct?: number
           anticipo_requerido?: number
+          cancelado_at?: string | null
           cliente_id?: string
           cotizacion_id?: string | null
           created_at?: string
@@ -1526,14 +1577,18 @@ export type Database = {
           descuento_pct?: number
           direccion_entrega?: string | null
           empresa_id?: string
+          en_produccion_at?: string | null
           entregado_at?: string | null
           envio?: number
           estado?: Database["public"]["Enums"]["estado_pedido"]
+          factura_path?: string | null
           facturado?: boolean
           fecha_compromiso?: string | null
           folio?: number | null
           id?: string
           iva?: number
+          liquidado_at?: string | null
+          motivo_cancelacion?: string | null
           notas?: string | null
           pagado?: number
           precios_con_iva?: boolean
@@ -1718,6 +1773,60 @@ export type Database = {
           },
         ]
       }
+      v_pagos: {
+        Row: {
+          anulado: boolean | null
+          anulado_at: string | null
+          anulado_por: string | null
+          comprobante_path: string | null
+          created_at: string | null
+          empresa_id: string | null
+          externo_id: string | null
+          fecha: string | null
+          folio: number | null
+          id: string | null
+          metodo: Database["public"]["Enums"]["metodo_pago"] | null
+          monto: number | null
+          motivo_anulacion: string | null
+          pagado_acumulado: number | null
+          pedido_folio: number | null
+          pedido_id: string | null
+          pedido_total: number | null
+          referencia: string | null
+          registrado_por: string | null
+          saldo_despues: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagos_cliente_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagos_cliente_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagos_cliente_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedido_resumen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagos_cliente_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_pedido_resumen: {
         Row: {
           cliente: string | null
@@ -1736,6 +1845,88 @@ export type Database = {
           total: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "pedidos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_pedidos: {
+        Row: {
+          anticipo_faltante: number | null
+          anticipo_pct: number | null
+          anticipo_requerido: number | null
+          cancelado_at: string | null
+          cliente_apellidos: string | null
+          cliente_email: string | null
+          cliente_id: string | null
+          cliente_nombre: string | null
+          cliente_telefono: string | null
+          cotizacion_id: string | null
+          created_at: string | null
+          created_by: string | null
+          descuento_monto: number | null
+          descuento_pct: number | null
+          dias_para_compromiso: number | null
+          direccion_entrega: string | null
+          empresa_cliente: string | null
+          empresa_id: string | null
+          en_produccion_at: string | null
+          entregado_at: string | null
+          envio: number | null
+          estado: Database["public"]["Enums"]["estado_pedido"] | null
+          factura_path: string | null
+          facturado: boolean | null
+          fecha_compromiso: string | null
+          folio: number | null
+          id: string | null
+          iva: number | null
+          liquidado_at: string | null
+          motivo_cancelacion: string | null
+          notas: string | null
+          pagado: number | null
+          precios_con_iva: boolean | null
+          saldo: number | null
+          saldo_a_favor: number | null
+          semaforo: string | null
+          subtotal: number | null
+          terminado_at: string | null
+          token_portal: string | null
+          total: number | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "v_clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_cotizacion_id_fkey"
+            columns: ["cotizacion_id"]
+            isOneToOne: false
+            referencedRelation: "cotizaciones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_cotizacion_id_fkey"
+            columns: ["cotizacion_id"]
+            isOneToOne: false
+            referencedRelation: "v_cotizaciones"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pedidos_empresa_id_fkey"
             columns: ["empresa_id"]
@@ -1804,6 +1995,7 @@ export type Database = {
       }
       duplicar_cotizacion: { Args: { p_cotizacion: string }; Returns: string }
       es_miembro: { Args: { p_empresa: string }; Returns: boolean }
+      hoy_mx: { Args: never; Returns: string }
       marcar_avance_orden: {
         Args: {
           p_estado: Database["public"]["Enums"]["estado_orden"]

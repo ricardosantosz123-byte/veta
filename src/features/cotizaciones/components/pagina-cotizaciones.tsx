@@ -25,21 +25,11 @@ import { crearCotizacion, duplicarCotizacion, leerCotizaciones, leerEquipo } fro
 import { EditorCotizacion } from '@/features/cotizaciones/components/editor-cotizacion'
 import { mensajeError } from '@/lib/errores'
 import { estadoCotizacion } from '@/lib/estados'
-import { fecha, moneda } from '@/lib/formato'
+import { diasDesdeHoy, fecha, moneda } from '@/lib/formato'
 import type { Enum } from '@/lib/supabase'
 import { normalizar } from '@/lib/texto'
 
 const TODOS = '__todos__'
-const DIA = 86_400_000
-
-/** Días para que venza (negativo: ya venció). Fechas de calendario, sin zona horaria. */
-function diasParaVencer(vigencia: string | null) {
-  if (!vigencia) return null
-  const hoy = new Date()
-  const hoyUtc = Date.UTC(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())
-  return Math.round((Date.parse(`${vigencia}T00:00:00Z`) - hoyUtc) / DIA)
-}
-
 function ListaCotizaciones() {
   const { empresa } = useEmpresaActiva()
   const { user } = useAuth()
@@ -71,7 +61,7 @@ function ListaCotizaciones() {
       if (estado !== TODOS && c.estado_efectivo !== estado) return false
       if (vendedor !== TODOS && c.vendedor_id !== (vendedor === 'yo' ? user?.id : vendedor)) return false
       if (vence !== TODOS) {
-        const d = diasParaVencer(c.vigencia_hasta)
+        const d = diasDesdeHoy(c.vigencia_hasta)
         const abierta = c.estado === 'borrador' || c.estado === 'enviada'
         if (vence === 'semana' && !(abierta && d !== null && d >= 0 && d <= 7)) return false
         if (vence === 'vencidas' && c.estado_efectivo !== 'vencida') return false
@@ -168,7 +158,7 @@ function ListaCotizaciones() {
             <ul className="divide-y">
               {visibles.length === 0 && <li className="p-6 text-center text-sm text-muted-foreground">No hay cotizaciones con esos filtros.</li>}
               {visibles.map((c) => {
-                const d = diasParaVencer(c.vigencia_hasta)
+                const d = diasDesdeHoy(c.vigencia_hasta)
                 const porVencer = (c.estado === 'borrador' || c.estado === 'enviada') && d !== null && d >= 0 && d <= 3
                 return (
                   <li key={c.id} className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 px-4 py-3 hover:bg-muted/40 lg:grid-cols-[5rem_1fr_7rem_8rem_8rem_7rem_8rem_2.5rem]">

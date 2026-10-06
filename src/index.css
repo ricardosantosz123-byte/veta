@@ -131,3 +131,17 @@
 @utility tabular {
   font-variant-numeric: tabular-nums;
 }
+
+/* Impresión (estado de cuenta): solo el contenido, sin menú ni encabezado de la app. */
+@media print {
+  [data-slot="sidebar"],
+  [data-slot="sidebar-gap"],
+  [data-slot="sidebar-container"],
+  header,
+  [role="status"] {
+    display: none !important;
+  }
+  [data-slot="sidebar-inset"] main {
+    padding: 0 !important;
+  }
+}

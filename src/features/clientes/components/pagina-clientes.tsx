@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, FilePlus2, Mail, MapPin, MessageCircle, Pencil, Phone, Plus, Search, Users } from 'lucide-react'
+import { ArrowLeft, FilePlus2, Mail, MapPin, MessageCircle, Pencil, Phone, Plus, ReceiptText, Search, Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link, Navigate, Route, Routes, useNavigate, useParams } from 'react-router'
 import { useEmpresaActiva, usePuedeEditar } from '@/app/empresa-activa'
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { leerCliente, leerClientes, leerHistorial, nombreCompleto } from '@/features/clientes/api'
 import { DialogoCliente } from '@/features/clientes/components/dialogo-cliente'
+import { EstadoCuenta } from '@/features/pedidos/components/estado-cuenta'
 import { mensajeError } from '@/lib/errores'
 import { fecha, moneda } from '@/lib/formato'
 import { normalizar } from '@/lib/texto'
@@ -131,6 +132,11 @@ function FichaCliente() {
           <h1 className="truncate text-2xl font-semibold tracking-tight">{nombre}</h1>
           {c.empresa_cliente && <p className="text-sm text-muted-foreground">{c.empresa_cliente}</p>}
         </div>
+        <Button variant="outline" asChild>
+          <Link to={`/clientes/${c.id}/estado-de-cuenta`}>
+            <ReceiptText aria-hidden /> Estado de cuenta
+          </Link>
+        </Button>
         {editar && (
           <Button variant="outline" onClick={() => setEditando(true)}>
             <Pencil aria-hidden /> Editar
@@ -221,13 +227,15 @@ function FichaCliente() {
               ) : (
                 <ul className="divide-y">
                   {historial.data?.pedidos.map((p) => (
-                    <li key={p.id} className="flex items-center gap-3 py-2.5">
+                    <li key={p.id}>
+                      <Link to={`/pedidos/${p.id}`} className="flex items-center gap-3 py-2.5">
                       <span className="w-16 font-medium tabular">P-{p.folio}</span>
                       <span className="flex-1 text-sm text-muted-foreground">{fecha(p.created_at)}</span>
                       <InsigniaEstado tipo="pedido" estado={p.estado} />
                       <span className="w-28 text-right text-sm tabular">
                         {Number(p.saldo) > 0 ? `Debe ${moneda(p.saldo)}` : 'Pagado'}
                       </span>
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -247,6 +255,7 @@ export default function PaginaClientes() {
     <Routes>
       <Route index element={<ListaClientes />} />
       <Route path=":id" element={<FichaCliente />} />
+      <Route path=":id/estado-de-cuenta" element={<EstadoCuenta />} />
       <Route path="*" element={<Navigate to="/clientes" replace />} />
     </Routes>
   )

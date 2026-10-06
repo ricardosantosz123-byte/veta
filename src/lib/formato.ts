@@ -72,3 +72,15 @@ export function fecha(valor: string | Date | null | undefined): string {
 export function fechaHora(valor: string | Date | null | undefined): string {
   return armar(valor, true)
 }
+
+/** "Hoy" en la Ciudad de México como "AAAA-MM-DD" (para fechas por defecto y comparaciones). */
+export function hoyMx(): string {
+  // en-CA da el formato ISO AAAA-MM-DD.
+  return new Intl.DateTimeFormat('en-CA', { timeZone: ZONA, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
+}
+
+/** Días de calendario entre hoy (Ciudad de México) y una fecha "AAAA-MM-DD". Negativo: ya pasó. */
+export function diasDesdeHoy(fechaIso: string | null | undefined): number | null {
+  if (!fechaIso || !SOLO_FECHA.test(fechaIso)) return null
+  return Math.round((Date.parse(`${fechaIso}T00:00:00Z`) - Date.parse(`${hoyMx()}T00:00:00Z`)) / 86_400_000)
+}

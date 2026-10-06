@@ -2,8 +2,8 @@ import { createBrowserRouter } from 'react-router'
 import { Inicio, RequiereEmpresa, RequierePermiso, RequiereSesion } from '@/app/guardias'
 import { AppLayout } from '@/app/layout/app-layout'
 import { modulos } from '@/app/modulos'
-import { PaginaModulo, PaginaNoEncontrada } from '@/app/paginas'
-import { PaginaCatalogo, PaginaClientes, PaginaCotizaciones } from '@/app/paginas-lazy'
+import { PaginaModulo, PaginaNoEncontrada, PortalEnConstruccion } from '@/app/paginas'
+import { PaginaCatalogo, PaginaClientes, PaginaCotizaciones, PaginaPedidos } from '@/app/paginas-lazy'
 import { PaginaAjustes } from '@/features/ajustes/components/pagina-ajustes'
 import {
   PaginaEntrar,
@@ -19,9 +19,10 @@ const paginas: Record<string, React.ReactNode> = {
   '/catalogo': <PaginaCatalogo />,
   '/clientes': <PaginaClientes />,
   '/cotizaciones': <PaginaCotizaciones />,
+  '/pedidos': <PaginaPedidos />,
 }
 // Módulos con subrutas propias (/catalogo/modelos/:id…).
-const conSubrutas = new Set(['/catalogo', '/clientes', '/cotizaciones'])
+const conSubrutas = new Set(['/catalogo', '/clientes', '/cotizaciones', '/pedidos'])
 
 export const router = createBrowserRouter([
   { path: '/entrar', element: <PaginaEntrar /> },
@@ -50,6 +51,9 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  // Portal público (Fase 7): /:slug/p/:token y /:slug/seguimiento, fuera del layout y sin sesión.
+  // Portal público del cliente final (se construye en la Fase 7): sin sesión y fuera del layout.
+  // Las rutas fijas de arriba (/entrar, /pedidos…) tienen prioridad sobre estas con :slug.
+  { path: '/:slug/p/:token', element: <PortalEnConstruccion /> },
+  { path: '/:slug/seguimiento', element: <PortalEnConstruccion /> },
   { path: '*', element: <PaginaNoEncontrada /> },
 ])

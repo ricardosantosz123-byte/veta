@@ -2,6 +2,7 @@
 //
 // Tipos implementados:
 //   · cotizacion_enviada  { cotizacion_id, pdf_path } → correo al cliente con el PDF adjunto.
+//   · pago_recibido       { pago_id, pdf_path }       → correo al cliente con el recibo adjunto.
 //
 // Todo se lee con la sesión de quien llama: RLS decide si puede ver la cotización y descargar el PDF.
 // Sin RESEND_API_KEY / EMAIL_FROM responde { correo: 'no_configurado' } y la app ofrece WhatsApp.
@@ -101,6 +102,60 @@ ${c.vigencia_hasta ? `<tr><td style="color:#6e6e73;padding-right:16px">Válida h
   return json({ correo })
 }
 
+const METODO: Record<string, string> = {
+  efectivo: 'Efectivo', transferencia: 'Transferencia', tarjeta: 'Tarjeta', mercado_pago: 'Mercado Pago', otro: 'Otro',
+}
+
+async function pagoRecibido(db: SupabaseClient, cuerpo: Record<string, unknown>) {
+  const pagoId = cuerpo.pago_id
+  const pdfPath = cuerpo.pdf_path
+  if (typeof pagoId !== 'string' || !UUID.test(pagoId)) return json({ error: 'Pago inválido.' }, 400)
+  if (typeof pdfPath !== 'string') return json({ error: 'Falta el recibo.' }, 400)
+
+  // v_pagos trae el saldo después de este pago, calculado por la base.
+  const { data: g } = await db
+    .from('v_pagos')
+    .select('id, empresa_id, pedido_id, folio, fecha, monto, metodo, anulado, saldo_despues, pedido_folio')
+    .eq('id', pagoId)
+    .maybeSingle()
+  if (!g) return json({ error: 'No tienes acceso a ese pago.' }, 403)
+  if (g.anulado) return json({ error: 'Ese pago está anulado.' }, 400)
+  const { data: p } = await db
+    .from('pedidos')
+    .select('cliente:clientes(nombre, email), empresa:empresas(nombre, color_marca, email)')
+    .eq('id', g.pedido_id)
+    .single()
+  const cliente = p?.cliente as unknown as { nombre: string; email: string | null } | null
+  const empresa = p?.empresa as unknown as { nombre: string; color_marca: string; email: string | null }
+  if (!cliente?.email) return json({ error: 'El cliente no tiene correo. Agrégalo en su ficha.' }, 400)
+
+  if (!pdfPath.startsWith(`${g.empresa_id}/recibos/${g.pedido_id}/`) || pdfPath.includes('..')) {
+    return json({ error: 'Recibo inválido.' }, 400)
+  }
+  const { data: archivo, error: errPdf } = await db.storage.from('privado').download(pdfPath)
+  if (errPdf || !archivo) return json({ error: 'No se encontró el recibo.' }, 404)
+
+  const saldo = Number(g.saldo_despues)
+  const lineaSaldo = saldo > 0 ? `Saldo pendiente: <strong>${moneda.format(saldo)}</strong>` : saldo < 0 ? `Saldo a favor: <strong>${moneda.format(-saldo)}</strong>` : 'Tu pedido quedó liquidado.'
+  const html = plantilla({
+    empresa: empresa.nombre,
+    color: empresa.color_marca,
+    titulo: `Recibimos tu pago`,
+    cuerpo: `<p style="margin:0 0 12px;font-size:15px;line-height:1.5">Hola ${escapar(cliente.nombre)}, gracias por tu pago para el pedido P-${g.pedido_folio}. Adjuntamos el recibo R-${g.folio}.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" style="font-size:15px;line-height:1.6">
+<tr><td style="color:#6e6e73;padding-right:16px">Monto</td><td style="font-weight:600">${escapar(moneda.format(Number(g.monto)))}</td></tr>
+<tr><td style="color:#6e6e73;padding-right:16px">Fecha</td><td>${fechaLarga(g.fecha)}</td></tr>
+<tr><td style="color:#6e6e73;padding-right:16px">Forma de pago</td><td>${escapar(METODO[g.metodo] ?? g.metodo)}</td></tr>
+</table>
+<p style="margin:16px 0 0;font-size:15px">${lineaSaldo}</p>`,
+    pie: `Si tienes dudas, responde a este correo${empresa.email ? ` o escribe a ${escapar(empresa.email)}` : ''}.`,
+  })
+  const correo = await enviarResend(cliente.email, `Recibo R-${g.folio} · ${empresa.nombre}`, html, [
+    { filename: `Recibo-R-${g.folio}.pdf`, content: base64(new Uint8Array(await archivo.arrayBuffer())) },
+  ])
+  return json({ correo })
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   if (req.method !== 'POST') return json({ error: 'Método no permitido.' }, 405)
@@ -124,6 +179,8 @@ Deno.serve(async (req) => {
   switch (cuerpo.tipo) {
     case 'cotizacion_enviada':
       return cotizacionEnviada(db, cuerpo)
+    case 'pago_recibido':
+      return pagoRecibido(db, cuerpo)
     default:
       return json({ error: 'Tipo de aviso desconocido.' }, 400)
   }

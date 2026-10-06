@@ -8,16 +8,12 @@ function rutaLogoPdf(e: { logo_pdf_path: string | null; logo_path: string | null
   return e.logo_path && /\.(png|jpe?g)$/i.test(e.logo_path) ? e.logo_path : null
 }
 
-/** Arma los datos y genera el PDF. @react-pdf/renderer se descarga aquí, solo cuando hace falta. */
-export async function prepararPdfCotizacion(cotizacion: Cotizacion, renglones: Renglon[]): Promise<Blob> {
-  const [{ generarPdfCotizacion, imagenComoDataUrl }, empresa] = await Promise.all([
-    import('@/features/cotizaciones/pdf/generar'),
-    leerEmpresa(cotizacion.empresa_id!),
-  ])
+/** Datos de la empresa y su logo (data: URL) para cualquier PDF: cotización, recibo… */
+export async function empresaParaPdf(empresaId: string) {
+  const [{ imagenComoDataUrl }, empresa] = await Promise.all([import('@/features/cotizaciones/pdf/generar'), leerEmpresa(empresaId)])
   const logo = await imagenComoDataUrl(urlPublica(rutaLogoPdf(empresa)))
-  const cl = cotizacion.cliente
-
-  return generarPdfCotizacion({
+  return {
+    logo,
     empresa: {
       nombre: empresa.nombre,
       razon_social: empresa.razon_social,
@@ -29,6 +25,19 @@ export async function prepararPdfCotizacion(cotizacion: Cotizacion, renglones: R
       iva: Number(empresa.iva),
       condiciones_cotizacion: empresa.condiciones_cotizacion,
     },
+  }
+}
+
+/** Arma los datos y genera el PDF. @react-pdf/renderer se descarga aquí, solo cuando hace falta. */
+export async function prepararPdfCotizacion(cotizacion: Cotizacion, renglones: Renglon[]): Promise<Blob> {
+  const [{ generarPdfCotizacion }, { empresa, logo }] = await Promise.all([
+    import('@/features/cotizaciones/pdf/generar'),
+    empresaParaPdf(cotizacion.empresa_id!),
+  ])
+  const cl = cotizacion.cliente
+
+  return generarPdfCotizacion({
+    empresa,
     logo,
     cotizacion: {
       folio: cotizacion.folio!,
@@ -60,9 +69,9 @@ export async function prepararPdfCotizacion(cotizacion: Cotizacion, renglones: R
   })
 }
 
-export function nombreArchivo(folio: number, cliente: string) {
+export function nombreArchivo(folio: number, cliente: string, prefijo = 'Cotizacion-C') {
   const limpio = cliente.normalize('NFD').replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-')
-  return `Cotizacion-C-${folio}${limpio ? `-${limpio}` : ''}.pdf`
+  return `${prefijo}-${folio}${limpio ? `-${limpio}` : ''}.pdf`
 }
 
 export function descargar(blob: Blob, nombre: string) {
