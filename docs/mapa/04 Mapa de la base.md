@@ -22,6 +22,7 @@
 | `20261015000001_fase10_tablero.sql` | `tablero(empresa)`: indicadores del PRD §5.10 (completo para Admin/Contador, propio y sin costos para el Vendedor) |
 | `20261017000001_margen_venta.sql` | `modelo_costeo.margen_venta` (convertido desde markup sin cambiar precios, tope 90 %); `calcular_precio` = costo ÷ (1 − margen); `markup` queda sin uso |
 | `20261018000001_portal_cierre_90_dias.sql` | `portal_pedido`: 90 días después de `entregado_at` devuelve solo `{cerrado, empresa}`; agrega `pedido.disponible_hasta` (fecha CDMX). |
+| `20261019000001_rol_comprador.sql` · `20261019000002_rol_comprador_permisos.sql` | Valor `comprador` en `rol_miembro`; `tiene_rol` lo trata como Producción + Contador (lectura). |
 | `20261016000001_texto_proveedor.sql` | Texto visible "destajista" → "proveedor": mensaje de `_tg_orden_before` y comentarios "Margen sobre fabricación" en `v_pedido_resumen` |
 | `20261015000002_fase10_avisos.sql` | `pg_net` y `pg_cron`; `_avisar()` (lee URL y secreto de Vault); triggers `aviso_pedido_terminado` y `aviso_pago_mp`; tarea `veta-avisos-prueba` (diaria 15:00 UTC) |
 | `20261014000001_fase9_stripe.sql` | `empresas.cancela_al_final`; tabla `stripe_eventos` (solo service_role); `guardar_cliente_stripe`, `aplicar_suscripcion_stripe` (mapeo PRD §5.11) |

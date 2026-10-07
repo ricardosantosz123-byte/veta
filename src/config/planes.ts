@@ -6,7 +6,7 @@ export const planes = {
   mensual: { nombre: 'Mensual', precio: null as number | null, periodo: 'al mes' },
   anual: { nombre: 'Anual', precio: null as number | null, periodo: 'al año' },
   incluye: [
-    'Usuarios ilimitados con roles (Admin, Vendedor, Producción, Proveedor, Contador)',
+    'Usuarios ilimitados con roles (Admin, Vendedor, Comprador, Producción, Proveedor, Contador)',
     'Cotizador con tus listas de precios y PDF con tu logo',
     'Pedidos, anticipos, saldos y recibos',
     'Producción por etapa con proveedores',

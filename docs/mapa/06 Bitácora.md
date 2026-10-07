@@ -7,8 +7,9 @@
 ### 2026-10-06 · Afinación, bloque A
 - Hecho: cuestionario de afinación con Ricardo (2 rondas); movimiento sutil en botones y menús; "Margen operativo"; portal cerrado 90 días después de entregar; Ricardo fuera de la demo.
 - Decisiones nuevas: ver "Afinación de la plataforma" en [[02 Decisiones]]; rol Comprador, planes y módulos nuevos aprobados para los bloques siguientes.
-- Pruebas: run.sh ✅ (250) · typecheck/lint/build ✅
-- Siguiente paso: rol Comprador.
+- Pruebas: run.sh ✅ (248) · typecheck/lint/build ✅
+- Después, en la misma sesión: **rol Comprador** (2 migraciones, 12 pruebas nuevas, 260 en total), invitación y matriz del PRD.
+- Siguiente paso: bloque B (planes y límites de usuarios).
 
 ### AAAA-MM-DD · Fase N
 - Hecho:

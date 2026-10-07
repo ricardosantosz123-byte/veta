@@ -110,7 +110,7 @@ export function FichaPedido() {
   const cobrar = usePuedeEditar('registrar_cobro')
   const esAdmin = usePuede('anular_pago')
   const programar = usePuedeEditar('gestionar_produccion')
-  const editarEntrega = puedeEscribir && (rol === 'admin' || rol === 'vendedor' || rol === 'produccion')
+  const editarEntrega = puedeEscribir && (rol === 'admin' || rol === 'vendedor' || rol === 'produccion' || rol === 'comprador')
 
   const pedido = useQuery({ queryKey: ['pedidos', empresa!.id, id], queryFn: () => leerPedido(id) })
   const renglones = useQuery({ queryKey: ['pedidos', empresa!.id, id, 'renglones'], queryFn: () => leerRenglonesPedido(id) })

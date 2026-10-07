@@ -29,7 +29,7 @@ const NUEVO = '__nuevo__'
 const schema = z
   .object({
     email: z.string().trim().min(1, 'Escribe el correo.').pipe(z.email('Ese correo no es válido.')).transform((v) => v.toLowerCase()),
-    rol: z.enum(['admin', 'vendedor', 'produccion', 'destajista', 'contador']),
+    rol: z.enum(['admin', 'vendedor', 'comprador', 'produccion', 'destajista', 'contador']),
     destajista: z.string(),
     nuevo_nombre: z.string().trim().max(80, 'Usa como máximo 80 caracteres.'),
     nuevo_telefono: z.string().trim().max(30, 'Usa como máximo 30 caracteres.'),

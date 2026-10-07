@@ -20,7 +20,7 @@ Un mismo modelo de datos atiende a ambos: en el taller el "destajista" puede ser
 **V1 incluye**
 
 1. Cuenta, empresa, prueba de 14 días sin tarjeta y suscripción.
-2. Usuarios con 5 roles más el portal del cliente final.
+2. Usuarios con 6 roles (Admin, Vendedor, Comprador, Producción, Proveedor y Contador) más el portal del cliente final.
 3. Catálogo con variaciones y **dos métodos de precio** a elegir por empresa.
 4. Clientes.
 5. Cotizador con PDF de marca, envío por correo y WhatsApp prearmado, y **venta por partes**.
@@ -43,23 +43,23 @@ Un mismo modelo de datos atiende a ambos: en el taller el "destajista" puede ser
 
 ## 4. Roles y permisos
 
-| Capacidad | Admin | Vendedor | Producción | Destajista | Contador | Cliente final |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|
-| Configurar empresa, usuarios y suscripción | ✅ | | | | | |
-| Ver catálogo y precios | ✅ | ✅ | ✅ | | ✅ | |
-| Editar catálogo y precios | ✅ | | | | | |
-| Ver costos por etapa | ✅ | | ✅ | | ✅ | |
-| Ver margen de venta y márgenes | ✅ | | | | ✅ | |
-| Clientes y cotizaciones | ✅ | ✅ | | | 👁 | |
-| Convertir a pedido y registrar cobros | ✅ | ✅ | | | 👁 | |
-| Anular un pago | ✅ | | | | | |
-| Crear órdenes y pagar destajos | ✅ | | ✅ | | 👁 | |
-| Ver y avanzar **sus** órdenes | | | | ✅ | | |
-| Insumos | ✅ | | ✅ | | 👁 | |
-| Bitácora | ✅ | | | | | |
-| Ver su pedido (portal) | | | | | | ✅ |
+| Capacidad | Admin | Vendedor | Comprador | Producción | Destajista | Contador | Cliente final |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Configurar empresa, usuarios y suscripción | ✅ | | | | | | |
+| Ver catálogo y precios | ✅ | ✅ | ✅ | ✅ | | ✅ | |
+| Editar catálogo y precios | ✅ | | | | | | |
+| Ver costos por etapa | ✅ | | ✅ | ✅ | | ✅ | |
+| Ver margen de venta y márgenes | ✅ | | ✅ | | | ✅ | |
+| Clientes y cotizaciones | ✅ | ✅ | 👁 | | | 👁 | |
+| Convertir a pedido y registrar cobros | ✅ | ✅ | 👁 | | | 👁 | |
+| Anular un pago | ✅ | | | | | | |
+| Crear órdenes y pagar destajos | ✅ | | ✅ | ✅ | | 👁 | |
+| Ver y avanzar **sus** órdenes | | | | | ✅ | | |
+| Insumos | ✅ | | ✅ | ✅ | | 👁 | |
+| Bitácora | ✅ | | | | | | |
+| Ver su pedido (portal) | | | | | | | ✅ |
 
-👁 = solo lectura. Todo está aplicado en la base de datos con RLS (ver `supabase/migrations`) y probado en `supabase/tests`. La interfaz solo oculta lo que la base ya protege.
+👁 = solo lectura. El **Comprador** (2026-10-06) asigna pedidos a los proveedores, les registra pagos y compra insumos; en la base cuenta como Producción y como Contador (`tiene_rol`). Todo está aplicado en la base de datos con RLS (ver `supabase/migrations`) y probado en `supabase/tests`. La interfaz solo oculta lo que la base ya protege.
 
 Un usuario puede pertenecer a varias empresas (por ejemplo, un tapicero que trabaja para tres mueblerías). Al entrar elige la empresa activa.
 

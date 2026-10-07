@@ -28,6 +28,7 @@ insert into auth.users (id, email) values
  ('a0000000-0000-0000-0000-000000000003','prod@a.mx'),
  ('a0000000-0000-0000-0000-000000000004','sergio@destajo.mx'),
  ('a0000000-0000-0000-0000-000000000005','conta@a.mx'),
+ ('a0000000-0000-0000-0000-000000000006','compras@a.mx'),
  ('b0000000-0000-0000-0000-000000000001','admin@b.mx');
 
 \set adminA 'a0000000-0000-0000-0000-000000000001'
@@ -35,6 +36,7 @@ insert into auth.users (id, email) values
 \set prodA  'a0000000-0000-0000-0000-000000000003'
 \set destA  'a0000000-0000-0000-0000-000000000004'
 \set contA  'a0000000-0000-0000-0000-000000000005'
+\set compA  'a0000000-0000-0000-0000-000000000006'
 \set adminB 'b0000000-0000-0000-0000-000000000001'
 
 -- ============ Admin A: alta de empresa y catálogo ============
@@ -97,7 +99,8 @@ update listas_precios set predeterminada = true where id = :'l_gen';
 -- Invitaciones
 insert into destajistas (empresa_id, nombre, especialidad) values (:'emp_a', 'Sergio Ávalos', 'Carpintería') returning id as d_sergio \gset
 insert into invitaciones (empresa_id, email, rol) values
-  (:'emp_a', 'venta@a.mx', 'vendedor'), (:'emp_a', 'prod@a.mx', 'produccion'), (:'emp_a', 'conta@a.mx', 'contador');
+  (:'emp_a', 'venta@a.mx', 'vendedor'), (:'emp_a', 'prod@a.mx', 'produccion'), (:'emp_a', 'conta@a.mx', 'contador'),
+  (:'emp_a', 'compras@a.mx', 'comprador');
 insert into invitaciones (empresa_id, email, rol, destajista_id) values (:'emp_a', 'SERGIO@destajo.mx', 'destajista', :'d_sergio');
 select pg_temp.falla($$update empresas set estado_suscripcion = 'activa'$$, 'Admin no puede activarse la suscripción');
 reset role;
@@ -106,6 +109,7 @@ reset role;
 select set_config('request.jwt.claim.sub', :'vendA', false); set role authenticated; select aceptar_invitaciones(); reset role;
 select set_config('request.jwt.claim.sub', :'prodA', false); set role authenticated; select aceptar_invitaciones(); reset role;
 select set_config('request.jwt.claim.sub', :'contA', false); set role authenticated; select aceptar_invitaciones(); reset role;
+select set_config('request.jwt.claim.sub', :'compA', false); set role authenticated; select aceptar_invitaciones(); reset role;
 select set_config('request.jwt.claim.sub', :'destA', false); set role authenticated;
 select pg_temp.ok(aceptar_invitaciones() = 1, 'invitación de destajista aceptada sin importar mayúsculas del correo');
 reset role;
@@ -173,7 +177,7 @@ select pg_temp.ok((select count(*) from cotizacion_items where cotizacion_id = :
   and (select estado = 'borrador' and folio > :cot_folio from cotizaciones where id = :'cot3'), 'duplicar copia renglones con folio nuevo');
 update cotizaciones set vigencia_hasta = hoy_mx() - 1 where id = :'cot3';
 select pg_temp.ok((select estado_efectivo from v_cotizaciones where id = :'cot3') = 'vencida', 'vencida se deriva de la vigencia');
-select pg_temp.ok((select count(*) from nombres_equipo(:'emp_a')) = 5, 'nombres_equipo lista a los miembros');
+select pg_temp.ok((select count(*) from nombres_equipo(:'emp_a')) = 6, 'nombres_equipo lista a los miembros');
 reset role;  -- limpieza para no alterar los conteos de pruebas posteriores
 delete from cotizaciones where id in (:'cot2', :'cot3');
 delete from clientes where id = :'cli2';
@@ -416,6 +420,42 @@ select pg_temp.falla(format($$update ordenes_produccion set destajista_id = null
 select pg_temp.ok((select por_pagar = 5600 + 7200 and comprometido = 1400 + 1800
   from corte_destajistas(:'emp_a', hoy_mx() - 6, hoy_mx()) where destajista_id = :'d_sergio'), 'corte: separa por pagar (terminadas) y comprometido (en curso − adelantos)');
 reset role;
+
+-- ============ Rol Comprador: asigna, paga a proveedores y compra; ve casi todo ============
+select id as e_laca from etapas where empresa_id = :'emp_a' and nombre = 'Acabado / Laca' \gset
+select set_config('request.jwt.claim.sub', :'compA', false); set role authenticated;
+insert into destajistas (empresa_id, nombre, especialidad) values (:'emp_a', 'Tapicería Hermanos Luna', 'Tapicería') returning id as d_comp \gset
+insert into ordenes_produccion (empresa_id, pedido_item_id, etapa_id, destajista_id, cantidad, costo_acordado)
+  values (:'emp_a', :'pit3', :'e_laca', :'d_comp', 1, 500) returning id as o_comp \gset
+select pg_temp.ok(:'o_comp' is not null, 'Comprador asigna un pedido a un proveedor');
+insert into pagos_destajista (empresa_id, orden_id, monto) values (:'emp_a', :'o_comp', 100) returning id as pd_comp \gset
+select pg_temp.ok((select saldo from ordenes_produccion where id = :'o_comp') = 400, 'Comprador registra pagos a proveedores');
+select crear_insumo(:'emp_a', 'Clavo 1"', 'herraje', 'kg', 2, 'Ferretera Centro', 10, 38) as ins_comp \gset
+select pg_temp.ok((select existencia from insumos where id = :'ins_comp') = 10, 'Comprador da de alta proveedores e insumos con su compra');
+select pg_temp.ok((select count(*) from clientes) > 0 and (select count(*) from cotizaciones) > 0 and (select count(*) from pagos_cliente) > 0,
+  'Comprador ve clientes, cotizaciones y cobros');
+select pg_temp.ok((select count(*) from modelo_costeo) > 0 and (select count(*) from costos_modelo) > 0 and (select count(*) from cotizacion_item_costos) > 0,
+  'Comprador ve costos y margen de venta');
+select pg_temp.ok((tablero(:'emp_a')->>'completo')::boolean and tablero(:'emp_a')->'margen_mes' is not null, 'Comprador ve el tablero completo, con márgenes');
+select pg_temp.falla(format($$insert into cotizaciones (empresa_id, cliente_id, lista_id) values (%L, %L, %L)$$, :'emp_a', :'cli', :'l_gen'), 'Comprador no crea cotizaciones');
+select pg_temp.falla(format($$insert into pagos_cliente (empresa_id, pedido_id, monto, metodo) values (%L, %L, 1, 'efectivo')$$, :'emp_a', :'ped3'), 'Comprador no registra cobros');
+select pg_temp.falla(format($$insert into invitaciones (empresa_id, email, rol) values (%L, 'x@a.mx', 'vendedor')$$, :'emp_a'), 'Comprador no invita usuarios');
+update modelos set nombre = 'Cambiado' where id = :'m_nat';
+update modelo_costeo set margen_venta = 0.1 where modelo_id = :'m_nat';
+update empresas set nombre = 'Cambiada' where id = :'emp_a';
+delete from pagos_destajista where id = :'pd_comp';
+reset role;
+select pg_temp.ok((select nombre from modelos where id = :'m_nat') = 'Natalia' and (select margen_venta from modelo_costeo where modelo_id = :'m_nat') = 0.5
+  and (select nombre from empresas where id = :'emp_a') <> 'Cambiada', 'Comprador no edita catálogo, margen ni la empresa');
+select pg_temp.ok((select count(*) from pagos_destajista where id = :'pd_comp') = 1, 'Comprador no anula pagos a proveedores (solo el Admin)');
+select set_config('request.jwt.claim.sub', :'compA', false); set role authenticated;
+select pg_temp.ok((select count(*) from bitacora) = 0, 'Comprador no ve la bitácora');
+reset role;
+-- limpieza para no alterar los conteos de pruebas posteriores
+delete from pagos_destajista where id = :'pd_comp';
+delete from ordenes_produccion where id = :'o_comp';
+delete from destajistas where id = :'d_comp';
+
 
 select set_config('request.jwt.claim.sub', :'destA', false); set role authenticated;
 select pg_temp.falla(format($$select marcar_avance_orden(%L, 'en_proceso')$$, :'o5'), 'sin anticipo no se empieza una orden');

@@ -2462,6 +2462,7 @@ export type Database = {
         | "produccion"
         | "destajista"
         | "contador"
+        | "comprador"
       tipo_movimiento: "entrada" | "salida" | "ajuste"
     }
     CompositeTypes: {
@@ -2626,6 +2627,7 @@ export const Constants = {
         "produccion",
         "destajista",
         "contador",
+        "comprador",
       ],
       tipo_movimiento: ["entrada", "salida", "ajuste"],
     },

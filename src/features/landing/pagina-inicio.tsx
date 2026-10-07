@@ -31,7 +31,7 @@ const PREGUNTAS = [
   { p: '¿Emite facturas (CFDI)?', r: 'Todavía no. Por ahora marcas el pedido como facturado y adjuntas el CFDI de tu sistema de facturación. La facturación integrada viene después.' },
   { p: '¿A qué cuenta llega el dinero de Mercado Pago?', r: 'A la tuya. Conectas tu propia cuenta de Mercado Pago; nosotros nunca tocamos tu dinero.' },
   { p: '¿Funciona en el celular?', r: 'Sí. Se usa desde el navegador y puedes instalarla en la pantalla de inicio. El portal del cliente y la vista del proveedor están pensados primero para celular.' },
-  { p: '¿Quién ve mis costos y márgenes?', r: 'Solo el Admin y el Contador. El Vendedor ve precios pero no costos; el proveedor solo ve sus órdenes.' },
+  { p: '¿Quién ve mis costos y márgenes?', r: 'Solo el Admin, el Comprador y el Contador. El Vendedor ve precios pero no costos; el proveedor solo ve sus órdenes.' },
 ]
 
 /** Captura real de la app en un marco sobrio. La imagen se ancla arriba dentro de una proporción fija. */

@@ -138,6 +138,13 @@
 - **Ricardo sale de "Muebles Alameda"** (empresa demo de las capturas): su membresía quedó `activo = false`; la empresa y sus datos se conservan.
 - Confirmadas sin cambio: portal con total/pagado/saldo, links de pago Admin y Vendedor, ventas con IVA, aviso a 3 días y tablero del Vendedor solo con lo suyo.
 
+## Rol Comprador (2026-10-06, Ricardo)
+- **Rol nuevo `comprador`**, aparte de Producción (que sigue siendo el jefe de taller): asigna pedidos a los proveedores (fabricantes), les registra pagos y compra insumos.
+- Ve casi todo: pedidos con precio, clientes, cotizaciones, cobros, catálogo, costos, **márgenes** y el tablero completo. No edita ventas, catálogo, cobros, usuarios, empresa ni suscripción; no ve la bitácora; anular pagos sigue siendo solo del Admin.
+- **Implementación:** una sola regla en `tiene_rol`: el Comprador cumple cualquier permiso que incluya a Producción o al Contador. Así todas las políticas y RPC existentes lo cubren sin reescribirlas. `lib/permisos.ts` usa la misma regla.
+- En los planes cuenta como usuario de oficina (dentro de los 3 incluidos), igual que Vendedor y Producción.
+- Se hizo en dos migraciones porque Postgres no deja usar un valor nuevo de enum en la transacción que lo crea.
+
 ## Herramientas (2026-10-05)
 - ~~Skills de antislop v3.2.20 en `.claude/skills/`, aplicando salvo contradicción con CLAUDE.md.~~ Reemplazado el mismo día:
 - **antislop se retiró del proyecto (las 6 skills).** Por qué:

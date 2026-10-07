@@ -11,12 +11,13 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { corsHeaders, json } from '../_shared/cors.ts'
 
-const ROLES = ['admin', 'vendedor', 'produccion', 'destajista', 'contador'] as const
+const ROLES = ['admin', 'vendedor', 'comprador', 'produccion', 'destajista', 'contador'] as const
 type Rol = (typeof ROLES)[number]
 
 const NOMBRE_ROL: Record<Rol, string> = {
   admin: 'Admin',
   vendedor: 'Vendedor',
+  comprador: 'Comprador',
   produccion: 'Producción',
   destajista: 'Proveedor (fabricante)',
   contador: 'Contador',
