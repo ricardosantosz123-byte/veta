@@ -147,7 +147,7 @@ export default function PaginaTablero() {
           {t.completo && t.margen_mes && (
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
               <Indicador
-                titulo="Margen sobre fabricación del mes"
+                titulo="Margen operativo del mes"
                 valor={t.margen_mes.pct === null ? '—' : `${Number(t.margen_mes.pct).toLocaleString('es-MX')}%`}
                 nota={`${moneda(t.margen_mes.margen)} · No incluye material de insumos`}
               />
@@ -241,7 +241,7 @@ export default function PaginaTablero() {
           {t.completo && t.margen_pedidos && t.margen_pedidos.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Margen sobre fabricación por pedido</CardTitle>
+                <CardTitle className="text-base">Margen operativo por pedido</CardTitle>
                 <CardDescription>Venta sin IVA menos el costo de las órdenes. No incluye material de insumos.</CardDescription>
               </CardHeader>
               <CardContent className="overflow-x-auto">

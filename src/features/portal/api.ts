@@ -23,6 +23,8 @@ export interface PortalPedido {
     terminado_at: string | null
     liquidado_at: string | null
     entregado_at: string | null
+    /** Fecha (CDMX) hasta la que el link sigue abierto: 90 días después de la entrega. */
+    disponible_hasta: string | null
   }
   items: {
     descripcion: string
@@ -34,6 +36,15 @@ export interface PortalPedido {
   pagos: { fecha: string; monto: number; metodo: Enum<'metodo_pago'> }[]
   link_pago: string | null
 }
+
+/** Pasados 90 días de la entrega, la base ya no devuelve el pedido: solo el contacto de la mueblería. */
+export interface PortalCerrado {
+  token: string
+  cerrado: true
+  empresa: PortalPedido['empresa']
+}
+
+export type PortalRespuesta = PortalPedido | PortalCerrado
 
 type TipoError = 'no_encontrado' | 'demasiados_intentos' | 'error'
 
@@ -51,7 +62,7 @@ export class ErrorPortal extends Error {
   }
 }
 
-async function llamar(init: RequestInit & { query?: Record<string, string> }): Promise<PortalPedido> {
+async function llamar(init: RequestInit & { query?: Record<string, string> }): Promise<PortalRespuesta> {
   const url = init.query ? `${URL_FUNCION}?${new URLSearchParams(init.query)}` : URL_FUNCION
   let r: Response
   try {

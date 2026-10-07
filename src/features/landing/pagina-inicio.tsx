@@ -102,12 +102,12 @@ export default function PaginaInicio() {
               Cotiza, cobra anticipos y manda a producir con tus proveedores. Tu cliente ve el avance desde su celular.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button size="lg" className="h-12 px-6 text-base active:scale-[0.98]" asChild>
+              <Button size="lg" className="h-12 px-6 text-base" asChild>
                 <Link to="/registro">
                   {REGISTRO} <ArrowRight aria-hidden />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="h-12 px-6 text-base active:scale-[0.98]" asChild>
+              <Button size="lg" variant="outline" className="h-12 px-6 text-base" asChild>
                 <a href="#como-funciona">Cómo funciona</a>
               </Button>
             </div>
@@ -268,7 +268,7 @@ export default function PaginaInicio() {
         <section className="border-t bg-muted/40">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6 px-4 py-16">
             <h2 className="max-w-xl text-3xl font-semibold tracking-tight text-balance">Tu próxima cotización, en minutos</h2>
-            <Button size="lg" className="h-12 px-6 text-base active:scale-[0.98]" asChild>
+            <Button size="lg" className="h-12 px-6 text-base" asChild>
               <Link to="/registro">
                 {REGISTRO} <ArrowRight aria-hidden />
               </Link>

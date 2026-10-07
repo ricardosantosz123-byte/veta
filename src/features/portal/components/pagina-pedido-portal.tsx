@@ -3,7 +3,7 @@ import { Check, CreditCard, MessageCircle, PackageSearch, Search } from 'lucide-
 import { Link, useParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ErrorPortal, leerPedidoPortal, type PortalPedido } from '@/features/portal/api'
+import { ErrorPortal, leerPedidoPortal, type PortalCerrado, type PortalPedido, type PortalRespuesta } from '@/features/portal/api'
 import { MarcoPortal } from '@/features/portal/components/marco-portal'
 import { colorMarca, textoSobre } from '@/lib/color'
 import { fecha, moneda } from '@/lib/formato'
@@ -41,7 +41,10 @@ function estadoGrande(p: Pedido): { titulo: string; detalle: string } {
     case 'liquidado':
       return { titulo: 'Listo para entregar', detalle: 'Tu pedido está pagado. Coordinemos la entrega.' }
     case 'entregado':
-      return { titulo: 'Entregado', detalle: '¡Gracias por tu compra!' }
+      return {
+        titulo: 'Entregado',
+        detalle: p.disponible_hasta ? `¡Gracias por tu compra! Podrás consultar este seguimiento hasta el ${fecha(p.disponible_hasta)}.` : '¡Gracias por tu compra!',
+      }
     default:
       return { titulo: 'Pedido', detalle: '' }
   }
@@ -134,7 +137,37 @@ function Tarjeta({ titulo, children }: { titulo?: string; children: React.ReactN
   )
 }
 
-export function VistaPedido({ datos, slug }: { datos: PortalPedido; slug: string }) {
+function VistaCerrado({ datos, slug }: { datos: PortalCerrado; slug: string }) {
+  const { empresa } = datos
+  return (
+    <MarcoPortal empresa={empresa}>
+      <section className="grid justify-items-center gap-3 rounded-2xl border bg-card p-8 text-center">
+        <Check className="size-10 text-muted-foreground" aria-hidden />
+        <h1 className="text-xl font-semibold">Este seguimiento ya terminó</h1>
+        <p className="max-w-sm text-sm text-muted-foreground">
+          Tu pedido se entregó hace más de 90 días, así que este enlace ya no muestra el detalle. Si necesitas algo de tu compra, {empresa.nombre} te atiende con gusto.
+        </p>
+        <div className="grid w-full max-w-xs gap-2">
+          {empresa.telefono && (
+            <Button asChild size="lg" className="h-12">
+              <a href={enlaceWhatsApp('Hola, tengo una duda sobre un pedido que ya me entregaron.', empresa.telefono)} target="_blank" rel="noreferrer">
+                <MessageCircle aria-hidden /> Escríbenos por WhatsApp
+              </a>
+            </Button>
+          )}
+          <Button asChild variant="ghost" size="lg" className="h-12">
+            <Link to={`/${slug}/seguimiento`}>
+              <Search aria-hidden /> Buscar otro pedido
+            </Link>
+          </Button>
+        </div>
+      </section>
+    </MarcoPortal>
+  )
+}
+
+export function VistaPedido({ datos, slug }: { datos: PortalRespuesta; slug: string }) {
+  if ('cerrado' in datos) return <VistaCerrado datos={datos} slug={slug} />
   const { empresa, pedido: p, items, pagos, link_pago } = datos
   const acento = colorMarca(empresa.color)
   const grande = estadoGrande(p)

@@ -69,9 +69,9 @@
 - El valor del material entregado **no** se descuenta del pago al destajista.
 
 ## Fase 7 (2026-10-06)
-- **A1** (⚠️ Decidida en modo nocturno, revisar): el link del portal sigue funcionando después de entregado (historial y garantía). Solo los pedidos cancelados no se muestran.
+- **A1** (cambiada por Ricardo, 2026-10-06): el link del portal sigue abierto **90 días después de la entrega**; luego solo muestra "Este seguimiento ya terminó" con el WhatsApp de la mueblería, sin datos del pedido (`portal_pedido` devuelve `{cerrado, empresa}`). El portal dice hasta qué fecha estará disponible. Los cancelados no se muestran.
 - **B1** (⚠️ Decidida en modo nocturno, revisar): botón "¿Dudas? Escríbenos por WhatsApp" al teléfono de la mueblería, si lo tiene.
-- **C1** (⚠️ Decidida en modo nocturno, revisar): el portal muestra total, pagado y saldo, sin desglose.
+- **C1** (confirmada por Ricardo, 2026-10-06): el portal muestra total, pagado y saldo, sin desglose.
 - Límite por IP (⚠️ Decidida en modo nocturno, revisar): 10 intentos cada 10 minutos. Cuentan las **búsquedas** y los **links que no existen**; abrir un link válido no gasta intentos (el token es un UUID imposible de adivinar). La IP solo se guarda como SHA-256(IP + `PORTAL_SALT`); los intentos de más de un día se borran solos.
 - El link solo abre bajo el slug de su mueblería (`portal_pedido(token, slug)`).
 - La función `portal` es pública (`verify_jwt = false`): la llave del proyecto es del formato nuevo `sb_publishable_…`, que no es un JWT.
@@ -80,7 +80,7 @@
 - `PORTAL_SALT` lo generó Claude al azar (`openssl rand -hex 32`) dentro del shell; nunca se mostró.
 
 ## Fase 8 (2026-10-06)
-- Generan links el **Admin y el Vendedor** (mismo permiso que registrar cobros). Hay **un solo link activo** por pedido: uno nuevo cancela el anterior. (⚠️ Decidida en modo nocturno, revisar)
+- Generan links el **Admin y el Vendedor** (mismo permiso que registrar cobros). Hay **un solo link activo** por pedido: uno nuevo cancela el anterior. (confirmada por Ricardo, 2026-10-06)
 - Monto del link: anticipo que falta, saldo completo u otro monto, **nunca mayor que el saldo** (lo valida `preparar_link_pago` y otra vez `registrar_link_pago`).
 - Desde la app solo se **cancela** un link activo (política RLS `lp_upd`); "pagado" y "expirado" los escribe la base. Un pago manual sigue expirando el link (Fase 4).
 - El webhook **no confía en la notificación**: consulta el pago en la API de Mercado Pago con el token de la empresa de la URL; solo registra pagos `approved` en MXN cuyo `external_reference` sea un pedido de esa empresa. Idempotente por `externo_id`. Si el pago supera el saldo se acepta (saldo a favor, Fase 4).
@@ -103,10 +103,10 @@
 
 ## Fase 10 (2026-10-06)
 - **Tablero** calculado en la base (`tablero(empresa)`), en una llamada:
-  - Ventas del mes = total **con IVA** de los pedidos creados en el mes (CDMX), sin cancelados. (⚠️ Decidida en modo nocturno, revisar)
+  - Ventas del mes = total **con IVA** de los pedidos creados en el mes (CDMX), sin cancelados. (confirmada por Ricardo, 2026-10-06)
   - Conversión = cotizaciones vendidas (parcial o aceptada) entre cotizaciones no borrador de los **últimos 90 días**. (⚠️ Decidida en modo nocturno, revisar)
-  - "Por vencer" = cotizaciones enviadas que vencen en los próximos **3 días**. (⚠️ Decidida en modo nocturno, revisar)
-  - El Vendedor ve **solo lo suyo**: sus cotizaciones (`vendedor_id`) y los pedidos que nacieron de ellas (o que él creó), sin costos ni márgenes. Producción no tiene tablero de ventas. (⚠️ Decidida en modo nocturno, revisar)
+  - "Por vencer" = cotizaciones enviadas que vencen en los próximos **3 días**. (confirmada por Ricardo, 2026-10-06)
+  - El Vendedor ve **solo lo suyo**: sus cotizaciones (`vendedor_id`) y los pedidos que nacieron de ellas (o que él creó), sin costos ni márgenes. Producción no tiene tablero de ventas. (confirmada por Ricardo, 2026-10-06)
   - Gráficas: barras de una sola serie en el color del texto (sin depender del color), tooltip por barra y tabla para lectores de pantalla. Sin librerías de gráficas.
 - **Avisos**: función nueva `avisos` (pública con `x-avisos-secreto`) para eventos del sistema, separada de `notificar`, que sigue trabajando con la sesión del usuario. (⚠️ Decidida en modo nocturno, revisar)
   - Automáticos: pedido terminado → cliente (con link al portal); pago de **Mercado Pago** → cliente; prueba por vencer (3 días antes y el último día) → Admins, con `pg_cron` diario a las 9:00 CDMX.
@@ -129,8 +129,14 @@
 ## Lenguaje (2026-10-06)
 - **"Destajista" pasa a "Proveedor"** en todo lo que ve la gente (pantallas, roles, PDFs, WhatsApp, correos, landing, legales y mensajes de la base). Ricardo: la palabra suena vulgar.
   - El rol se muestra como **"Proveedor (fabricante)"**; el campo de Insumos dice **"Proveedor de insumos"**, para distinguirlos.
-  - "Margen sobre destajos" pasa a **"Margen sobre fabricación"** (sigue con la nota "No incluye material de insumos"). "Corte de destajo" pasa a "Corte de proveedores".
+  - "Margen sobre destajos" pasa a ~~"Margen sobre fabricación"~~ **"Margen operativo"** (Ricardo, 2026-10-06) (sigue con la nota "No incluye material de insumos"). "Corte de destajo" pasa a "Corte de proveedores".
   - Los **nombres internos no cambian** (tabla `destajistas`, rol `destajista`, columnas `destajista_id`, `v_destajo_saldos`): renombrarlos sería riesgoso y nadie los ve. Los documentos internos (PRD, FASES, mapa) siguen usando "destajista" como término técnico.
+
+## Afinación de la plataforma (2026-10-06, cuestionario con Ricardo)
+- **Movimiento sutil:** los botones se hunden al presionar (`scale 0.97`, 150 ms); menús, selects y diálogos entran en 150 ms con curva `--ease-out` (cubic-bezier 0.23, 1, 0.32, 1) y salen en 100 ms; el panel lateral usa `--ease-drawer`. Con "reducir movimiento" quedan solo los fundidos. Hover solo en dispositivos con puntero (Tailwind v4 ya lo hace).
+- **Densidad** de pantallas: intermedia (se queda como está).
+- **Ricardo sale de "Muebles Alameda"** (empresa demo de las capturas): su membresía quedó `activo = false`; la empresa y sus datos se conservan.
+- Confirmadas sin cambio: portal con total/pagado/saldo, links de pago Admin y Vendedor, ventas con IVA, aviso a 3 días y tablero del Vendedor solo con lo suyo.
 
 ## Herramientas (2026-10-05)
 - ~~Skills de antislop v3.2.20 en `.claude/skills/`, aplicando salvo contradicción con CLAUDE.md.~~ Reemplazado el mismo día:

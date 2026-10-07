@@ -545,6 +545,16 @@ select pg_temp.ok(portal_pedido(:'tok')->>'link_pago' is null, 'portal: sin sald
 select pg_temp.ok(portal_pedido(:'tok')::text not like '%Listas en blanco%' and portal_pedido(:'tok')::text not like '%apellidos%'
   and portal_pedido(:'tok')::text not like '%costo%' and portal_pedido(:'tok')::text not like '%margen%',
   'portal: sin notas internas, apellidos ni costos');
+select pg_temp.ok((portal_pedido(:'tok')->'pedido'->>'disponible_hasta')::date
+  = (((select entregado_at from pedidos where token_portal = :'tok') + interval '90 days') at time zone 'America/Mexico_City')::date, 'portal: dice hasta cuándo estará disponible');
+reset role;
+update pedidos set entregado_at = now() - interval '91 days' where token_portal = :'tok';
+set role service_role;
+select pg_temp.ok((portal_pedido(:'tok')->>'cerrado')::boolean and portal_pedido(:'tok') ? 'empresa'
+  and not portal_pedido(:'tok') ? 'pedido' and not portal_pedido(:'tok') ? 'pagos', 'portal: 90 días después de entregado el link se cierra sin datos del pedido');
+reset role;
+update pedidos set entregado_at = now() where token_portal = :'tok';
+set role service_role;
 select pg_temp.ok(portal_pedido(gen_random_uuid()) is null, 'portal: token inexistente no muestra nada');
 select pg_temp.ok(portal_permitido(repeat('a', 64)), 'portal: una IP nueva puede intentar');
 select portal_registrar_intento(repeat('a', 64)) from generate_series(1, 10);

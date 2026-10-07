@@ -215,7 +215,7 @@ Minimalista estilo Apple: tipografía del sistema (SF Pro o Inter), grises neutr
 
 ## 12. Glosario
 
-> En la interfaz, "destajista" se muestra como **proveedor** (fabricante) y el margen como **"Margen sobre fabricación"** (decisión del 2026-10-06). En el código y la base sigue llamándose `destajista`.
+> En la interfaz, "destajista" se muestra como **proveedor** (fabricante) y el margen como **"Margen operativo"** (decisión del 2026-10-06). En el código y la base sigue llamándose `destajista`.
 
 **Destajista**: quien produce una etapa por pieza. **Hechura en blanco**: carpintería sin acabado. **Finiquito**: pago del saldo. **Sobre diseño**: mueble a medida sin modelo de catálogo.
 
