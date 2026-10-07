@@ -177,12 +177,24 @@
   .entrada-tarde {
     animation-delay: 120ms;
   }
+  /* Barra de avance del recorrido de la landing: lineal, porque mide tiempo. */
+  .avance-escena {
+    animation: avance-escena linear both;
+  }
   @supports (animation-timeline: view()) {
     .aparece {
       animation: entrada linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 40%;
     }
+  }
+}
+@keyframes avance-escena {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }
 @keyframes entrada {

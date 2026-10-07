@@ -10,7 +10,8 @@
 - Pruebas: run.sh ✅ (248) · typecheck/lint/build ✅
 - Después, en la misma sesión: **rol Comprador** (2 migraciones, 12 pruebas nuevas, 260 en total), invitación y matriz del PRD.
 - Bloque B: planes Taller/Mueblería/Despacho, límite 3 oficina + 5 proveedores, adicionales (`stripe-extras`), Suscripción con selector de plan y medidores; 270 pruebas.
-- Siguiente paso: bloque C (landing).
+- Bloque C: landing con tono dolor→solución, antes/después, recorrido animado con capturas reales, 3 pasos, 3 planes y 10 preguntas.
+- Siguiente paso: bloque D (fases nuevas en FASES.md) y captura del proveedor.
 
 ### AAAA-MM-DD · Fase N
 - Hecho:

@@ -115,7 +115,7 @@
   - La URL de las funciones y el secreto viven en **Supabase Vault** (`veta_funciones_url`, `veta_avisos_secreto`); `AVISOS_SECRET` lo generó Claude al azar sin mostrarlo. Si faltan, `_avisar()` no hace nada y nunca rompe la operación.
   - Se activaron **pg_net** y **pg_cron** en veta-dev (migración).
 - **Bitácora**: pestaña de Ajustes (Admin), filtros por tabla, usuario y fechas. (⚠️ Decidida en modo nocturno, revisar)
-- **Landing** (borrador): sin capturas ni cifras; los precios se leen de `src/config/planes.ts` y muestran "Precio por anunciar" mientras sean `null`. (⚠️ Decidida en modo nocturno, revisar)
+- ~~Landing borrador sin capturas ni cifras~~ → ver "Landing" en Afinación (2026-10-06).
 - **Privacidad y términos**: borradores con aviso visible; Veta encargado y la mueblería responsable de los datos de sus clientes (LFPDPPP). Faltan razón social, domicilio, reembolsos y jurisdicción.
 - **PWA**: íconos PNG generados del `icon.svg` actual (la "V"); cambian cuando haya logo definitivo.
 - **Rendimiento**: layout, Ajustes, asistente y páginas de acceso con carga diferida. Lighthouse móvil en la landing: 92 / 100 / 100 / 92.
@@ -137,6 +137,12 @@
 - **Densidad** de pantallas: intermedia (se queda como está).
 - **Ricardo sale de "Muebles Alameda"** (empresa demo de las capturas): su membresía quedó `activo = false`; la empresa y sus datos se conservan.
 - Confirmadas sin cambio: portal con total/pagado/saldo, links de pago Admin y Vendedor, ventas con IVA, aviso a 3 días y tablero del Vendedor solo con lo suyo.
+
+## Landing (2026-10-06, Ricardo)
+- Habla **a mueblerías, talleres y despachos por igual**, con tono **"del dolor a la solución"**: titular "Tus pedidos ya no viven en la libreta ni en el WhatsApp".
+- Botón principal: **"Prueba 14 días gratis"** (en celular el del encabezado dice "Prueba gratis" para caber).
+- Secciones nuevas: **antes y después**, **recorrido** (el "video": las 3 capturas reales avanzan solas cada 4.5 s solo mientras están a la vista; se puede pausar o elegir paso; con "reducir movimiento" no avanza solo), **empieza en 3 pasos**, **precios con los 3 planes** y más **preguntas frecuentes** (usuarios incluidos, cancelar, seguridad, despachos), escritas solo con lo que Veta hace hoy.
+- Falta la sección **"vista del proveedor en el celular"**: necesita una captura real con la cuenta del proveedor (Ricardo entra una vez en el panel).
 
 ## Rol Comprador (2026-10-06, Ricardo)
 - **Rol nuevo `comprador`**, aparte de Producción (que sigue siendo el jefe de taller): asigna pedidos a los proveedores (fabricantes), les registra pagos y compra insumos.
