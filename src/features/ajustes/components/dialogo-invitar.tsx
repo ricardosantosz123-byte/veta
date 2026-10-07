@@ -98,7 +98,10 @@ export function DialogoInvitar({ abierto, onCerrar }: Props) {
     },
     onSuccess: async (r) => {
       setResultado(r)
-      await queryClient.invalidateQueries({ queryKey: ['invitaciones', empresa!.id] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['invitaciones', empresa!.id] }),
+        queryClient.invalidateQueries({ queryKey: ['uso-plan', empresa!.id] }),
+      ])
     },
   })
 

@@ -539,6 +539,7 @@ export type Database = {
           mp_cuenta: string | null
           nombre: string
           periodo_termina: string | null
+          plan: string
           plan_intervalo: string | null
           prueba_termina: string
           razon_social: string | null
@@ -547,6 +548,7 @@ export type Database = {
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
           telefono: string | null
+          usuarios_extra: number
           vigencia_cotizacion_dias: number
         }
         Insert: {
@@ -567,6 +569,7 @@ export type Database = {
           mp_cuenta?: string | null
           nombre: string
           periodo_termina?: string | null
+          plan?: string
           plan_intervalo?: string | null
           prueba_termina?: string
           razon_social?: string | null
@@ -575,6 +578,7 @@ export type Database = {
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           telefono?: string | null
+          usuarios_extra?: number
           vigencia_cotizacion_dias?: number
         }
         Update: {
@@ -595,6 +599,7 @@ export type Database = {
           mp_cuenta?: string | null
           nombre?: string
           periodo_termina?: string | null
+          plan?: string
           plan_intervalo?: string | null
           prueba_termina?: string
           razon_social?: string | null
@@ -603,6 +608,7 @@ export type Database = {
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           telefono?: string | null
+          usuarios_extra?: number
           vigencia_cotizacion_dias?: number
         }
         Relationships: []
@@ -2213,6 +2219,10 @@ export type Database = {
         Returns: number
       }
       _empresa_de_ruta: { Args: { p_name: string }; Returns: string }
+      _grupo_rol: {
+        Args: { p_rol: Database["public"]["Enums"]["rol_miembro"] }
+        Returns: string
+      }
       _norm: { Args: { t: string }; Returns: string }
       _normalizar_telefono: { Args: { p: string }; Returns: string }
       _siguiente_folio: {
@@ -2254,8 +2264,10 @@ export type Database = {
           p_empresa: string
           p_intervalo: string
           p_periodo_termina: string
+          p_plan?: string
           p_status: string
           p_subscription: string
+          p_usuarios_extra?: number
         }
         Returns: Database["public"]["Enums"]["estado_suscripcion"]
       }
@@ -2430,6 +2442,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      uso_plan: { Args: { p_empresa: string }; Returns: Json }
     }
     Enums: {
       estado_cotizacion:

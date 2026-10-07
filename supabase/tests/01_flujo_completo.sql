@@ -547,6 +547,38 @@ select pg_temp.falla(format($$insert into clientes (empresa_id, nombre) values (
 select pg_temp.falla($$select portal_pedido(gen_random_uuid())$$, 'usuario autenticado no llama funciones del portal');
 select pg_temp.falla(format($$insert into invitaciones (empresa_id, email, rol, destajista_id) values (%L, 'x@b.mx', 'destajista', %L)$$, :'emp_b', :'d_sergio'),
   'B no puede invitar ligando un destajista de A');
+-- Planes: 3 de oficina + 5 proveedores incluidos; Admin y Contador no cuentan; los adicionales cubren el exceso
+savepoint planes;
+select pg_temp.ok((uso_plan(:'emp_b')->>'plan') = 'muebleria' and (uso_plan(:'emp_b')->>'oficina')::int = 0, 'una empresa nueva prueba el plan Mueblería sin usuarios ocupados');
+insert into invitaciones (empresa_id, email, rol) values
+  (:'emp_b', 'v1@b.mx', 'vendedor'), (:'emp_b', 'c1@b.mx', 'comprador'), (:'emp_b', 'p1@b.mx', 'produccion'), (:'emp_b', 'conta@b.mx', 'contador');
+select pg_temp.ok((uso_plan(:'emp_b')->>'oficina')::int = 3, 'las invitaciones pendientes ocupan lugar; el Contador no cuenta');
+select pg_temp.falla(format($$insert into invitaciones (empresa_id, email, rol) values (%L, 'v2@b.mx', 'vendedor')$$, :'emp_b'),
+  'el 4.º usuario de oficina se rechaza sin usuarios adicionales');
+insert into destajistas (empresa_id, nombre) select :'emp_b', 'Proveedor ' || n from generate_series(1, 6) n;
+insert into invitaciones (empresa_id, email, rol, destajista_id)
+  select :'emp_b', 'prov' || row_number() over (order by nombre) || '@b.mx', 'destajista', id
+  from destajistas where empresa_id = :'emp_b' and nombre <> 'Proveedor 6';
+select pg_temp.ok((uso_plan(:'emp_b')->>'proveedores')::int = 5, 'caben 5 proveedores con acceso');
+select pg_temp.falla(format($$insert into invitaciones (empresa_id, email, rol, destajista_id) select %L, 'prov6@b.mx', 'destajista', id from destajistas where empresa_id = %L and nombre = 'Proveedor 6'$$, :'emp_b', :'emp_b'),
+  'el 6.º proveedor con acceso se rechaza');
+select pg_temp.falla(format($$update empresas set usuarios_extra = 5, plan = 'taller' where id = %L$$, :'emp_b'), 'el Admin no se asigna usuarios adicionales ni plan');
+reset role;
+set role service_role;
+select aplicar_suscripcion_stripe(:'emp_b', null, 'sub_prueba', 'active', 'mes', now() + interval '30 days', false, 'taller', 1);
+reset role;
+select set_config('request.jwt.claim.sub', :'adminB', false); set role authenticated;
+select pg_temp.ok((uso_plan(:'emp_b')->>'plan') = 'taller' and (uso_plan(:'emp_b')->>'extra')::int = 1, 'Stripe aplica el plan y los usuarios adicionales');
+insert into invitaciones (empresa_id, email, rol) values (:'emp_b', 'v2@b.mx', 'vendedor');
+select pg_temp.ok((uso_plan(:'emp_b')->>'extra_usados')::int = 1, 'un usuario adicional cubre al 4.º de oficina');
+select pg_temp.falla(format($$insert into invitaciones (empresa_id, email, rol, destajista_id) select %L, 'prov6@b.mx', 'destajista', id from destajistas where empresa_id = %L and nombre = 'Proveedor 6'$$, :'emp_b', :'emp_b'),
+  'la bolsa de adicionales se comparte: ya no cabe otro proveedor');
+reset role;
+select set_config('request.jwt.claim.sub', :'adminA', false); set role authenticated;
+select pg_temp.falla(format($$select uso_plan(%L)$$, :'emp_b'), 'A no ve el uso del plan de B');
+reset role;
+select set_config('request.jwt.claim.sub', :'adminB', false); set role authenticated;
+rollback to savepoint planes;
 -- Margen de venta: 30 % significa costo ÷ 0.70
 select id as e_carp_b from etapas where empresa_id = :'emp_b' and nombre = 'Carpintería' \gset
 insert into modelos (empresa_id, nombre) values (:'emp_b', 'Banco Tláloc') returning id as m_banco \gset

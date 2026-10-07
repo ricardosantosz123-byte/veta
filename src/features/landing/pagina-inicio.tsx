@@ -2,8 +2,9 @@ import { ArrowRight, BadgeDollarSign, Boxes, Check, ClipboardCheck, FileText, Ha
 import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { marca } from '@/config/marca'
-import { planes } from '@/config/planes'
-import { moneda } from '@/lib/formato'
+import { planes, type Plan } from '@/config/planes'
+import { monedaEntera } from '@/lib/formato'
+import { cn } from '@/lib/utils'
 
 // Landing pública (borrador). Las capturas son de la app real, con la empresa de demostración
 // "Muebles Alameda" (datos ficticios) en veta-dev. Sin cifras inventadas: los precios vienen de config.
@@ -52,17 +53,20 @@ function Captura({ src, alt, ancho, alto, className, prioridad }: { src: string;
   )
 }
 
-function Precio({ plan }: { plan: { nombre: string; precio: number | null; periodo: string } }) {
+function Precio({ plan }: { plan: Plan }) {
   return (
-    <div className="grid gap-1 rounded-2xl border bg-card p-6">
-      <p className="text-sm font-medium text-muted-foreground">{plan.nombre}</p>
-      {plan.precio === null ? (
-        <p className="text-2xl font-semibold tracking-tight">Precio por anunciar</p>
-      ) : (
-        <p className="text-3xl font-semibold tracking-tight tabular">
-          {moneda(plan.precio)} <span className="text-base font-normal text-muted-foreground">{plan.periodo}</span>
-        </p>
-      )}
+    <div className={cn('grid content-start gap-3 rounded-2xl border bg-card p-6', !plan.disponible && 'bg-muted/40')}>
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="font-semibold">{plan.nombre}</h3>
+        {!plan.disponible && <span className="rounded-full border px-2.5 py-0.5 text-xs text-muted-foreground">Próximamente</span>}
+      </div>
+      <p className="text-sm text-muted-foreground">{plan.para}</p>
+      <p className="text-4xl font-semibold tracking-tight tabular">
+        {monedaEntera(plan.mensual)} <span className="text-base font-normal text-muted-foreground">al mes</span>
+      </p>
+      <p className="text-sm text-muted-foreground">
+        o <span className="tabular">{monedaEntera(plan.anual)}</span> al año: 2 meses gratis
+      </p>
     </div>
   )
 }
@@ -223,19 +227,23 @@ export default function PaginaInicio() {
 
         {/* Precios */}
         <section id="precios" className="scroll-mt-20 border-t" aria-labelledby="titulo-precios">
-          <div className="mx-auto grid max-w-3xl gap-8 px-4 py-20 sm:py-24">
+          <div className="mx-auto grid max-w-5xl gap-8 px-4 py-20 sm:py-24">
             <div className="text-center">
               <h2 id="titulo-precios" className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 Precios
               </h2>
               <p className="mt-3 text-muted-foreground">
-                Un precio por empresa, con todos tus usuarios. {planes.diasPrueba} días de prueba, sin tarjeta.
+                Precios en pesos con IVA incluido. {planes.diasPrueba} días de prueba, sin tarjeta.
               </p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Precio plan={planes.mensual} />
-              <Precio plan={planes.anual} />
+            <div className="grid gap-4 md:grid-cols-3">
+              {planes.lista.map((p) => (
+                <Precio key={p.id} plan={p} />
+              ))}
             </div>
+            <p className="text-center text-sm text-muted-foreground">
+              ¿Necesitas más? Cada usuario adicional cuesta <span className="tabular">{monedaEntera(planes.extra.mensual)}</span> al mes, de oficina o proveedor.
+            </p>
             <ul className="grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
               {planes.incluye.map((t) => (
                 <li key={t} className="flex gap-2">

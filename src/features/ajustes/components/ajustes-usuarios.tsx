@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { MessageCircle, MoreHorizontal, RotateCw, UserPlus, Users, X } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { useEmpresaActiva, usePuedeEditar } from '@/app/empresa-activa'
 import { EstadoVacio } from '@/components/estado-vacio'
@@ -37,6 +38,7 @@ import {
   type Miembro,
 } from '@/features/ajustes/api'
 import { DialogoInvitar } from '@/features/ajustes/components/dialogo-invitar'
+import { leerUsoPlan } from '@/features/suscripcion/api'
 import { textoInvitacion } from '@/features/ajustes/invitacion'
 import { mensajeError } from '@/lib/errores'
 import { fecha } from '@/lib/formato'
@@ -58,7 +60,10 @@ function DialogoRol({ miembro, onCerrar }: { miembro: Miembro | null; onCerrar: 
   const guardar = useMutation({
     mutationFn: () => cambiarRol(miembro!.id, rol, rol === 'destajista' ? destajista : null),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['miembros', empresa!.id] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['miembros', empresa!.id] }),
+        queryClient.invalidateQueries({ queryKey: ['uso-plan', empresa!.id] }),
+      ])
       toast.success('Rol actualizado')
       onCerrar()
     },
@@ -133,7 +138,10 @@ function FilaMiembro({ m, esYo, habilitado, onCambiarRol }: { m: Miembro; esYo: 
   const activar = useMutation({
     mutationFn: () => cambiarActivo(m.id, !m.activo),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['miembros', empresa!.id] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['miembros', empresa!.id] }),
+        queryClient.invalidateQueries({ queryKey: ['uso-plan', empresa!.id] }),
+      ])
       toast.success(m.activo ? 'Usuario desactivado' : 'Usuario reactivado')
     },
     onError: (e) => toast.error(mensajeError(e)),
@@ -179,7 +187,8 @@ function FilaMiembro({ m, esYo, habilitado, onCambiarRol }: { m: Miembro; esYo: 
 function FilaInvitacion({ inv, habilitado }: { inv: Invitacion; habilitado: boolean }) {
   const { empresa } = useEmpresaActiva()
   const queryClient = useQueryClient()
-  const refrescar = () => queryClient.invalidateQueries({ queryKey: ['invitaciones', empresa!.id] })
+  const refrescar = () =>
+    Promise.all([queryClient.invalidateQueries({ queryKey: ['invitaciones', empresa!.id] }), queryClient.invalidateQueries({ queryKey: ['uso-plan', empresa!.id] })])
 
   const cancelar = useMutation({
     mutationFn: () => cancelarInvitacion(inv.id),
@@ -234,6 +243,7 @@ export function AjustesUsuarios({ empresaId }: { empresaId: string }) {
   const [editando, setEditando] = useState<Miembro | null>(null)
 
   const miembros = useQuery({ queryKey: ['miembros', empresaId], queryFn: () => leerMiembros(empresaId) })
+  const uso = useQuery({ queryKey: ['uso-plan', empresaId], queryFn: () => leerUsoPlan(empresaId) })
   const invitaciones = useQuery({ queryKey: ['invitaciones', empresaId], queryFn: () => leerInvitacionesPendientes(empresaId) })
 
   return (
@@ -241,7 +251,18 @@ export function AjustesUsuarios({ empresaId }: { empresaId: string }) {
       <Card>
         <CardHeader>
           <CardTitle>Miembros</CardTitle>
-          <CardDescription>Quién entra a esta empresa y con qué rol.</CardDescription>
+          <CardDescription>
+            Quién entra a esta empresa y con qué rol.
+            {uso.data && (
+              <span className="mt-1 block tabular">
+                Oficina {uso.data.oficina} de {uso.data.oficina_incluidos} · Proveedores {uso.data.proveedores} de {uso.data.proveedores_incluidos}
+                {uso.data.extra > 0 && ` · ${uso.data.extra_usados} de ${uso.data.extra} adicionales`} ·{' '}
+                <Link to="/suscripcion" className="underline underline-offset-4 hover:text-foreground">
+                  Ver plan
+                </Link>
+              </span>
+            )}
+          </CardDescription>
           <CardAction>
             <Button onClick={() => setInvitando(true)} disabled={!habilitado}>
               <UserPlus aria-hidden />

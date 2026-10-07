@@ -4,7 +4,7 @@
 - [ ] **Dominio + Resend verificado** como SMTP de Supabase Auth, y **volver a encender "Confirm email"**. Sin esto, alguien podría registrarse con el correo de un invitado y tomar su invitación.
 - [ ] **Supabase Pro** para producción (el plan gratuito pausa proyectos inactivos).
 - [ ] **Aviso de privacidad y términos** revisados por un abogado (LFPDPPP).
-- [ ] **Precio de la suscripción** definido y cargado en Stripe.
+- [x] **Precio de la suscripción** definido (2026-10-06): Taller $300, Mueblería $500, Despacho $500; adicional $100. Falta cargarlo en Stripe.
 - [ ] **Nombre definitivo:** buscarlo en el IMPI (clases 9 y 42) y comprar el dominio.
 
 ## Seguridad
@@ -19,7 +19,8 @@
 
 ## Fases 8 a 10 (lo que solo puede hacer Ricardo)
 - [ ] Cuentas de prueba de Mercado Pago (vendedor y comprador) y prueba de pago real en veta-dev.
-- [ ] Stripe: cuenta, producto con precio mensual y anual, Portal de Cliente; secretos `STRIPE_*`; desplegar `stripe-checkout`, `stripe-portal` y `stripe-webhook`; endpoint del webhook.
+- [ ] Stripe: cuenta; 4 productos con precio mensual y anual (ver `docs/DESPLIEGUE.md`); Portal de Cliente; secretos `STRIPE_*`; desplegar `stripe-checkout`, `stripe-portal`, `stripe-extras` y `stripe-webhook`; endpoint del webhook.
+- [ ] Afinar los beneficios de cada plan (Ricardo: "después afinamos"). Hoy Taller y Mueblería tienen lo mismo y solo cambia el precio.
 - [ ] Resend + dominio: `RESEND_API_KEY`, `EMAIL_FROM`; SMTP de Auth; **Confirm email**.
 - [ ] Datos legales en `/privacidad` y `/terminos` (razón social, domicilio, reembolsos, jurisdicción) y revisión del abogado.
 - [ ] `marca.correoSoporte` sigue siendo `soporte@tudominio.com`.

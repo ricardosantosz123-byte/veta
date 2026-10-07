@@ -9,7 +9,8 @@
 - Decisiones nuevas: ver "Afinación de la plataforma" en [[02 Decisiones]]; rol Comprador, planes y módulos nuevos aprobados para los bloques siguientes.
 - Pruebas: run.sh ✅ (248) · typecheck/lint/build ✅
 - Después, en la misma sesión: **rol Comprador** (2 migraciones, 12 pruebas nuevas, 260 en total), invitación y matriz del PRD.
-- Siguiente paso: bloque B (planes y límites de usuarios).
+- Bloque B: planes Taller/Mueblería/Despacho, límite 3 oficina + 5 proveedores, adicionales (`stripe-extras`), Suscripción con selector de plan y medidores; 270 pruebas.
+- Siguiente paso: bloque C (landing).
 
 ### AAAA-MM-DD · Fase N
 - Hecho:

@@ -4,10 +4,11 @@
 // 2. Ignora eventos ya procesados (tabla stripe_eventos).
 // 3. checkout.session.completed y customer.subscription.created/updated/deleted: vuelve a LEER la
 //    suscripción en la API (el orden de los eventos no importa) y aplica su estado actual con
-//    aplicar_suscripcion_stripe (mapeo del PRD §5.11).
+//    aplicar_suscripcion_stripe (mapeo del PRD §5.11), con el plan y los usuarios adicionales
+//    que salen de los precios de la suscripción (catalogoPrecios).
 // La empresa sale de metadata.empresa_id (la pone stripe-checkout) o, si falta, del customer.
 //
-// Secretos: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET. Se despliega con --no-verify-jwt.
+// Secretos: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET y los STRIPE_PRICE_* (para reconocer plan y adicionales). Se despliega con --no-verify-jwt.
 import { clienteServicio, UUID } from '../_shared/sesion.ts'
 import { proveedorCripto, resumenSuscripcion, stripeOpcional, type Stripe } from '../_shared/stripe.ts'
 
@@ -70,6 +71,8 @@ Deno.serve(async (req) => {
     p_intervalo: resumen.intervalo,
     p_periodo_termina: resumen.periodo_termina,
     p_cancela_al_final: resumen.cancela_al_final,
+    p_plan: resumen.plan,
+    p_usuarios_extra: resumen.usuarios_extra,
   })
   if (error) {
     console.error('stripe-webhook', evento.id, error.message)

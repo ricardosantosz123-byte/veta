@@ -34,9 +34,11 @@ npx supabase secrets set APP_URL=https://<tu-dominio>
 npx supabase secrets set APP_ORIGINS=https://<tu-dominio>
 npx supabase secrets set "PORTAL_SALT=$(openssl rand -hex 32)"
 npx supabase secrets set RESEND_API_KEY=<re_…> "EMAIL_FROM=<Nombre> <avisos@tu-dominio>"
-npx supabase secrets set STRIPE_SECRET_KEY=<sk_live_…> STRIPE_PRICE_MENSUAL=<price_…> STRIPE_PRICE_ANUAL=<price_…>
+npx supabase secrets set STRIPE_SECRET_KEY=<sk_live_…>
+npx supabase secrets set STRIPE_PRICE_TALLER_MENSUAL=<price_…> STRIPE_PRICE_TALLER_ANUAL=<price_…> STRIPE_PRICE_MUEBLERIA_MENSUAL=<price_…> STRIPE_PRICE_MUEBLERIA_ANUAL=<price_…>
+npx supabase secrets set STRIPE_PRICE_DESPACHO_MENSUAL=<price_…> STRIPE_PRICE_DESPACHO_ANUAL=<price_…> STRIPE_PRICE_EXTRA_MENSUAL=<price_…> STRIPE_PRICE_EXTRA_ANUAL=<price_…>
 ```
-`STRIPE_WEBHOOK_SECRET` se pone en el paso 5. La lista completa está en `supabase/functions/.env.example`.
+En Stripe crea 4 productos (Taller, Mueblería, Despacho de Interiores y Usuario adicional), cada uno con precio mensual y anual en MXN con IVA incluido: $300/$3,000, $500/$5,000, $500/$5,000 y $100/$1,000. Despliega también `stripe-extras`. `STRIPE_WEBHOOK_SECRET` se pone en el paso 5. La lista completa está en `supabase/functions/.env.example`.
 
 ## 3. Avisos automáticos (Vault + pg_cron)
 La base llama a la función `avisos` con la URL y el secreto guardados en Supabase Vault. Corre esto **una vez** (el secreto se genera y nunca se muestra):

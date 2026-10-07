@@ -195,7 +195,7 @@ Lee CLAUDE.md y docs/PRD.md §5.11.
 
 Fase 9:
 1. Pantalla Ajustes > Suscripción (Admin): estado, días de prueba restantes, plan actual, botones "Suscribirme mensual" / "Suscribirme anual" y "Administrar pago".
-2. Edge Function `stripe-checkout`: crea o reutiliza el customer (guarda stripe_customer_id), crea una Checkout Session mode=subscription con STRIPE_PRICE_MENSUAL o STRIPE_PRICE_ANUAL, metadata empresa_id, success/cancel URLs.
+2. Edge Function `stripe-checkout`: crea o reutiliza el customer (guarda stripe_customer_id), crea una Checkout Session mode=subscription con el precio del plan elegido (STRIPE_PRICE_<PLAN>_<MENSUAL|ANUAL>), metadata empresa_id, success/cancel URLs.
 3. Edge Function `stripe-portal`: sesión del Billing Portal.
 4. Edge Function `stripe-webhook`: verifica la firma; maneja checkout.session.completed y customer.subscription.created/updated/deleted; actualiza estado_suscripcion (mapeo del PRD), stripe_subscription_id, plan_intervalo, periodo_termina. Idempotente.
 5. Los precios se leen de variables de entorno; no hay montos en el código.

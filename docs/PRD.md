@@ -153,9 +153,13 @@ Ventas del mes, cobrado del mes, cuentas por cobrar, conversión de cotización 
 ### 5.11 Suscripción
 
 - Prueba de **14 días sin tarjeta**. Al vencer, la cuenta queda en **solo lectura** (la base lo impone con `puede_escribir()`), con un banner para suscribirse.
-- **Stripe Billing**: plan mensual y anual. Los precios **se definen después** y se cargan como `STRIPE_PRICE_MENSUAL` y `STRIPE_PRICE_ANUAL`, sin tocar código.
+- **Planes** (2026-10-06), en pesos con IVA incluido, pago mensual o anual (anual = 10 meses):
+  - **Taller** $300 al mes · **Mueblería** $500 · **Despacho de Interiores** $500 (a la venta cuando exista el módulo de Proyectos).
+  - Cada plan incluye **3 usuarios de oficina** (Vendedor, Comprador, Producción) y **5 proveedores con acceso**; Admin y Contador no cuentan. Las invitaciones pendientes ocupan lugar.
+  - **Usuario adicional** $100 al mes ($1,000 al año): una bolsa que cubre el exceso de oficina o de proveedores. La base rechaza invitar o reactivar por encima del límite (`uso_plan`).
+- **Stripe Billing**: un precio por plan e intervalo más el del usuario adicional (`STRIPE_PRICE_<PLAN>_<MENSUAL|ANUAL>`, `STRIPE_PRICE_EXTRA_<MENSUAL|ANUAL>`). El Admin cambia sus adicionales desde Suscripción (`stripe-extras`, con prorrateo).
 - Checkout de Stripe para suscribirse y Portal de Cliente de Stripe para la tarjeta, las facturas y la cancelación.
-- El webhook actualiza `estado_suscripcion`, `periodo_termina` y `plan_intervalo`. Mapeo de estados de Stripe: `active`, `trialing` y `past_due` → `activa` (mientras Stripe reintenta el cobro); `unpaid` e `incomplete_expired` → `vencida`; `canceled` → `cancelada`.
+- El webhook actualiza `estado_suscripcion`, `periodo_termina`, `plan_intervalo`, `plan` y `usuarios_extra`. Mapeo de estados de Stripe: `active`, `trialing` y `past_due` → `activa` (mientras Stripe reintenta el cobro); `unpaid` e `incomplete_expired` → `vencida`; `canceled` → `cancelada`.
 
 ## 6. Arquitectura
 

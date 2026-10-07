@@ -4,6 +4,7 @@
 const ZONA = 'America/Mexico_City'
 
 const fmtMoneda = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
+const fmtMonedaEntera = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 })
 const fmtNumero = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 2 })
 const fmtCantidad = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 3 })
 const fmtMonedaPrecisa = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2, maximumFractionDigits: 4 })
@@ -30,6 +31,12 @@ export function numero(valor: Monto): string {
 }
 
 /** Costo unitario con hasta 4 decimales ($0.3333), como lo guarda la base para insumos. */
+/** Montos redondos sin centavos, para precios de lista ($300, $5,000). */
+export function monedaEntera(valor: Monto): string {
+  const n = aNumero(valor)
+  return n === null ? '—' : fmtMonedaEntera.format(n)
+}
+
 export function monedaPrecisa(valor: Monto): string {
   const n = aNumero(valor)
   return n === null ? '—' : fmtMonedaPrecisa.format(n)

@@ -96,7 +96,7 @@
 - Mapeo del PRD §5.11 más dos casos: `incomplete` → sin cambio (el primer cobro aún no se confirma) y `paused` → vencida. (⚠️ Decidida en modo nocturno, revisar)
 - Cancelación programada (`cancel_at_period_end`): la cuenta sigue **activa** hasta el fin del periodo y la pantalla dice "Se cancela el …" (`empresas.cancela_al_final`).
 - No se abre un segundo Checkout si la suscripción ya está activa: se usa "Administrar pago" (cambiar de plan, tarjeta o cancelar en el Portal de Stripe). (⚠️ Decidida en modo nocturno, revisar)
-- La interfaz **no muestra montos**: el precio aparece en la página de Stripe (los precios viven en Stripe y en `STRIPE_PRICE_*`). (⚠️ Decidida en modo nocturno, revisar)
+- ~~La interfaz no muestra montos~~ → reemplazada por "Planes y límites" (2026-10-06): la app muestra los precios de `src/config/planes.ts`.
 - Checkout en español (`es-419`) y con códigos promocionales habilitados. (⚠️ Decidida en modo nocturno, revisar)
 - Un customer de Stripe por empresa, creado una sola vez (`guardar_cliente_stripe`, clave de idempotencia `customer-<empresa>`).
 - SDK `npm:stripe@23` solo en Edge Functions (verificación de firma); no entra al bundle del navegador.
@@ -144,6 +144,14 @@
 - **Implementación:** una sola regla en `tiene_rol`: el Comprador cumple cualquier permiso que incluya a Producción o al Contador. Así todas las políticas y RPC existentes lo cubren sin reescribirlas. `lib/permisos.ts` usa la misma regla.
 - En los planes cuenta como usuario de oficina (dentro de los 3 incluidos), igual que Vendedor y Producción.
 - Se hizo en dos migraciones porque Postgres no deja usar un valor nuevo de enum en la transacción que lo crea.
+
+## Planes y límites (2026-10-06, Ricardo)
+- **Taller $300, Mueblería $500 y Despacho de Interiores $500 al mes, IVA incluido**; anual con 2 meses gratis ($3,000 / $5,000 / $5,000).
+- Cada plan: **3 usuarios de oficina** (Vendedor, Comprador, Producción) y **5 proveedores con acceso**. Admin y Contador aparte. Por ahora los tres planes tienen las mismas funciones; los beneficios se afinan después.
+- **Usuario adicional $100 al mes.** (⚠️ Decidida por Claude, revisar) El anual cuesta $1,000 porque Stripe exige el mismo intervalo en toda la suscripción. Los adicionales son **una bolsa compartida**: cubren el exceso de oficina o de proveedores, sin separar.
+- **Se bloquea y se ofrece comprar** (Ricardo). La base cuenta miembros activos + invitaciones pendientes (`uso_plan`) y rechaza la invitación, el alta o la reactivación que no quepa, con un mensaje que manda a Suscripción. Bajar adicionales en Stripe no borra a nadie: la empresa queda "excedida" y no puede sumar hasta liberar lugares; `stripe-extras` no deja bajar de los que están en uso.
+- (⚠️ Decidida por Claude, revisar) Durante la prueba la empresa está en plan **Mueblería** y aplican los mismos límites. El plan solo lo escribe Stripe (el Admin lo elige al pagar).
+- **Despacho de Interiores** se muestra como "Próximamente" en la landing y en Suscripción, y `stripe-checkout` lo rechaza, hasta que exista el módulo de **Proyectos**.
 
 ## Herramientas (2026-10-05)
 - ~~Skills de antislop v3.2.20 en `.claude/skills/`, aplicando salvo contradicción con CLAUDE.md.~~ Reemplazado el mismo día:
