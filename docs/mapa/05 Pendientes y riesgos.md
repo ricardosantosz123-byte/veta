@@ -32,3 +32,7 @@
 ## Decisiones abiertas
 - ¿Tope de descuento manual por rol? `precio_sugerido` ya permite medirlo.
 - ¿Límite de usuarios por plan?
+
+
+## Hoja de ruta V2 (2026-10-06)
+Fases 11 a 19 en `docs/FASES.md`: Proyectos, pagos a proveedores y órdenes de compra, recordatorio de saldo, entregas, garantías, importar Excel, reembolsos de Mercado Pago, sucursales y CFDI.

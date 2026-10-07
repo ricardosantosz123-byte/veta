@@ -223,3 +223,42 @@ Fase 10:
 ```
 
 **Aceptación**: Confirm email encendido y correos de Auth enviados desde el dominio propio; una persona ajena se registra, crea su primera cotización en menos de 30 minutos y se suscribe con tarjeta real en producción.
+
+---
+
+# Fases V2 (acordadas con Ricardo el 2026-10-06)
+
+Mismo método: una fase a la vez, plan corto antes de construir, migración nueva con pruebas, `typecheck`, `lint`, `build` y `run.sh` en verde. El orden es el recomendado; se puede mover.
+
+## Fase 11 · Proyectos (base del plan Despacho de Interiores)
+Un **proyecto** agrupa varios pedidos de un mismo cliente (sala, recámara, comedor…): avance y saldo del proyecto completo, portal del cliente con todos sus pedidos, y cotización por espacios. Al terminarla, el plan **Despacho de Interiores** sale a la venta (`PLANES_A_LA_VENTA` en `_shared/stripe.ts` y `disponible` en `src/config/planes.ts`).
+
+**Aceptación**: un despacho crea un proyecto con 3 pedidos, el cliente ve los 3 en un solo link y el saldo del proyecto suma los tres.
+
+## Fase 12 · Pagos a proveedores, adeudos y órdenes de compra
+- Pagos y adeudos con proveedores de insumos (hoy solo existen con los fabricantes).
+- **Órdenes de compra** del Comprador a proveedores de insumos: pedida → recibida (parcial o completa) → entrada automática al inventario con su costo y adeudo con el proveedor.
+- Estado de cuenta por proveedor.
+
+**Aceptación**: el Comprador pide 30 m de tela, recibe 20, el inventario sube 20 y el adeudo es por lo recibido.
+
+## Fase 13 · Recordatorio de saldo al cliente
+Aviso automático (correo, con link al portal y al pago de Mercado Pago) cuando un pedido terminado tiene saldo, con frecuencia configurable. Usa los avisos de la Fase 10 (`_avisar`, pg_cron).
+
+## Fase 14 · Entregas
+Fecha y ventana de entrega, dirección, flete (costo y cobro), ruta del día por chofer y confirmación de entrega desde el celular (foto y firma).
+
+## Fase 15 · Garantías y reclamos
+Reclamo ligado al pedido y al mueble, con fotos, responsable (proveedor de la etapa), estado y costo. El portal del cliente permite abrir un reclamo dentro del periodo de garantía.
+
+## Fase 16 · Importar catálogo desde Excel
+Plantilla descargable, vista previa con errores por renglón y alta de modelos, opciones y costos por etapa en una sola operación.
+
+## Fase 17 · Reembolsos y contracargos de Mercado Pago
+El webhook procesa `refunded` y `charged_back`: anula o ajusta el pago y avisa al Admin. Mover el token de Mercado Pago a Supabase Vault.
+
+## Fase 18 · Varias sucursales
+Sucursal en pedidos, inventario y usuarios; tablero por sucursal y total. Define si cambia el precio de los planes.
+
+## Fase 19 · Factura CFDI
+Timbrado con un PAC (servicio de paga: Ricardo elige proveedor y costo antes de empezar). CFDI de ingreso por pedido, complemento de pago para anticipos y saldo, y cancelación.

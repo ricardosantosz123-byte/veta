@@ -1,6 +1,6 @@
 # Estado actual
 
-> Actualizar al cerrar cada fase. Última actualización: 2026-10-06 (noche autónoma: Fases 7 a 10).
+> Actualizar al cerrar cada fase. Última actualización: 2026-10-06 (afinación con cuestionario: bloques A a D).
 
 ## Fases
 | Fase | Tema | Estado | Commit |
@@ -16,6 +16,17 @@
 | 8 | Link de pago Mercado Pago | 🟡 Construida (noche) y desplegada; falta probar con cuentas de prueba de Mercado Pago | `826bce9` · [[07 Reporte nocturno]] |
 | 9 | Suscripción Stripe | 🟡 Código y pruebas listos (noche); funciones sin desplegar hasta tener las llaves de Stripe | `65f6fef` · [[07 Reporte nocturno]] |
 | 10 | Tablero, avisos, landing, lanzamiento | 🟡 Construida (noche) salvo lo que requiere dominio, Resend real y Netlify | `8e9d67b` + `9ee5346` + `c56b73b` · [[07 Reporte nocturno]] |
+
+## Afinación del 2026-10-06 (cuestionario con Ricardo)
+| Bloque | Qué | Commit |
+|---|---|---|
+| A | Movimiento sutil, "Margen operativo", portal cerrado 90 días después de entregar, Ricardo fuera de la demo | `748e6ca` |
+| — | Rol **Comprador** | `bbc4f34` |
+| B | Planes Taller / Mueblería / Despacho, límite 3 oficina + 5 proveedores, usuarios adicionales | `77e4f36` |
+| C | Landing nueva (dolor → solución, antes/después, recorrido, 3 pasos, precios, preguntas) | `ce52a88` |
+| D | Fases 11 a 19 en `docs/FASES.md` | (este commit) |
+
+`run.sh`: **270 pruebas en verde**. Falta: captura "vista del proveedor" para la landing y revisar la app con los demás roles (Ricardo entra con cada cuenta).
 
 ## Fase 6: cierre
 - [x] Migración `20261011000001_fase6_insumos.sql` y `20261011000002_fase6_unidad_dm2.sql` aplicadas en veta-dev; `run.sh`: **189 pruebas en verde** (35 nuevas).
@@ -33,11 +44,13 @@
 6. **Ajuste por conteo** a 2 con motivo → aparece **Bajo mínimo** en la lista.
 
 ## Siguiente paso
-Leer [[07 Reporte nocturno]]: decisiones ⚠️ por revisar, cuentas y llaves que faltan y pruebas de aceptación de las Fases 7 a 10.
+1. Ricardo entra en el panel con la cuenta del proveedor → captura para la landing y revisión de "Mis órdenes" en celular; luego Vendedor y Comprador.
+2. Pendientes de [[07 Reporte nocturno]]: cuentas y llaves (Stripe con los 8 precios, Mercado Pago de prueba, Resend y dominio) y pruebas de aceptación de las Fases 7 a 10.
+3. Después: Fase 11 (Proyectos).
 
 ## Datos de prueba
-- Silla **Natalia**: Carpintería 1,800 · Tapicería 900 · Nogal +600 · Piel +900 · markup 1.0 → **$8,400** General / **$9,800** Expo.
+- Silla **Natalia**: Carpintería 1,800 · Tapicería 900 · Nogal +600 · Piel +900 · margen de venta 50 % → **$8,400** General / **$9,800** Expo.
 - Cotización: 4 Natalia + mesa sobre diseño $12,000 − 10% → **$47,606.40**.
-- Cuentas de prueba: Admin `ricardosantosz123@gmail.com` · Vendedor `ventas@flexora.mx` · Destajista `rsantoszertuche@gmail.com` (destajista "Ricardo").
+- Cuentas de prueba: Admin `ricardosantosz123@gmail.com` · Vendedor `ventas@flexora.mx` · Proveedor (fabricante) `rsantoszertuche@gmail.com` ("Ricardo").
 - En veta-dev: empresa **Casa Sauce**, pedido **P-1** terminado (3 órdenes de Ricardo terminadas), saldo $13,363.20 por cobrar.
 - Dev server en la red local: `npm run dev -- --host` → `http://192.168.100.8:5173` (la IP puede cambiar).
